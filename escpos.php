@@ -153,7 +153,7 @@ class escpos {
 	 * Justification must be JUSTIFY_LEFT, JUSTIFY_CENTER, or JUSTIFY_RIGHT.
 	 */
 	function set_justification($justification) {
-		fwrite($this -> fp, self::ESC . "M" . chr($justification));
+		fwrite($this -> fp, self::ESC . "a" . chr($justification));
 	}
 	
 	/**
