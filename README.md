@@ -30,6 +30,7 @@ $printer -> text("Hello World!\n");
 $printer -> cut();
 fclose($fp);
 ```
+A more advanced example can be found in the code of [Auth](https://github.com/mike42/Auth) in [ReceiptPrinter.php](https://github.com/mike42/Auth/blob/master/lib/misc/ReceiptPrinter.php). It includes justification, boldness, and a barcode.
 
 Available methods
 -----------------
