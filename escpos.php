@@ -8,7 +8,7 @@
  * See test.php for example usage.
  * Some functions have not been implemented:
  * 		- set paper sensors
- * 		- generate pulse (for cash drawer
+ * 		- generate pulse (for cash drawer)
  * 		- select print colour
  * 		- select character code table
  * 		- turn white/black reverse printing mode on/off
@@ -125,7 +125,7 @@ class escpos {
 	 * 
 	 *  @param boolean $on true for emphasis, false for no emphasis
 	 */
-	function set_emphasis($on = true) {
+	function set_emphasis($on = false) {
 		fwrite($this -> fp, self::ESC . "E". ($on ? chr(1) : chr(0)));
 	}
 	
@@ -134,7 +134,7 @@ class escpos {
 	 * 
 	 * @param boolean $on true for double strike, false for no double strike
 	 */
-	function set_double_strike($on) {
+	function set_double_strike($on = false) {
 		fwrite($this -> fp, self::ESC . "G". ($on ? chr(1) : chr(0)));
 	}
 	
@@ -144,7 +144,7 @@ class escpos {
 	 * 
 	 * @param int $font
 	 */
-	function set_font($font) {
+	function set_font($font = self::FONT_A) {
 		fwrite($this -> fp, self::ESC . "M" . chr($font));
 	}
 
@@ -152,7 +152,7 @@ class escpos {
 	 * Select justification
 	 * Justification must be JUSTIFY_LEFT, JUSTIFY_CENTER, or JUSTIFY_RIGHT.
 	 */
-	function set_justification($justification) {
+	function set_justification($justification = self::JUSTIFY_LEFT) {
 		fwrite($this -> fp, self::ESC . "a" . chr($justification));
 	}
 	
