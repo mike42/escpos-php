@@ -6,7 +6,7 @@ It is intended for use with networked printers, but you can also use the library
 
 Basic usage
 -----------
-The library is best give a file pointer to the printer. A file pointer to a networked printer can be opened via [fsockopen()](http://www.php.net/manual/en/function.fsockopen.php), or you can use [fopen()](http://www.php.net/manual/en/function.fopen.php) if you have a local printer available at `/dev/lp0` (or a serial interface, etc). If no file pointer is specified, then standard output is used.
+The library should be initialised with a file pointer to the printer. For a networked printer, this can be opened via [fsockopen()](http://www.php.net/manual/en/function.fsockopen.php). For a local printer, use [fopen()](http://www.php.net/manual/en/function.fopen.php) to open `/dev/lp0` (or a serial interface, etc). If no file pointer is specified, then standard output is used.
 
 A "hello world" receipt can be printed easily (Call this `hello-world.php`):
 ```php
@@ -30,7 +30,8 @@ $printer -> text("Hello World!\n");
 $printer -> cut();
 fclose($fp);
 ```
-A more advanced example can be found in the code of [Auth](https://github.com/mike42/Auth) in [ReceiptPrinter.php](https://github.com/mike42/Auth/blob/master/lib/misc/ReceiptPrinter.php). It includes justification, boldness, and a barcode.
+
+A complete receipt can be found in the code of [Auth](https://github.com/mike42/Auth) in [ReceiptPrinter.php](https://github.com/mike42/Auth/blob/master/lib/misc/ReceiptPrinter.php). It includes justification, boldness, and a barcode.
 
 Available methods
 -----------------
@@ -135,6 +136,12 @@ Currently supported barcode standards are (depending on your printer):
 - `BARCODE_CODABAR`
 
 Note that some barcode standards can only encode numbers, so attempting to print non-numeric codes with them may result in strange behaviour.
+
+Further notes
+-------------
+Posts I've written up for people who are learning how to use receipt printers:
+* [What is ESC/POS, and how do I use it?](http://mike.bitrevision.com/blog/what-is-escpos-and-how-do-i-use-it), which documents the output of test.php.
+* [Setting up an Epson receipt printer](http://mike.bitrevision.com/blog/2014-20-26-setting-up-an-epson-receipt-printer)
 
 Vendor documentation
 --------------------
