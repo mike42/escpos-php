@@ -212,4 +212,15 @@ class escpos {
 		fwrite($this -> fp, self::GS . "k" . chr($type) . $content . self::NUL);
 	}
 
+	/**
+	 * Generate a pulse, for opening a cash drawer if one is connected.
+	 * The default settings should open an Epson drawer.
+	 *
+	 * @param int $pin 0 or 1, for pin 2 or pin 5 kick-out connector respectively.
+	 * @param int $on_ms pulse ON time, in milliseconds.
+	 * @param int $off_ms pulse OFF time, in milliseconds.
+	 */
+	function pulse($pin = 0, $on_ms = 120, $off_ms = 240) {
+		fwrite($this -> fp, self::ESC . "p" . chr($m + 48) . chr($t1 / 2) . chr($t2 / 2));
+	}
 }

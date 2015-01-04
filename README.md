@@ -137,6 +137,14 @@ Currently supported barcode standards are (depending on your printer):
 
 Note that some barcode standards can only encode numbers, so attempting to print non-numeric codes with them may result in strange behaviour.
 
+### pulse($pin, $on_mm, $off_ms)
+Generate a pulse, for opening a cash drawer if one is connected. The default settings (0, 120, 240) should open an Epson drawer.
+
+Parameters:
+- `int $pin`: 0 or 1, for pin 2 or pin 5 kick-out connector respectively.
+- `int $on_ms`: pulse ON time, in milliseconds.
+- `int $off_ms`: pulse OFF time, in milliseconds.
+
 Further notes
 -------------
 Posts I've written up for people who are learning how to use receipt printers:
