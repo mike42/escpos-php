@@ -26,7 +26,7 @@
  * See test.php for example usage.
  * Some functions have not been implemented:
  * 		- set paper sensors
- * 		- generate pulse (for cash drawer)
+ * 		- graphical output
  * 		- select print colour
  * 		- select character code table
  * 		- turn white/black reverse printing mode on/off
@@ -221,6 +221,6 @@ class escpos {
 	 * @param int $off_ms pulse OFF time, in milliseconds.
 	 */
 	function pulse($pin = 0, $on_ms = 120, $off_ms = 240) {
-		fwrite($this -> fp, self::ESC . "p" . chr($m + 48) . chr($t1 / 2) . chr($t2 / 2));
+		fwrite($this -> fp, self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
 	}
 }
