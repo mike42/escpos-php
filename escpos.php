@@ -38,6 +38,7 @@ class escpos {
 	const LF = "\x0a";
 	const ESC = "\x1b";
 	const GS = "\x1d";
+	const FS = "\x1c";
 	
 	/* Print mode constants */
 	const MODE_FONT_A = 0;
@@ -221,6 +222,13 @@ class escpos {
 	 * @param int $off_ms pulse OFF time, in milliseconds.
 	 */
 	function pulse($pin = 0, $on_ms = 120, $off_ms = 240) {
-		fwrite($this -> fp, self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
+	// NOTE: http://www.easify.co.uk/support/epos_hardware_setup_guide/ suggests for the EPOS printer, the pulse command should be
+	// 27,112,0,25,30,27,116,2.
+	// ESC p 0 25 (50ms) 30 (60ms), ESC t 2
+		fwrite($this -> fp, self::ESC . "p" . chr($pin) . chr($on_ms / 2) . chr($off_ms / 2));
+	}
+	
+	function image_nv_print_test($horiz_scale = 1, $vert_scale = 1) {
+			fwrite($this -> fp, self::FS . "p" . chr($horiz_scale) . chr($vert_scale));
 	}
 }
