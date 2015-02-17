@@ -1,5 +1,8 @@
 <?php
 /**
+ * escpos-php, a Thermal receipt printer library, for use with
+ * ESC/POS compatible printers
+ *
  * Copyright (c) 2014 Michael Billington <michael.billington@gmail.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,7 +35,7 @@
  * 		- turn white/black reverse printing mode on/off
  * 		- code93 and code128 barcodes‎
  */
-class escpos {
+class Escpos {
 	/* ASCII codes */
 	const NUL = "\x00";
 	const LF = "\x0a";
@@ -118,7 +121,7 @@ class escpos {
 	 * 
 	 * @param int $mode
 	 */
-	function select_print_mode($mode = self::NUL) {
+	function selectPrintMode($mode = self::NUL) {
 		fwrite($this -> fp, self::ESC . "!" . chr($mode));
 	}
 	
@@ -127,7 +130,7 @@ class escpos {
 	 * 
 	 * @param int $underline 0 for no underline, 1 for underline, 2 for heavy underline
 	 */
-	function set_underline($underline = 1) {
+	function setUnderline($underline = 1) {
 		fwrite($this -> fp, self::ESC . "-". chr($underline));
 	}
 	
@@ -143,7 +146,7 @@ class escpos {
 	 * 
 	 *  @param boolean $on true for emphasis, false for no emphasis
 	 */
-	function set_emphasis($on = false) {
+	function setEmphasis($on = false) {
 		fwrite($this -> fp, self::ESC . "E". ($on ? chr(1) : chr(0)));
 	}
 	
@@ -152,7 +155,7 @@ class escpos {
 	 * 
 	 * @param boolean $on true for double strike, false for no double strike
 	 */
-	function set_double_strike($on = false) {
+	function setDoubleStrike($on = false) {
 		fwrite($this -> fp, self::ESC . "G". ($on ? chr(1) : chr(0)));
 	}
 	
@@ -162,7 +165,7 @@ class escpos {
 	 * 
 	 * @param int $font
 	 */
-	function set_font($font = self::FONT_A) {
+	function setFont($font = self::FONT_A) {
 		fwrite($this -> fp, self::ESC . "M" . chr($font));
 	}
 
@@ -170,7 +173,7 @@ class escpos {
 	 * Select justification
 	 * Justification must be JUSTIFY_LEFT, JUSTIFY_CENTER, or JUSTIFY_RIGHT.
 	 */
-	function set_justification($justification = self::JUSTIFY_LEFT) {
+	function setJustification($justification = self::JUSTIFY_LEFT) {
 		fwrite($this -> fp, self::ESC . "a" . chr($justification));
 	}
 	
@@ -179,7 +182,7 @@ class escpos {
 	 * 
 	 * @param int $lines number of lines to feed
 	 */
-	function feed_reverse($lines = 1) {
+	function feedReverse($lines = 1) {
 		fwrite($this -> fp, self::ESC . "e" . chr($lines));
 	}
 	
@@ -198,7 +201,7 @@ class escpos {
 	 * 
 	 * @param int $height Height in dots
 	 */
-	function set_barcode_height($height = 8) {
+	function setBarcodeHeight($height = 8) {
 		fwrite($this -> fp, self::GS . "h" . chr($height));
 	}
 	

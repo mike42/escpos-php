@@ -1,6 +1,6 @@
 <?php
 /**
- * This is a test script for the functions of the PHP ESC/POS print driver,
+ * This is a demo script for the functions of the PHP ESC/POS print driver,
  * escpos.php.
  *
  * Most printers implement only a subset of the functionality of the driver, so
@@ -8,8 +8,8 @@
  *
  * @author Michael Billington <michael.billington@gmail.com>
  */
-require_once(dirname(__FILE__) . "/escpos.php");
-$printer = new escpos();
+require_once(dirname(__FILE__) . "/../Escpos.php");
+$printer = new Escpos();
 
 /* Initialize */
 $printer -> initialize();
@@ -22,7 +22,7 @@ $printer -> cut();
 $printer -> text("ABC");
 $printer -> feed(7);
 $printer -> text("DEF");
-$printer -> feed_reverse(3);
+$printer -> feedReverse(3);
 $printer -> text("GHI");
 $printer -> feed();
 $printer -> cut();
@@ -43,18 +43,18 @@ for($i = 0; $i < 2 ** count($modes); $i++) {
 			$mode |= $modes[$j];
 		}
 	}
-	$printer -> select_print_mode($mode);
+	$printer -> selectPrintMode($mode);
 	$printer -> text("ABCDEFGHIJabcdefghijk\n");
 }
-$printer -> select_print_mode(); // Reset
+$printer -> selectPrintMode(); // Reset
 $printer -> cut();
 
 /* Underline */
 for($i = 0; $i < 3; $i++) {
-	$printer -> set_underline($i);
+	$printer -> setUnderline($i);
 	$printer -> text("The quick brown fox jumps over the lazy dog\n");
 }
-$printer -> set_underline(0); // Reset
+$printer -> setUnderline(0); // Reset
 $printer -> cut();
 
 /* Cuts */
@@ -66,18 +66,18 @@ $printer -> cut();
 
 /* Emphasis */
 for($i = 0; $i < 2; $i++) {
-	$printer -> set_emphasis($i == 1);
+	$printer -> setEmphasis($i == 1);
 	$printer -> text("The quick brown fox jumps over the lazy dog\n");
 }
-$printer -> set_emphasis(); // Reset
+$printer -> setEmphasis(); // Reset
 $printer -> cut();
 
 /* Double-strike (looks basically the same as emphasis) */
 for($i = 0; $i < 2; $i++) {
-	$printer -> set_double_strike($i == 1);
+	$printer -> setDoubleStrike($i == 1);
 	$printer -> text("The quick brown fox jumps over the lazy dog\n");
 }
-$printer -> set_double_strike();
+$printer -> setDoubleStrike();
 $printer -> cut();
 
 /* Fonts (many printers do not have a 'Font C') */
@@ -86,10 +86,10 @@ $fonts = array(
 	escpos::FONT_B,
 	escpos::FONT_C);
 for($i = 0; $i < count($fonts); $i++) {
-	$printer -> set_font($fonts[$i]);
+	$printer -> setFont($fonts[$i]);
 	$printer -> text("The quick brown fox jumps over the lazy dog\n");
 }
-$printer -> set_font(); // Reset
+$printer -> setFont(); // Reset
 $printer -> cut();
 
 /* Justification */
@@ -98,10 +98,10 @@ $justification = array(
 	escpos::JUSTIFY_CENTER,
 	escpos::JUSTIFY_RIGHT);
 for($i = 0; $i < count($justification); $i++) {
-	$printer -> set_justification($justification[$i]);
+	$printer -> setJustification($justification[$i]);
 	$printer -> text("A man a plan a canal panama\n");
 }
-$printer -> set_justification(); // Reset
+$printer -> setJustification(); // Reset
 $printer -> cut();
 
 /* Barcodes */
@@ -113,12 +113,12 @@ $barcodes = array(
 	escpos::BARCODE_CODE39,
 	escpos::BARCODE_ITF,
 	escpos::BARCODE_CODABAR);
-$printer -> set_barcode_height(80);
+$printer -> setBarcodeHeight(80);
 for($i = 0; $i < count($barcodes); $i++) {
 	$printer -> text("Barcode $i " . "\n");
 	$printer -> barcode("9876", $barcodes[$i]);
 	$printer -> feed();
 }
 $printer -> cut();
-
+$printer -> pulse();
 ?>

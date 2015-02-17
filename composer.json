@@ -1,0 +1,17 @@
+{
+	"name": "mike42/escpos-php",
+	"type": "library",
+	"description": "Thermal receipt printer library, for use with ESC/POS compatible printers",
+	"homepage": "https://github.com/mike42/escpos-php",
+	"keywords": ["receipt", "print", "escpos", "ESC/POS", "driver"],
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Michael Billington",
+			"email": "michael.billington@gmail.com"
+		}
+	],
+	"require": {
+		"php": ">=5.3.0",
+	}
+}

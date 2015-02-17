@@ -53,7 +53,7 @@ Print and feed line / Print and feed n lines
 Parameters:
 - `int $lines`: Number of lines to feed
 
-### select_print_mode($mode)
+### selectPrintMode($mode)
 Select print mode(s).
 
 Parameters:
@@ -67,7 +67,7 @@ Any of the MODE_* constants can be OR'd together and used as `$mode`. Valid mode
 - `MODE_DOUBLE_WIDTH`
 - `MODE_UNDERLINE`
 	
-### set_underline($underline)
+### setUnderline($underline)
 Turn underline mode on/off.
 
 Parameters:
@@ -76,31 +76,31 @@ Parameters:
 ### initialize()
 Initialize printer. This resets all modes back to default, and you may wish to place it at the top of your scripts if poorly-written applications leave the printer in a strange state.
 
-### set_emphasis($on)
+### setEmphasis($on)
 Turn emphasized mode on/off.
 
 Parameters:
 - `boolean $on`: true for emphasis, false for no emphasis.
 
-### set_double_strike($on)
+### setDoubleStrike($on)
 Turn double-strike mode on/off.
 
 Parameters:
 - `boolean $on`: true for double strike, false for no double strike.
 
-### set_font($font)
+### setFont($font)
 Select character font.
 
 Parameters:
 - `int $font`: The font to use. Must be either FONT_A, FONT_B, or FONT_C.
 
-### set_justification($justification)
+### setJustification($justification)
 Select justification.
 
 Parameters:
 - `int $justification`: Must be JUSTIFY_LEFT, JUSTIFY_CENTER, or JUSTIFY_RIGHT.
 
-### feed_reverse($lines)
+### feedReverse($lines)
 Print and reverse feed n lines.
 
 Parameters:
@@ -113,7 +113,7 @@ Parameters:
 - `int $mode`: Cut mode, either CUT_FULL or CUT_PARTIAL. If not specified, CUT_FULL will be used.
 - `int $lines`: Number of lines to feed before cutting. If not specified, 3 will be used.
 
-### set_barcode_height($height)
+### setBarcodeHeight($height)
 Set barcode height.
  
 Parameters:

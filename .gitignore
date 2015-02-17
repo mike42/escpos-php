@@ -1,0 +1,5 @@
+# Eclipse files
+.settings/*
+.project
+.buildpath
+
