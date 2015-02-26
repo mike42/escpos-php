@@ -92,7 +92,10 @@ class Escpos {
 	 * @param string $str Text to print
 	 */
 	function text($str = "") {
-		fwrite($this -> fp, $str);
+		if (is_object($str) && !method_exists($str, '__toString')) {
+			throw new InvalidArgumentException("A");
+		}
+		fwrite($this -> fp, (string)$str);
 	}
 
 	/**
