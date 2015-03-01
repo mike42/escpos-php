@@ -64,6 +64,11 @@ class Escpos {
 	const CUT_FULL = 65;
 	const CUT_PARTIAL = 66;
 	
+	/* Underline */
+	const UNDERLINE_NONE = 0;
+	const UNDERLINE_SINGLE = 1;
+	const UNDERLINE_DOUBLE = 2;
+
 	/* Barcode types */
 	const BARCODE_UPCA = 0;
 	const BARCODE_UPCE = 1;
