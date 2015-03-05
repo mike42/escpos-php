@@ -380,6 +380,12 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> printer -> setBarcodeHeight(-1);
 	}
 
+	public function testSetBarcodeHeightTooSmall() {
+		$this -> setupTest();
+		$this -> setExpectedException('InvalidArgumentException');
+		$this -> printer -> setBarcodeHeight(0);
+	}
+
 	public function testSetBarcodeHeightTooLarge() {
 		$this -> setupTest();
 		$this -> setExpectedException('InvalidArgumentException');

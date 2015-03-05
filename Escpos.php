@@ -3,7 +3,7 @@
  * escpos-php, a Thermal receipt printer library, for use with
  * ESC/POS compatible printers
  *
- * Copyright (c) 2014 Michael Billington <michael.billington@gmail.com>
+ * Copyright (c) 2014-2015 Michael Billington <michael.billington@gmail.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -97,9 +97,7 @@ class Escpos {
 	 * @param string $str Text to print
 	 */
 	function text($str = "") {
-		if (is_object($str) && !method_exists($str, '__toString')) {
-			throw new InvalidArgumentException("A");
-		}
+		self::validateString($str, __FUNCTION__);
 		fwrite($this -> fp, (string)$str);
 	}
 
@@ -109,6 +107,7 @@ class Escpos {
 	 * @param int $lines Number of lines to feed
 	 */
 	function feed($lines = 1) {
+		self::validateInteger($lines, 1, 255, __FUNCTION__);
 		if($lines <= 1) {
 			fwrite($this -> fp, self::LF);
 		} else {
@@ -119,7 +118,7 @@ class Escpos {
 	/**
 	 * Select print mode(s).
 	 * 
-	 * Arguments should be OR'd together MODE_* constants: 
+	 * Argument should be OR'd together MODE_* constants: 
 	 * MODE_FONT_A
 	 * MODE_FONT_B
 	 * MODE_EMPHASIZED
@@ -129,21 +128,37 @@ class Escpos {
 	 * 
 	 * @param int $mode
 	 */
-	function selectPrintMode($mode = self::NUL) {
+	function selectPrintMode($mode = self::MODE_FONT_A) {
+		$allModes = self::MODE_FONT_B | self::MODE_EMPHASIZED | self::MODE_DOUBLE_HEIGHT | self::MODE_DOUBLE_WIDTH | self::MODE_UNDERLINE;
+		if(!is_integer($mode) || $mode < 0 || ($mode & $allModes) != $mode) {
+			throw new InvalidArgumentException("Test");
+		}
+
 		fwrite($this -> fp, self::ESC . "!" . chr($mode));
 	}
 	
 	/**
-	 * Turn underline mode on/off
+	 * Set underline for printed text.
+	 * 
+	 * Argument can be true/false, or one of UNDERLINE_NONE,
+	 * UNDERLINE_SINGLE or UNDERLINE_DOUBLE.
 	 * 
 	 * @param int $underline 0 for no underline, 1 for underline, 2 for heavy underline
 	 */
-	function setUnderline($underline = 1) {
+	function setUnderline($underline = self::UNDERLINE_SINGLE) {
+		/* Map true/false to underline constants */
+		if($underline === true) {
+			$underline = self::UNDERLINE_SINGLE;
+		} else if($underline === false) {
+			$underline = self::UNDERLINE_NONE;
+		}
+		/* Set the underline */
+		self::validateInteger($underline, 0, 2, __FUNCTION__);
 		fwrite($this -> fp, self::ESC . "-". chr($underline));
 	}
 	
 	/**
-	 * Initialize printer
+	 * Initialize printer. This resets formatting back to the defaults.
 	 */
 	function initialize() {
 		fwrite($this -> fp, self::ESC . "@");
@@ -154,7 +169,8 @@ class Escpos {
 	 * 
 	 *  @param boolean $on true for emphasis, false for no emphasis
 	 */
-	function setEmphasis($on = false) {
+	function setEmphasis($on = true) {
+		self::validateBoolean($on, __FUNCTION__);
 		fwrite($this -> fp, self::ESC . "E". ($on ? chr(1) : chr(0)));
 	}
 	
@@ -163,7 +179,8 @@ class Escpos {
 	 * 
 	 * @param boolean $on true for double strike, false for no double strike
 	 */
-	function setDoubleStrike($on = false) {
+	function setDoubleStrike($on = true) {
+		self::validateBoolean($on, __FUNCTION__);
 		fwrite($this -> fp, self::ESC . "G". ($on ? chr(1) : chr(0)));
 	}
 	
@@ -174,6 +191,7 @@ class Escpos {
 	 * @param int $font
 	 */
 	function setFont($font = self::FONT_A) {
+		self::validateInteger($font, 0, 2, __FUNCTION__);
 		fwrite($this -> fp, self::ESC . "M" . chr($font));
 	}
 
@@ -182,6 +200,7 @@ class Escpos {
 	 * Justification must be JUSTIFY_LEFT, JUSTIFY_CENTER, or JUSTIFY_RIGHT.
 	 */
 	function setJustification($justification = self::JUSTIFY_LEFT) {
+		self::validateInteger($justification, 0, 2, __FUNCTION__);
 		fwrite($this -> fp, self::ESC . "a" . chr($justification));
 	}
 	
@@ -191,6 +210,7 @@ class Escpos {
 	 * @param int $lines number of lines to feed
 	 */
 	function feedReverse($lines = 1) {
+		self::validateInteger($lines, 1, 255, __FUNCTION__);
 		fwrite($this -> fp, self::ESC . "e" . chr($lines));
 	}
 	
@@ -201,6 +221,7 @@ class Escpos {
 	 * @param int $lines Number of lines to feed
 	 */
 	function cut($mode = self::CUT_FULL, $lines = 3) {
+		// TODO validation on cut() inputs
 		fwrite($this -> fp, self::GS . "V" . chr($mode) . chr($lines));
 	}
 
@@ -210,6 +231,7 @@ class Escpos {
 	 * @param int $height Height in dots
 	 */
 	function setBarcodeHeight($height = 8) {
+		self::validateInteger($height, 1, 255, __FUNCTION__);
 		fwrite($this -> fp, self::GS . "h" . chr($height));
 	}
 	
@@ -220,6 +242,7 @@ class Escpos {
 	 * @param int $type
 	 */
 	function barcode($content, $type = self::BARCODE_CODE39) {
+		// TODO validation on barcode() inputs
 		fwrite($this -> fp, self::GS . "k" . chr($type) . $content . self::NUL);
 	}
 
@@ -232,6 +255,45 @@ class Escpos {
 	 * @param int $off_ms pulse OFF time, in milliseconds.
 	 */
 	function pulse($pin = 0, $on_ms = 120, $off_ms = 240) {
+		// TODO validation on pulse() inputs
 		fwrite($this -> fp, self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
+	}
+
+	/**
+	 * Throw an exception if the argument given is not a boolean
+	 * 
+	 * @param boolean $test the input to test
+	 * @param string $source the name of the function calling this
+	 */
+	private static function validateBoolean($test, $source) {
+		if(!($test === true || $test === false)) {
+			throw new InvalidArgumentException("Argument to $source must be a boolean");
+		}
+	}
+
+	/**
+	 * Throw an exception if the argument given can't be cast to a string
+	 * 
+	 * @param string $test the input to test
+	 * @param string $source the name of the function calling this
+	 */
+	private static function validateString($test, $source) {
+		if (is_object($test) && !method_exists($test, '__toString')) {
+			throw new InvalidArgumentException("Argument to $source must be a string");
+		}
+	}
+
+	/**
+	 * Throw an exception if the argument given is not an integer within the specified range
+	 * 
+	 * @param int $test the input to test
+	 * @param int $min the minimum allowable value (inclusive)
+	 * @param int $max the maximum allowable value (inclusive)
+	 * @param string $source the name of the function calling this
+	 */
+	private static function validateInteger($test, $min, $max, $source) {
+		if(!is_integer($test) || $test < $min || $test > $max) {
+			throw new InvalidArgumentException("Argument to $source must be a number between $min and $max");
+		}
 	}
 }
