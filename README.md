@@ -11,8 +11,8 @@ The library should be initialised with a file pointer to the printer. For a netw
 A "hello world" receipt can be printed easily (Call this `hello-world.php`):
 ```php
 <?php
-require_once(dirname(__FILE__) . "/escpos.php");
-$printer = new escpos();
+require_once(dirname(__FILE__) . "/Escpos.php");
+$printer = new Escpos();
 $printer -> text("Hello World!\n");
 $printer -> cut();
 ```
@@ -23,9 +23,9 @@ php hello-world.php | nc 10.x.x.x. 9100
 The same output can be passed directly to a socket:
 ```php
 <?php
-require_once(dirname(__FILE__) . "/escpos.php");
+require_once(dirname(__FILE__) . "/Escpos.php");
 $fp = fsockopen("10.x.x.x", 9100);
-$printer = new escpos($fp);
+$printer = new Escpos($fp);
 $printer -> text("Hello World!\n");
 $printer -> cut();
 fclose($fp);
@@ -44,11 +44,12 @@ Parameters:
 
 ### text($str)
 Add text to the buffer. Text should either be followed by a line-break, or `feed()` should be called after this.
+
 Parameters:
 - `string $str`: The string to print.
 
 ### feed($lines)
-Print and feed line / Print and feed n lines
+Print and feed line / Print and feed n lines.
 
 Parameters:
 - `int $lines`: Number of lines to feed
@@ -57,9 +58,9 @@ Parameters:
 Select print mode(s).
 
 Parameters:
-- `int $mode`: The mode to use. Default is `escpos::NUL`, which has a similar effect to running `initialize()`.
+- `int $mode`: The mode to use. Default is `Escpos::MODE_FONT_A`, with no special formatting. This has a similar effect to running `initialize()`.
 
-Any of the MODE_* constants can be OR'd together and used as `$mode`. Valid modes are:
+Several MODE_* constants can be OR'd together passed to this function's `$mode` argument. The valid modes are:
 - `MODE_FONT_A`
 - `MODE_FONT_B`
 - `MODE_EMPHASIZED`
@@ -68,13 +69,13 @@ Any of the MODE_* constants can be OR'd together and used as `$mode`. Valid mode
 - `MODE_UNDERLINE`
 	
 ### setUnderline($underline)
-Turn underline mode on/off.
+Set underline for printed text.
 
 Parameters:
-- `int $underline`: 0 for no underline, 1 for underline, 2 for heavy underline. Defaults to 1 if not specified.
+- `int $underline`: Either `true`/`false`, or one of `Escpos::UNDERLINE_NONE`, `Escpos::UNDERLINE_SINGLE` or `Escpos::UNDERLINE_DOUBLE`. Defaults to `Escpos::UNDERLINE_SINGLE`.
 
 ### initialize()
-Initialize printer. This resets all modes back to default, and you may wish to place it at the top of your scripts if poorly-written applications leave the printer in a strange state.
+Initialize printer. This resets formatting back to the defaults.
 
 ### setEmphasis($on)
 Turn emphasized mode on/off.
@@ -89,16 +90,16 @@ Parameters:
 - `boolean $on`: true for double strike, false for no double strike.
 
 ### setFont($font)
-Select character font.
+Select font. Most printers have two fonts (Fonts A and B), and some have a third (Font C).
 
 Parameters:
-- `int $font`: The font to use. Must be either FONT_A, FONT_B, or FONT_C.
+- `int $font`: The font to use. Must be either `Escpos::FONT_A`, `Escpos::FONT_B`, or `Escpos::FONT_C`.
 
 ### setJustification($justification)
 Select justification.
 
 Parameters:
-- `int $justification`: Must be JUSTIFY_LEFT, JUSTIFY_CENTER, or JUSTIFY_RIGHT.
+- `int $justification`: One of `Escpos::JUSTIFY_LEFT`, `Escpos::JUSTIFY_CENTER`, or `Escpos::JUSTIFY_RIGHT`.
 
 ### feedReverse($lines)
 Print and reverse feed n lines.
@@ -110,7 +111,7 @@ Parameters:
 Cut the paper.
 
 Parameters:
-- `int $mode`: Cut mode, either CUT_FULL or CUT_PARTIAL. If not specified, CUT_FULL will be used.
+- `int $mode`: Cut mode, either `Escpos::CUT_FULL` or `Escpos::CUT_PARTIAL`. If not specified, `Escpos::CUT_FULL` will be used.
 - `int $lines`: Number of lines to feed before cutting. If not specified, 3 will be used.
 
 ### setBarcodeHeight($height)
@@ -124,7 +125,7 @@ Print a barcode.
 
 Parameters:
 - `string $content`: The information to encode.
-- `int $type`: The barcode standard to output. If not specified, BARCODE_CODE39 will be used.
+- `int $type`: The barcode standard to output. If not specified, `Escpos::BARCODE_CODE39` will be used.
 
 Currently supported barcode standards are (depending on your printer):
 - `BARCODE_UPCA`

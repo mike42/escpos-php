@@ -92,7 +92,9 @@ class Escpos {
 	}
 
 	/**
-	 * Add text to the buffer
+	 * Add text to the buffer.
+	 *
+	 * Text should either be followed by a line-break, or feed() should be called after this.
 	 * 
 	 * @param string $str Text to print
 	 */
@@ -102,7 +104,7 @@ class Escpos {
 	}
 
 	/**
-	 * Print and feed line / Print and feed n lines
+	 * Print and feed line / Print and feed n lines.
 	 * 
 	 * @param int $lines Number of lines to feed
 	 */
@@ -118,15 +120,15 @@ class Escpos {
 	/**
 	 * Select print mode(s).
 	 * 
-	 * Argument should be OR'd together MODE_* constants: 
-	 * MODE_FONT_A
-	 * MODE_FONT_B
-	 * MODE_EMPHASIZED
-	 * MODE_DOUBLE_HEIGHT
-	 * MODE_DOUBLE_WIDTH
-	 * MODE_UNDERLINE
+	 * Several MODE_* constants can be OR'd together passed to this function's `$mode` argument. The valid modes are:
+	 *  - MODE_FONT_A
+	 *  - MODE_FONT_B
+	 *  - MODE_EMPHASIZED
+	 *  - MODE_DOUBLE_HEIGHT
+	 *  - MODE_DOUBLE_WIDTH
+	 *  - MODE_UNDERLINE
 	 * 
-	 * @param int $mode
+	 * @param int $mode The mode to use. Default is Escpos::MODE_FONT_A, with no special formatting. This has a similar effect to running initialize().
 	 */
 	function selectPrintMode($mode = self::MODE_FONT_A) {
 		$allModes = self::MODE_FONT_B | self::MODE_EMPHASIZED | self::MODE_DOUBLE_HEIGHT | self::MODE_DOUBLE_WIDTH | self::MODE_UNDERLINE;
@@ -143,7 +145,7 @@ class Escpos {
 	 * Argument can be true/false, or one of UNDERLINE_NONE,
 	 * UNDERLINE_SINGLE or UNDERLINE_DOUBLE.
 	 * 
-	 * @param int $underline 0 for no underline, 1 for underline, 2 for heavy underline
+	 * @param int $underline Either true/false, or one of Escpos::UNDERLINE_NONE, Escpos::UNDERLINE_SINGLE or Escpos::UNDERLINE_DOUBLE. Defaults to Escpos::UNDERLINE_SINGLE.
 	 */
 	function setUnderline($underline = self::UNDERLINE_SINGLE) {
 		/* Map true/false to underline constants */
@@ -165,7 +167,7 @@ class Escpos {
 	}
 	
 	/**
-	 * Turn emphasized mode on/off
+	 * Turn emphasized mode on/off.
 	 * 
 	 *  @param boolean $on true for emphasis, false for no emphasis
 	 */
@@ -175,7 +177,7 @@ class Escpos {
 	}
 	
 	/**
-	 * Turn double-strike mode on/off
+	 * Turn double-strike mode on/off.
 	 * 
 	 * @param boolean $on true for double strike, false for no double strike
 	 */
@@ -185,10 +187,9 @@ class Escpos {
 	}
 	
 	/**
-	 * Select character font.
-	 * Font must be FONT_A, FONT_B, or FONT_C.
+	 * Select font. Most printers have two fonts (Fonts A and B), and some have a third (Font C).
 	 * 
-	 * @param int $font
+	 * @param int $font The font to use. Must be either Escpos::FONT_A, Escpos::FONT_B, or Escpos::FONT_C.
 	 */
 	function setFont($font = self::FONT_A) {
 		self::validateInteger($font, 0, 2, __FUNCTION__);
@@ -196,8 +197,9 @@ class Escpos {
 	}
 
 	/**
-	 * Select justification
-	 * Justification must be JUSTIFY_LEFT, JUSTIFY_CENTER, or JUSTIFY_RIGHT.
+	 * Select justification.
+	 * 
+	 * @param int $justification One of Escpos::JUSTIFY_LEFT, Escpos::JUSTIFY_CENTER, or Escpos::JUSTIFY_RIGHT.
 	 */
 	function setJustification($justification = self::JUSTIFY_LEFT) {
 		self::validateInteger($justification, 0, 2, __FUNCTION__);
@@ -205,9 +207,9 @@ class Escpos {
 	}
 	
 	/**
-	 * Print and reverse feed n lines
+	 * Print and reverse feed n lines.
 	 * 
-	 * @param int $lines number of lines to feed
+	 * @param int $lines number of lines to feed. If not specified, 1 line will be fed.
 	 */
 	function feedReverse($lines = 1) {
 		self::validateInteger($lines, 1, 255, __FUNCTION__);
@@ -215,9 +217,9 @@ class Escpos {
 	}
 	
 	/**
-	 * Cut the paper
+	 * Cut the paper.
 	 * 
-	 * @param int $mode Cut mode, either CUT_FULL or CUT_PARTIAL
+	 * @param int $mode Cut mode, either Escpos::CUT_FULL or Escpos::CUT_PARTIAL. If not specified, `Escpos::CUT_FULL` will be used.
 	 * @param int $lines Number of lines to feed
 	 */
 	function cut($mode = self::CUT_FULL, $lines = 3) {
@@ -226,9 +228,9 @@ class Escpos {
 	}
 
 	/**
-	 * Set barcode height
+	 * Set barcode height.
 	 * 
-	 * @param int $height Height in dots
+	 * @param int $height Height in dots. If not specified, 8 will be used.
 	 */
 	function setBarcodeHeight($height = 8) {
 		self::validateInteger($height, 1, 255, __FUNCTION__);
@@ -236,10 +238,10 @@ class Escpos {
 	}
 	
 	/**
-	 * Print a barcode
+	 * Print a barcode.
 	 * 
-	 * @param string $content
-	 * @param int $type
+	 * @param string $content The information to encode.
+	 * @param int $type The barcode standard to output. If not specified, `Escpos::BARCODE_CODE39` will be used.
 	 */
 	function barcode($content, $type = self::BARCODE_CODE39) {
 		// TODO validation on barcode() inputs

@@ -1,7 +1,7 @@
 <?php
 /**
  * This is a demo script for the functions of the PHP ESC/POS print driver,
- * escpos.php.
+ * Escpos.php.
  *
  * Most printers implement only a subset of the functionality of the driver, so
  * will not render this output correctly in all cases.
@@ -29,12 +29,11 @@ $printer -> cut();
 
 /* Font modes */
 $modes = array(
-	escpos::MODE_FONT_A,
-	escpos::MODE_FONT_B,
-	escpos::MODE_EMPHASIZED,
-	escpos::MODE_DOUBLE_HEIGHT,
-	escpos::MODE_DOUBLE_WIDTH,
-	escpos::MODE_UNDERLINE);
+	Escpos::MODE_FONT_B,
+	Escpos::MODE_EMPHASIZED,
+	Escpos::MODE_DOUBLE_HEIGHT,
+	Escpos::MODE_DOUBLE_WIDTH,
+	Escpos::MODE_UNDERLINE);
 for($i = 0; $i < 2 ** count($modes); $i++) {
 	$bits = str_pad(decbin($i), count($modes), "0", STR_PAD_LEFT);
 	$mode = 0;
@@ -59,8 +58,8 @@ $printer -> cut();
 
 /* Cuts */
 for($i = 0; $i < 5; $i++) {
-	$printer -> cut(escpos::CUT_PARTIAL);
-	$printer -> cut(escpos::CUT_FULL);
+	$printer -> cut(Escpos::CUT_PARTIAL);
+	$printer -> cut(Escpos::CUT_FULL);
 }
 $printer -> cut();
 
@@ -69,7 +68,7 @@ for($i = 0; $i < 2; $i++) {
 	$printer -> setEmphasis($i == 1);
 	$printer -> text("The quick brown fox jumps over the lazy dog\n");
 }
-$printer -> setEmphasis(); // Reset
+$printer -> setEmphasis(false); // Reset
 $printer -> cut();
 
 /* Double-strike (looks basically the same as emphasis) */
@@ -77,14 +76,14 @@ for($i = 0; $i < 2; $i++) {
 	$printer -> setDoubleStrike($i == 1);
 	$printer -> text("The quick brown fox jumps over the lazy dog\n");
 }
-$printer -> setDoubleStrike();
+$printer -> setDoubleStrike(false);
 $printer -> cut();
 
 /* Fonts (many printers do not have a 'Font C') */
 $fonts = array(
-	escpos::FONT_A,
-	escpos::FONT_B,
-	escpos::FONT_C);
+	Escpos::FONT_A,
+	Escpos::FONT_B,
+	Escpos::FONT_C);
 for($i = 0; $i < count($fonts); $i++) {
 	$printer -> setFont($fonts[$i]);
 	$printer -> text("The quick brown fox jumps over the lazy dog\n");
@@ -94,9 +93,9 @@ $printer -> cut();
 
 /* Justification */
 $justification = array(
-	escpos::JUSTIFY_LEFT,
-	escpos::JUSTIFY_CENTER,
-	escpos::JUSTIFY_RIGHT);
+	Escpos::JUSTIFY_LEFT,
+	Escpos::JUSTIFY_CENTER,
+	Escpos::JUSTIFY_RIGHT);
 for($i = 0; $i < count($justification); $i++) {
 	$printer -> setJustification($justification[$i]);
 	$printer -> text("A man a plan a canal panama\n");
@@ -106,13 +105,13 @@ $printer -> cut();
 
 /* Barcodes */
 $barcodes = array(
-	escpos::BARCODE_UPCA,
-	escpos::BARCODE_UPCE,
-	escpos::BARCODE_JAN13,
-	escpos::BARCODE_JAN8,
-	escpos::BARCODE_CODE39,
-	escpos::BARCODE_ITF,
-	escpos::BARCODE_CODABAR);
+	Escpos::BARCODE_UPCA,
+	Escpos::BARCODE_UPCE,
+	Escpos::BARCODE_JAN13,
+	Escpos::BARCODE_JAN8,
+	Escpos::BARCODE_CODE39,
+	Escpos::BARCODE_ITF,
+	Escpos::BARCODE_CODABAR);
 $printer -> setBarcodeHeight(80);
 for($i = 0; $i < count($barcodes); $i++) {
 	$printer -> text("Barcode $i " . "\n");
