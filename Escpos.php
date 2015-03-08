@@ -35,7 +35,6 @@
  * 		- graphical output
  * 		- select print colour
  * 		- select character code table
- * 		- turn white/black reverse printing mode on/off
  * 		- code93 and code128 barcodes‎
  */
 class Escpos {
@@ -233,6 +232,16 @@ class Escpos {
 	function setJustification($justification = self::JUSTIFY_LEFT) {
 		self::validateInteger($justification, 0, 2, __FUNCTION__);
 		fwrite($this -> fp, self::ESC . "a" . chr($justification));
+	}
+	
+	/**
+	 * Set black/white reverse mode on or off. In this mode, text is printed white on a black background.
+	 * 
+	 * @param boolean $on True to enable, false to disable.
+	 */
+	function setReverseColors($on = true) {
+		self::validateBoolean($on, __FUNCTION__);
+		fwrite($this -> fp, self::GS . "B" . ($on ? chr(1) : chr(0)));
 	}
 	
 	/**

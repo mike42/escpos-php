@@ -409,6 +409,31 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> printer -> pulse();
 		$this -> checkOutput("\x1b@\x1bp0<x");
 	}
+	
+	/* Set reverse */
+    public function testSetReverseColorsDefault() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$this -> printer -> setReverseColors();
+		$this -> checkOutput("\x1b@\x1dB\x01");
+    }
+
+    public function testSetReverseColorsOn() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$this -> printer -> setReverseColors(true);
+		$this -> checkOutput("\x1b@\x1dB\x01");
+    }
+
+    public function testSetReverseColorsOff() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$this -> printer -> setReverseColors(false);
+		$this -> checkOutput("\x1b@\x1dB\x00");
+    }
+
+    public function testSetReverseColorsNonBoolean() {
+		$this -> setupTest();
+		$this -> setExpectedException('InvalidArgumentException');
+		$this -> printer -> setReverseColors(7);
+	}
 }
 
 /*
