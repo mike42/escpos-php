@@ -39,8 +39,10 @@
  * 		- set paper sensors
  * 		- select print colour
  * 		- select character code table
- * 		- code93 and code128 barcodes‎
+ * 		- code93 and code128 barcodes
  */
+require_once(dirname(__FILE__) . "/src/EscposImage.php");
+
 class Escpos {
 	/* ASCII codes */
 	const NUL = "\x00";
@@ -65,6 +67,10 @@ class Escpos {
 	const FONT_A = 0;
 	const FONT_B = 1;
 	const FONT_C = 2;
+	
+	/* Image sizing options */
+	const IMG_DOUBLE_WIDTH = 1;
+	const IMG_DOUBLE_HEIGHT = 2;
 	
 	/* Justifications */
 	const JUSTIFY_LEFT = 0;
@@ -112,6 +118,17 @@ class Escpos {
 	function barcode($content, $type = self::BARCODE_CODE39) {
 		// TODO validation on barcode() inputs
 		fwrite($this -> fp, self::GS . "k" . chr($type) . $content . self::NUL);
+	}
+	
+	/**
+	 * @param EscposImage $img
+	 */
+	function bitImage(EscposImage $img, $mode = 0) {
+		self::validateInteger($mode, 0, 3, __FUNCTION__);
+		// print raster bit image GS v 0
+		fwrite($this -> fp, self::GS . "v0" . chr($mode) . self::intLowHigh($img -> getWidthBytes()) . self::intLowHigh($img -> getHeight()) . $img -> toRasterFormat());
+
+		// print variable vertical size bit image GS Q 0
 	}
 	
 	/**
@@ -281,6 +298,17 @@ class Escpos {
 	function text($str = "") {
 		self::validateString($str, __FUNCTION__);
 		fwrite($this -> fp, (string)$str);
+	}
+	
+	/**
+	 * Generate two characters for a number: In lower and higher parts.
+	 * @param int $int Input number
+	 */
+	private static function intLowHigh($input) {
+		self::validateInteger($input, 0, 65535, __FUNCTION__);
+		$low = $input % 256;
+		$high = (int)($input / 256);
+		return chr($low) . chr($high);
 	}
 	
 	/**
