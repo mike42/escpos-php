@@ -1,9 +1,14 @@
 <?php
+
 /**
  * escpos-php, a Thermal receipt printer library, for use with
- * ESC/POS compatible printers
+ * ESC/POS compatible printers.
  * 
- * Copyright (c) 2014-2015 Michael Billington <michael.billington@gmail.com>
+ * Copyright (c) 2014-2015 Michael Billington <michael.billington@gmail.com>,
+ * 	incorporating modifications by:
+ *  - Roni Saha <roni.cse@gmail.com>
+ *  - Gergely Radics <gerifield@ustream.tv>
+ *  - Warren Doyle <w.doyle@fuelled.co>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +37,6 @@
  * See test.php for example usage.
  * Some functions have not been implemented:
  * 		- set paper sensors
- * 		- graphical output
  * 		- select print colour
  * 		- select character code table
  * 		- code93 and code128 barcodes‎
@@ -89,8 +93,11 @@ class Escpos {
 	 * @param resource $fp File pointer to print to
 	 */
 	function __construct($fp = null) {
-		if(is_null($fp)) {
+		if(is_null($fp) && php_sapi_name() == 'cli') {
 			$fp = fopen("php://stdout", "wb");
+		}
+		if(!$fp) {
+			throw new Exception("Cannot initialise printer. Please check that you are passing escpos-php a valid file pointer resource.");
 		}
 		$this -> fp = $fp;
 		$this -> initialize();
