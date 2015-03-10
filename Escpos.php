@@ -69,6 +69,7 @@ class Escpos {
 	const FONT_C = 2;
 	
 	/* Image sizing options */
+	const IMG_DEFAULT = 0;
 	const IMG_DOUBLE_WIDTH = 1;
 	const IMG_DOUBLE_HEIGHT = 2;
 	
@@ -123,12 +124,47 @@ class Escpos {
 	/**
 	 * @param EscposImage $img
 	 */
-	function bitImage(EscposImage $img, $mode = 0) {
+	function bitImage(EscposImage $img, $mode = self::IMG_DEFAULT) {
 		self::validateInteger($mode, 0, 3, __FUNCTION__);
 		// print raster bit image GS v 0
 		fwrite($this -> fp, self::GS . "v0" . chr($mode) . self::intLowHigh($img -> getWidthBytes()) . self::intLowHigh($img -> getHeight()) . $img -> toRasterFormat());
 
 		// print variable vertical size bit image GS Q 0
+	}
+	
+	function bitImageDlDefine() {
+		// GS *
+	}
+	
+	function bitImageDlPrint() {
+		//GS /
+	}
+	
+	function bitImageNvDefine(array $images) {
+		/* Append all images together */
+		$count = count($images);
+		self::validateInteger($count, 0, 255, __FUNCTION__);
+		if($count == 0) {
+			// No images to define
+			return;
+		}
+		foreach($images as $img) {
+			// Check types before we begin
+			if(gettype($img) !== "object" || get_class($img) !== "EscposImage") {
+				throw new InvalidArgumentException(__FUNCTION__ . " requires an array of EscposImage objects.");
+			}
+		}
+		/* Save to NV storage */
+		fwrite($this -> fp, self::FS . "q" . chr($count));
+		foreach($images as $img) {
+			fwrite($this -> fp, self::intLowHigh($img -> getWidthBytes()) . self::intLowHigh($img -> getHeight()) . $img -> toRasterFormat());
+		}
+	}
+	
+	function bitImageNvPrint($index = 1, $mode = self::IMG_DEFAULT) {
+		self::validateInteger($index, 1, 255, __FUNCTION__);
+		self::validateInteger($mode, 0, 3, __FUNCTION__);
+		fwrite($this -> fp, self::FS . "q" . chr($index) . chr($mode));
 	}
 	
 	/**
