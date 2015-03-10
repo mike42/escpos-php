@@ -48,6 +48,7 @@ class Escpos {
 	const NUL = "\x00";
 	const LF = "\x0a";
 	const ESC = "\x1b";
+	const FS = "\x1c";
 	const GS = "\x1d";
 	
 	/* Barcode types */
