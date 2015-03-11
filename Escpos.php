@@ -127,53 +127,9 @@ class Escpos {
 	 */
 	function bitImage(EscposImage $img, $mode = self::IMG_DEFAULT) {
 		self::validateInteger($mode, 0, 3, __FUNCTION__);
-		// print raster bit image GS v 0
 		$header = self::dataHeader(array($img -> getWidthBytes(), $img -> getHeight()), true);
 		fwrite($this -> fp, self::GS . "v0" . chr($mode) . $header);
 		fwrite($this -> fp, $img -> toRasterFormat());
-		// Maybe add-
-		//	print variable vertical size bit image GS Q 0
-		//	print in 8px or 24px slices ESC *
-	}
-	
-	function bitImageDlDefine(EscposImage $img) {
-		// GS *
-	}
-	
-	function bitImageDlPrint($mode = self::IMG_DEFAULT) {
-		self::validateInteger($mode, 0, 3, __FUNCTION__);
-		fwrite($this -> fp, self::GS . "/" . chr($mode)  . $img -> toColumnFormat());
-		//GS /
-	}
-	
-	function bitImageNvDefine(array $images) {
-		/* Append all images together */
-		$count = count($images);
-		self::validateInteger($count, 0, 255, __FUNCTION__);
-		if($count == 0) {
-			// No images to define
-			// TODO send nothing? This should clear the NV memory
-			return;
-		}
-		foreach($images as $img) {
-			// Check types before we begin
-			if(gettype($img) !== "object" || get_class($img) !== "EscposImage") {
-				throw new InvalidArgumentException(__FUNCTION__ . " requires an array of EscposImage objects.");
-			}
-		}
-		/* Write images to NV storage */
-		fwrite($this -> fp, self::FS . "q" . chr($count));
-		foreach($images as $img) {
-			$header = self::dataHeader(array($img -> getWidth(), $img -> getHeight()), false);
-			fwrite($this -> fp, $header);
-			fwrite($this -> fp, $img -> toColumnFormat());
-		}
-	}
-	
-	function bitImageNvPrint($index = 1, $mode = self::IMG_DEFAULT) {
-		self::validateInteger($index, 1, 255, __FUNCTION__);
-		self::validateInteger($mode, 0, 3, __FUNCTION__);
-		fwrite($this -> fp, self::FS . "q" . chr($index) . chr($mode));
 	}
 	
 	/**
@@ -209,6 +165,51 @@ class Escpos {
 	function feedReverse($lines = 1) {
 		self::validateInteger($lines, 1, 255, __FUNCTION__);
 		fwrite($this -> fp, self::ESC . "e" . chr($lines));
+	}
+	
+	function graphics() {
+		// Set density
+		// // GS ( L   <Function 49>
+				
+		// Store in print buffer (raster format)
+		// GS ( L   /   GS 8 L   <Function 112>
+				
+		// Print
+		// GS ( L   <Function 50>
+	}
+	
+	function graphicsDlDefine() {
+		// GS ( L   /   GS 8 L   <Function 83> (raster format)
+		// GS D   <Function 83> (bitmap format)
+	}
+	
+	function graphicsDlDelete() {
+		// GS ( L   <Function 82>
+	}
+	
+	function graphicsDlDeleteAll() {
+		// GS ( L   <Function 81>
+	}
+	
+	function graphicsDlPrint() {
+		// GS ( L   <Function 85>
+	}
+
+	function graphicsNvDefine() {
+		// GS ( L   /   GS 8 L   <Function 67> (raster format)
+		// GS D   <Function 67> (bitmap format)
+	}
+	
+	function graphicsNvDelete() {
+		// GS ( L   <Function 66>
+	}
+	
+	function graphicsNvDeleteAll() {
+		// GS ( L   <Function 65>
+	}
+	
+	function graphicsNvPrint() {
+		// GS ( L   <Function 69>
 	}
 	
 	/**

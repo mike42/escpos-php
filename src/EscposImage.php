@@ -137,36 +137,39 @@ class EscposImage {
 	 * Output image in column format. This format results in padding at the base and right of the image, if its height and width are not divisible by 8.
 	 */
 	public function toColumnFormat($long = true) {
-		$widthPixels = $this -> getHeight();
-		$heightPixels = $this -> getWidth();
+		$widthPixels = $this -> getWidth();
+		$heightPixels = $this -> getHeight();
 		$widthBytes = $this -> getWidthBytes();
 		$heightBytes = $this -> getHeightBytes();
 		$x = $y = $bit = $byte = $byteVal = 0;
-		$data = str_repeat("\0", $widthBytes * $heightBytes);
-		do {
-			$byteVal |= (int)$this -> imgData[$y * $this -> imgWidth + $x] << (7 - $bit);
-			$y++;
-			$bit++;
-			if($y >= $heightPixels) {
-				$y = 0;
-				$x++;
-				$bit = 8;
-				if($x >= $widthPixels) {
-					break;
-				}
-			}
-			if($bit >= 8) {
-				$data[$byte] = $byteVal;
-				$byteVal = 0;
-				$bit = 0;
-				$byte++;
-			}
-		} while(true);
-		
-		/* Add header */
-		if(strlen($data) != ($widthBytes * $heightBytes)) {
-			throw new Exception("Bug in " . __FUNCTION__ . ", wrong number of bytes.");
-		}
+		$data = str_repeat("\255", $widthBytes * $heightBytes * 8);
+ 		do {
+ 			$byteVal |= (int)$this -> imgData[$y * $this -> imgWidth + $x] << (8 - $bit);
+ 			echo "($x, $y) $byte / $bit\t".((int)$byteVal)."\n";
+ 			$y++;
+ 			$bit++;
+ 			if($y >= $heightPixels) {
+ 				$y = 0;
+ 				$x++;
+ 				$bit = 8;
+ 				if($x >= $widthPixels) {
+ 					break;
+ 				}
+ 			}
+ 			if($bit >= 8) {
+ 				$data[$byte] = $byteVal;
+ 				$byteVal = 0;
+ 				$bit = 0;
+ 				$byte++;
+ 			}
+ 		} while(true);
+		/* Check output length */
+ 		for($i = 0; $i < strlen($data); $i++) {
+ 			echo (int)$data[$i]. "\n";
+ 		}
+  		if(strlen($data) != ($widthBytes * $heightBytes * 8)) {
+  			throw new Exception("Bug in " . __FUNCTION__ . ", wrong number of bytes. Should be " . ($widthBytes * $heightBytes * 8) . " but was " . strlen($data));
+  		}
 		return $data;
 	}
 }
