@@ -46,8 +46,7 @@ class EscposImage {
  		for($y = 0; $y < $this -> imgHeight; $y++) {
  			for($x = 0; $x < $this -> imgWidth; $x++) {
  				$cols = imagecolorsforindex($im, imagecolorat($im, $x, $y));
- 				$val = $cols['red'] >> 7;
- 				$this -> imgData[$y * $this -> imgWidth + $x] = $val;
+ 				$this -> imgData[$y * $this -> imgWidth + $x] = ($cols['red'] >> 7);
  			}
  		}
 	}
@@ -56,6 +55,13 @@ class EscposImage {
 	 */
 	public function getHeight() {
 		return $this -> imgHeight;
+	}
+	
+	/**
+	 * Number of bytes to represent a row of this image
+	 */
+	public function getHeightBytes() {
+		return (int)(($this -> imgHeight + 7) / 8);
 	}
 	
 	/**
@@ -86,12 +92,17 @@ class EscposImage {
 		return $this -> imgBmpData == null;
 	}
 	
-	/** 
-	 * Output the image in raster format.
-	 * 
+
+	/**
+	 * Output the image in raster (row) format. This can result in padding on the right of the image, if its width is not divisible by 8.
+	 *
 	 * @return string The image in ESC/POS raster format
+	 * @param boolean $long True to use double-length size parameter ( required by some functions), false to use one character for width and another for height.
+	 * @throws Exception Where the generated data is unsuitable for the printer (indicates a bug or oversized image).
+	 * @return string The image in raster format, with header.
 	 */
-	public function toRasterFormat() {
+	public function toRasterFormat($long = true) {
+		// TODO remove string array & implode()- should write directly to an output array.
 		$widthBytes = $this -> getWidthBytes();
 		$heightDots = $this -> getHeight();
 		$widthDots = $this -> getWidth();
@@ -114,11 +125,48 @@ class EscposImage {
  			$row[] = $column;
  		}
  		
- 		/* Join up */
+ 		/* Join up and check output length */
  		$data = implode($row, "");
  		if(strlen($data) != ($this -> getWidthBytes() * $this -> getHeight())) {
  			throw new Exception("Bug in " . __FUNCTION__ . ", wrong number of bytes.");
  		}
+ 		return $data;
+	}
+	
+	/**
+	 * Output image in column format. This format results in padding at the base and right of the image, if its height and width are not divisible by 8.
+	 */
+	public function toColumnFormat($long = true) {
+		$widthPixels = $this -> getHeight();
+		$heightPixels = $this -> getWidth();
+		$widthBytes = $this -> getWidthBytes();
+		$heightBytes = $this -> getHeightBytes();
+		$x = $y = $bit = $byte = $byteVal = 0;
+		$data = str_repeat("\0", $widthBytes * $heightBytes);
+		do {
+			$byteVal |= (int)$this -> imgData[$y * $this -> imgWidth + $x] << (7 - $bit);
+			$y++;
+			$bit++;
+			if($y >= $heightPixels) {
+				$y = 0;
+				$x++;
+				$bit = 8;
+				if($x >= $widthPixels) {
+					break;
+				}
+			}
+			if($bit >= 8) {
+				$data[$byte] = $byteVal;
+				$byteVal = 0;
+				$bit = 0;
+				$byte++;
+			}
+		} while(true);
+		
+		/* Add header */
+		if(strlen($data) != ($widthBytes * $heightBytes)) {
+			throw new Exception("Bug in " . __FUNCTION__ . ", wrong number of bytes.");
+		}
 		return $data;
 	}
 }

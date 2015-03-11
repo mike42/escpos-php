@@ -128,16 +128,21 @@ class Escpos {
 	function bitImage(EscposImage $img, $mode = self::IMG_DEFAULT) {
 		self::validateInteger($mode, 0, 3, __FUNCTION__);
 		// print raster bit image GS v 0
-		fwrite($this -> fp, self::GS . "v0" . chr($mode) . self::intLowHigh($img -> getWidthBytes()) . self::intLowHigh($img -> getHeight()) . $img -> toRasterFormat());
-
-		// print variable vertical size bit image GS Q 0
+		$header = self::dataHeader(array($img -> getWidthBytes(), $img -> getHeight()), true);
+		fwrite($this -> fp, self::GS . "v0" . chr($mode) . $header);
+		fwrite($this -> fp, $img -> toRasterFormat());
+		// Maybe add-
+		//	print variable vertical size bit image GS Q 0
+		//	print in 8px or 24px slices ESC *
 	}
 	
-	function bitImageDlDefine() {
+	function bitImageDlDefine(EscposImage $img) {
 		// GS *
 	}
 	
-	function bitImageDlPrint() {
+	function bitImageDlPrint($mode = self::IMG_DEFAULT) {
+		self::validateInteger($mode, 0, 3, __FUNCTION__);
+		fwrite($this -> fp, self::GS . "/" . chr($mode)  . $img -> toColumnFormat());
 		//GS /
 	}
 	
@@ -147,6 +152,7 @@ class Escpos {
 		self::validateInteger($count, 0, 255, __FUNCTION__);
 		if($count == 0) {
 			// No images to define
+			// TODO send nothing? This should clear the NV memory
 			return;
 		}
 		foreach($images as $img) {
@@ -155,10 +161,12 @@ class Escpos {
 				throw new InvalidArgumentException(__FUNCTION__ . " requires an array of EscposImage objects.");
 			}
 		}
-		/* Save to NV storage */
+		/* Write images to NV storage */
 		fwrite($this -> fp, self::FS . "q" . chr($count));
 		foreach($images as $img) {
-			fwrite($this -> fp, self::intLowHigh($img -> getWidthBytes()) . self::intLowHigh($img -> getHeight()) . $img -> toRasterFormat());
+			$header = self::dataHeader(array($img -> getWidth(), $img -> getHeight()), false);
+			fwrite($this -> fp, $header);
+			fwrite($this -> fp, $img -> toColumnFormat());
 		}
 	}
 	
@@ -335,6 +343,19 @@ class Escpos {
 	function text($str = "") {
 		self::validateString($str, __FUNCTION__);
 		fwrite($this -> fp, (string)$str);
+	}
+	
+	private static function dataHeader(array $inputs, $long = true) {
+		$outp = array();
+		foreach($inputs as $input) {
+			if($long) {
+				$outp[] = Escpos::intLowHigh($input);
+			} else {
+				self::validateInteger($input, 0 , 255, __FUNCTION__);
+				$outp[] = chr($input);
+			}
+		}
+		return implode("", $outp);
 	}
 	
 	/**
