@@ -172,24 +172,35 @@ class Escpos {
 		fwrite($this -> fp, self::ESC . "e" . chr($lines));
 	}
 	
-	function graphics(EscposImage $img) {
-		/* Save to print buffer, then print */
-		$header = self::dataHeader(array($img -> getWidth(), $img -> getHeight()), true);
+	/**
+	 * @param EscposImage $img
+	 * @param int $mode
+	 */
+	function graphics(EscposImage $img, $mode = self::IMG_DEFAULT) {
+		self::validateInteger($mode, 0, 3, __FUNCTION__);
+		$imgHeader = self::dataHeader(array($img -> getWidth(), $img -> getHeight()), true);
+		$tone = '0';
+		$colors = '1';
+		$xm = (($mode & self::IMG_DOUBLE_WIDTH) == self::IMG_DOUBLE_WIDTH) ? chr(2) : chr(1);
+		$ym = (($mode & self::IMG_DOUBLE_HEIGHT) == self::IMG_DOUBLE_HEIGHT) ? chr(2) : chr(1);
+		$header = $tone . $xm . $ym . $colors . $imgHeader;
 		$this -> graphicsSendData('0', 'p', $header . $img -> toRasterFormat());
 		$this -> graphicsSendData('0', '2');
 	}
 	
-	function graphicsDlDefine(EscposImage $img, $kc1 = 33, $kc2 = 33) {
-		self::validateInteger($kc1, 33, 126, __FUNCTION__);
-		self::validateInteger($kc2, 33, 126, __FUNCTION__);
+	function graphicsDlDefine(EscposImage $img, $kc1 = 32, $kc2 = 32) {
+		self::validateInteger($kc1, 32, 126, __FUNCTION__);
+		self::validateInteger($kc2, 32, 126, __FUNCTION__);
 		if($img -> isWindowsBMP()) {
 			// GS D   <Function 83> (bitmap format)
-			throw new Exception("Not implemented");
+			throw new Exception("Bitmap graphics not implemented");
 		}
 		$tone = '0';
-		$colors = '1';
-		$header = self::dataHeader(array($img -> getWidth(), $img -> getHeight()), true);
-		$this -> graphicsSendData('0', 'S', $tone . chr($kc1) . chr($kc2) . $colors . $header . $img -> toRasterFormat());
+		$colors = chr(1);
+		$thisColor = '1';
+		$imgHeader = self::dataHeader(array($img -> getWidth(), $img -> getHeight()), true);
+		$header = $tone . chr($kc1) . chr($kc2) . $colors . $thisColor . $imgHeader;
+		$this -> graphicsSendData('0', 'S', $header . $img -> toRasterFormat());
 	}
 	
 	function graphicsDlDelete() {
@@ -202,10 +213,13 @@ class Escpos {
 		throw new Exception("Not implemented");
 	}
 	
-	function graphicsDlPrint($kc1 = 33, $kc2 = 33) {
-		self::validateInteger($kc1, 33, 126, __FUNCTION__);
-		self::validateInteger($kc2, 33, 126, __FUNCTION__);
-		$this -> graphicsSendData('0', 'U', $kc1 . $kc2 . chr(0) . chr(0));
+	function graphicsDlPrint($kc1 = 32, $kc2 = 32, $mode = self::IMG_DEFAULT) {
+		self::validateInteger($kc1, 32, 126, __FUNCTION__);
+		self::validateInteger($kc2, 32, 126, __FUNCTION__);
+		self::validateInteger($mode, 0, 3, __FUNCTION__);
+		$xm = (($mode & self::IMG_DOUBLE_WIDTH) == self::IMG_DOUBLE_WIDTH) ? chr(2) : chr(1);
+		$ym = (($mode & self::IMG_DOUBLE_HEIGHT) == self::IMG_DOUBLE_HEIGHT) ? chr(2) : chr(1);
+		$this -> graphicsSendData('0', 'U', chr($kc1) . chr($kc2) . chr(1) . chr(1));
 	}
 
 	function graphicsNvDefine() {
@@ -240,8 +254,8 @@ class Escpos {
 		if(strlen($m) != 1 || strlen($fn) != 1) {
 			throw new IllegalArgumentException("graphicsSendData: m and fn must be one character each.");
 		}
-		$len = $this -> intLowHigh(strlen($data) + 1, 2);
-		fwrite($this -> fp, self::GS . "(L" . $len . $m . $fn . $data);
+		$header = $this -> intLowHigh(strlen($data) + 2, 2);
+		fwrite($this -> fp, self::GS . "(L" . $header . $m . $fn . $data);
 	}
 	
 	/**

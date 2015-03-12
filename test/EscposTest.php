@@ -467,7 +467,7 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> setupOutputTest(__FUNCTION__);
 		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_white.png");
 		$this -> printer -> graphicsDlDefine($img);
-		$this -> printer -> graphicsDlPrint($img);
+		$this -> printer -> graphicsDlPrint();
 		$this -> checkOutput();
 	}
 }
