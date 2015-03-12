@@ -36,7 +36,7 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		}
 		$this -> outputFn = null;
 		$this -> outputFp = null;
-		$this -> assertEquals($outp, $expected);
+		$this -> assertEquals($expected, $outp);
 	}
 
 	private function friendlyBinary($in) {
@@ -433,6 +433,42 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> setupTest();
 		$this -> setExpectedException('InvalidArgumentException');
 		$this -> printer -> setReverseColors(7);
+	}
+
+	public function testBitImageBlack() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_black.png");
+		$this -> printer -> bitImage($img);
+		$this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x01\x00\x80");
+	}
+
+	public function testBitImageWhite() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_white.png");
+		$this -> printer -> bitImage($img);
+		$this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x01\x00\x00");
+	}
+	
+	public function testGraphicsWhite() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_white.png");
+		$this -> printer -> graphics($img);
+		$this -> checkOutput();
+	}
+	
+	public function testGraphicsBlack() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_black.png");
+		$this -> printer -> graphics($img);
+		$this -> checkOutput();
+	}
+	
+	public function testGraphicsDlDefine() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_white.png");
+		$this -> printer -> graphicsDlDefine($img);
+		$this -> printer -> graphicsDlPrint($img);
+		$this -> checkOutput();
 	}
 }
 

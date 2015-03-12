@@ -123,7 +123,12 @@ class Escpos {
 	}
 	
 	/**
-	 * @param EscposImage $img
+	 * Print an image, using the older "bit image" command. This creates padding on the right of the image,
+	 * if its width is not divisible by 8.
+	 * 
+	 * Should only be used if your printer does not support the graphics() command.
+	 * 
+	 * @param EscposImage $img The image to print
 	 */
 	function bitImage(EscposImage $img, $mode = self::IMG_DEFAULT) {
 		self::validateInteger($mode, 0, 3, __FUNCTION__);
@@ -167,49 +172,76 @@ class Escpos {
 		fwrite($this -> fp, self::ESC . "e" . chr($lines));
 	}
 	
-	function graphics() {
-		// Set density
-		// // GS ( L   <Function 49>
-				
-		// Store in print buffer (raster format)
-		// GS ( L   /   GS 8 L   <Function 112>
-				
-		// Print
-		// GS ( L   <Function 50>
+	function graphics(EscposImage $img) {
+		/* Save to print buffer, then print */
+		$header = self::dataHeader(array($img -> getWidth(), $img -> getHeight()), true);
+		$this -> graphicsSendData('0', 'p', $header . $img -> toRasterFormat());
+		$this -> graphicsSendData('0', '2');
 	}
 	
-	function graphicsDlDefine() {
-		// GS ( L   /   GS 8 L   <Function 83> (raster format)
-		// GS D   <Function 83> (bitmap format)
+	function graphicsDlDefine(EscposImage $img, $kc1 = 33, $kc2 = 33) {
+		self::validateInteger($kc1, 33, 126, __FUNCTION__);
+		self::validateInteger($kc2, 33, 126, __FUNCTION__);
+		if($img -> isWindowsBMP()) {
+			// GS D   <Function 83> (bitmap format)
+			throw new Exception("Not implemented");
+		}
+		$tone = '0';
+		$colors = '1';
+		$header = self::dataHeader(array($img -> getWidth(), $img -> getHeight()), true);
+		$this -> graphicsSendData('0', 'S', $tone . chr($kc1) . chr($kc2) . $colors . $header . $img -> toRasterFormat());
 	}
 	
 	function graphicsDlDelete() {
-		// GS ( L   <Function 82>
+		/// TODO GS ( L   <Function 82>
+		throw new Exception("Not implemented");
 	}
 	
 	function graphicsDlDeleteAll() {
-		// GS ( L   <Function 81>
+		// TODO GS ( L   <Function 81>
+		throw new Exception("Not implemented");
 	}
 	
-	function graphicsDlPrint() {
-		// GS ( L   <Function 85>
+	function graphicsDlPrint($kc1 = 33, $kc2 = 33) {
+		self::validateInteger($kc1, 33, 126, __FUNCTION__);
+		self::validateInteger($kc2, 33, 126, __FUNCTION__);
+		$this -> graphicsSendData('0', 'U', $kc1 . $kc2 . chr(0) . chr(0));
 	}
 
 	function graphicsNvDefine() {
-		// GS ( L   /   GS 8 L   <Function 67> (raster format)
+		// TODO GS ( L   /   GS 8 L   <Function 67> (raster format)
 		// GS D   <Function 67> (bitmap format)
+		throw new Exception("Not implemented");
 	}
 	
 	function graphicsNvDelete() {
-		// GS ( L   <Function 66>
+		// TODO GS ( L   <Function 66>
+		throw new Exception("Not implemented");
 	}
 	
 	function graphicsNvDeleteAll() {
-		// GS ( L   <Function 65>
+		// TODO GS ( L   <Function 65>
+		throw new Exception("Not implemented");
 	}
 	
 	function graphicsNvPrint() {
-		// GS ( L   <Function 69>
+		// TODO GS ( L   <Function 69>
+		throw new Exception("Not implemented");
+	}
+
+	/**
+	 * Wrapper for GS ( L, to set correct data length.
+	 * 
+	 * @param int $m
+	 * @param int $fn
+	 * @param string $data
+	 */
+	private function graphicsSendData($m, $fn, $data = '') {
+		if(strlen($m) != 1 || strlen($fn) != 1) {
+			throw new IllegalArgumentException("graphicsSendData: m and fn must be one character each.");
+		}
+		$len = $this -> intLowHigh(strlen($data) + 1, 2);
+		fwrite($this -> fp, self::GS . "(L" . $len . $m . $fn . $data);
 	}
 	
 	/**
@@ -294,6 +326,12 @@ class Escpos {
 		fwrite($this -> fp, self::ESC . "M" . chr($font));
 	}
 	
+	private function setGraphicsDensity() {
+		// TODO Set density
+		// GS ( L   <Function 49>
+		throw new Exception("Not implemented");
+	}
+	
 	/**
 	 * Select justification.
 	 *
@@ -346,11 +384,18 @@ class Escpos {
 		fwrite($this -> fp, (string)$str);
 	}
 	
+	/**
+	 * Convert widths and heights to characters. Used before sending graphics to set the size.
+	 * 
+	 * @param array $inputs
+	 * @param boolean $long True to use 4 bytes, false to use 2
+	 * @return string
+	 */
 	private static function dataHeader(array $inputs, $long = true) {
 		$outp = array();
 		foreach($inputs as $input) {
 			if($long) {
-				$outp[] = Escpos::intLowHigh($input);
+				$outp[] = Escpos::intLowHigh($input, 2);
 			} else {
 				self::validateInteger($input, 0 , 255, __FUNCTION__);
 				$outp[] = chr($input);
@@ -360,14 +405,20 @@ class Escpos {
 	}
 	
 	/**
-	 * Generate two characters for a number: In lower and higher parts.
+	 * Generate two characters for a number: In lower and higher parts, or more parts as needed.
 	 * @param int $int Input number
+	 * @param int $length The number of bytes to output (1 - 4).
 	 */
-	private static function intLowHigh($input) {
-		self::validateInteger($input, 0, 65535, __FUNCTION__);
-		$low = $input % 256;
-		$high = (int)($input / 256);
-		return chr($low) . chr($high);
+	private static function intLowHigh($input, $length) {
+		$maxInput = (256 << ($length * 8) - 1);
+		self::validateInteger($length, 1, 4, __FUNCTION__);
+		self::validateInteger($input, 0, $maxInput, __FUNCTION__);
+		$outp = "";
+		for($i = 0; $i < $length; $i++) {
+			$outp .= chr($input % 256);
+			$input = (int)($input / 256);
+		}
+		return $outp;
 	}
 	
 	/**

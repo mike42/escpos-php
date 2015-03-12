@@ -89,7 +89,7 @@ class EscposImage {
 	 * @return boolean True if the image was a windows bitmap, false otherwise
 	 */
 	public function isWindowsBMP() {
-		return $this -> imgBmpData == null;
+		return $this -> imgBmpData != null;
 	}
 	
 
@@ -97,11 +97,10 @@ class EscposImage {
 	 * Output the image in raster (row) format. This can result in padding on the right of the image, if its width is not divisible by 8.
 	 *
 	 * @return string The image in ESC/POS raster format
-	 * @param boolean $long True to use double-length size parameter ( required by some functions), false to use one character for width and another for height.
 	 * @throws Exception Where the generated data is unsuitable for the printer (indicates a bug or oversized image).
 	 * @return string The image in raster format, with header.
 	 */
-	public function toRasterFormat($long = true) {
+	public function toRasterFormat() {
 		// TODO remove string array & implode()- should write directly to an output array.
 		$widthBytes = $this -> getWidthBytes();
 		$heightDots = $this -> getHeight();
@@ -136,7 +135,7 @@ class EscposImage {
 	/**
 	 * Output image in column format. This format results in padding at the base and right of the image, if its height and width are not divisible by 8.
 	 */
-	public function toColumnFormat($long = true) {
+	public function toColumnFormat() {
 		$widthPixels = $this -> getWidth();
 		$heightPixels = $this -> getHeight();
 		$widthBytes = $this -> getWidthBytes();
