@@ -119,5 +119,34 @@ for($i = 0; $i < count($barcodes); $i++) {
 	$printer -> feed();
 }
 $printer -> cut();
+
+/* Graphics */
+$logo = new EscposImage("images/escpos-php.png");
+$imgModes = array(
+	Escpos::IMG_DEFAULT,
+	Escpos::IMG_DOUBLE_WIDTH,
+	Escpos::IMG_DOUBLE_HEIGHT,
+	Escpos::IMG_DOUBLE_WIDTH | 	Escpos::IMG_DOUBLE_HEIGHT
+);
+foreach($imgModes as $mode) {
+	$printer -> graphics($logo, $mode);
+}
+$printer -> cut();
+
+
+/* Bit image */
+$logo = new EscposImage("images/escpos-php.png");
+$imgModes = array(
+	Escpos::IMG_DEFAULT,
+	Escpos::IMG_DOUBLE_WIDTH,
+	Escpos::IMG_DOUBLE_HEIGHT,
+	Escpos::IMG_DOUBLE_WIDTH | 	Escpos::IMG_DOUBLE_HEIGHT
+);
+foreach($imgModes as $mode) {
+	$printer -> bitImage($logo, $mode);
+}
+$printer -> cut();
+
+/* Pulse */
 $printer -> pulse();
 ?>

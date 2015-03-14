@@ -1,5 +1,4 @@
 <?php
-
 /**
  * escpos-php, a Thermal receipt printer library, for use with
  * ESC/POS compatible printers.
@@ -28,24 +27,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  * 
- * Class for generating ESC/POS printer control commands, as documented at the following URL:
- * http://content.epson.de/fileadmin/content/files/RSD/downloads/escpos.pdf
+ * This class generates ESC/POS printer control commands for compatible printers.
+ * See README.md for a summary of compatible printers and supported commands, and
+ * basic usage.
  * 
- * And supplemented with more advanced commands from:
- * http://www.goodson.com.au/download/manual/cino/user/MP3200%20Programming%20Reference%20Rev.%2002.pdf
+ * See example/demo.php for a detailed print-out demonstrating the range of commands
+ * implemented in this project.
  * 
- * See test.php for example usage.
- * Some functions have not been implemented:
- * 		- set paper sensors
- * 		- select print colour
- * 		- select character code table
- * 		- code93 and code128 barcodes‎
+ * Note that some functions have not been implemented:
+ * 		- Set paper sensors
+ * 		- Select print colour
+ * 		- Select character code table
+ * 		- Code93 and code128 barcodes
+ * 
+ * Please direct feature requests, bug reports and contributions to escpos-php
+ * on Github:
+ * 		- https://github.com/mike42/escpos-php
  */
+require_once(dirname(__FILE__) . "/EscposImage.php");
+
 class Escpos {
 	/* ASCII codes */
 	const NUL = "\x00";
 	const LF = "\x0a";
 	const ESC = "\x1b";
+	const FS = "\x1c";
 	const GS = "\x1d";
 	
 	/* Barcode types */
@@ -65,6 +71,11 @@ class Escpos {
 	const FONT_A = 0;
 	const FONT_B = 1;
 	const FONT_C = 2;
+	
+	/* Image sizing options */
+	const IMG_DEFAULT = 0;
+	const IMG_DOUBLE_WIDTH = 1;
+	const IMG_DOUBLE_HEIGHT = 2;
 	
 	/* Justifications */
 	const JUSTIFY_LEFT = 0;
@@ -115,6 +126,22 @@ class Escpos {
 	}
 	
 	/**
+	 * Print an image, using the older "bit image" command. This creates padding on the right of the image,
+	 * if its width is not divisible by 8.
+	 * 
+	 * Should only be used if your printer does not support the graphics() command.
+	 * 
+	 * @param EscposImage $img The image to print
+	 * @param EscposImage $size Size modifier for the image.
+	 */
+	function bitImage(EscposImage $img, $size = self::IMG_DEFAULT) {
+		self::validateInteger($size, 0, 3, __FUNCTION__);
+		$header = self::dataHeader(array($img -> getWidthBytes(), $img -> getHeight()), true);
+		fwrite($this -> fp, self::GS . "v0" . chr($size) . $header);
+		fwrite($this -> fp, $img -> toRasterFormat());
+	}
+	
+	/**
 	 * Cut the paper.
 	 *
 	 * @param int $mode Cut mode, either Escpos::CUT_FULL or Escpos::CUT_PARTIAL. If not specified, `Escpos::CUT_FULL` will be used.
@@ -147,6 +174,49 @@ class Escpos {
 	function feedReverse($lines = 1) {
 		self::validateInteger($lines, 1, 255, __FUNCTION__);
 		fwrite($this -> fp, self::ESC . "e" . chr($lines));
+	}
+	
+	/**
+	 * Print an image to the printer.
+	 * 
+	 * Size modifiers are:
+	 * - IMG_DEFAULT (leave image at original size)
+	 * - IMG_DOUBLE_WIDTH
+	 * - IMG_DOUBLE_HEIGHT
+	 * 
+	 * See the example/ folder for detailed examples.
+	 * 
+	 * The function bitImage() takes the same parameters, and can be used if
+	 * your printer doesn't support the newer graphics commands.
+	 * 
+	 * @param EscposImage $img The image to print.
+	 * @param int $size Output size modifier for the image.
+	 */
+	function graphics(EscposImage $img, $size = self::IMG_DEFAULT) {
+		self::validateInteger($size, 0, 3, __FUNCTION__);
+		$imgHeader = self::dataHeader(array($img -> getWidth(), $img -> getHeight()), true);
+		$tone = '0';
+		$colors = '1';
+		$xm = (($size & self::IMG_DOUBLE_WIDTH) == self::IMG_DOUBLE_WIDTH) ? chr(2) : chr(1);
+		$ym = (($size & self::IMG_DOUBLE_HEIGHT) == self::IMG_DOUBLE_HEIGHT) ? chr(2) : chr(1);
+		$header = $tone . $xm . $ym . $colors . $imgHeader;
+		$this -> graphicsSendData('0', 'p', $header . $img -> toRasterFormat());
+		$this -> graphicsSendData('0', '2');
+	}
+	
+	/**
+	 * Wrapper for GS ( L, to set correct data length.
+	 * 
+	 * @param int $m
+	 * @param int $fn
+	 * @param string $data
+	 */
+	private function graphicsSendData($m, $fn, $data = '') {
+		if(strlen($m) != 1 || strlen($fn) != 1) {
+			throw new IllegalArgumentException("graphicsSendData: m and fn must be one character each.");
+		}
+		$header = $this -> intLowHigh(strlen($data) + 2, 2);
+		fwrite($this -> fp, self::GS . "(L" . $header . $m . $fn . $data);
 	}
 	
 	/**
@@ -281,6 +351,43 @@ class Escpos {
 	function text($str = "") {
 		self::validateString($str, __FUNCTION__);
 		fwrite($this -> fp, (string)$str);
+	}
+	
+	/**
+	 * Convert widths and heights to characters. Used before sending graphics to set the size.
+	 * 
+	 * @param array $inputs
+	 * @param boolean $long True to use 4 bytes, false to use 2
+	 * @return string
+	 */
+	private static function dataHeader(array $inputs, $long = true) {
+		$outp = array();
+		foreach($inputs as $input) {
+			if($long) {
+				$outp[] = Escpos::intLowHigh($input, 2);
+			} else {
+				self::validateInteger($input, 0 , 255, __FUNCTION__);
+				$outp[] = chr($input);
+			}
+		}
+		return implode("", $outp);
+	}
+	
+	/**
+	 * Generate two characters for a number: In lower and higher parts, or more parts as needed.
+	 * @param int $int Input number
+	 * @param int $length The number of bytes to output (1 - 4).
+	 */
+	private static function intLowHigh($input, $length) {
+		$maxInput = (256 << ($length * 8) - 1);
+		self::validateInteger($length, 1, 4, __FUNCTION__);
+		self::validateInteger($input, 0, $maxInput, __FUNCTION__);
+		$outp = "";
+		for($i = 0; $i < $length; $i++) {
+			$outp .= chr($input % 256);
+			$input = (int)($input / 256);
+		}
+		return $outp;
 	}
 	
 	/**
