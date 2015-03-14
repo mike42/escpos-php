@@ -2,12 +2,12 @@
 require_once(dirname(__FILE__) . "/../Escpos.php");
 
 class EscposTest extends PHPUnit_Framework_TestCase {
-	private $printer;
+	protected $printer;
 
-	private $outputFn;
-	private $outputFp;
+	protected $outputFn;
+	protected $outputFp;
 
-	private $expectedOutputFn;
+	protected $expectedOutputFn;
 
 	protected function setup() {
 		$this -> outputFn = null;
@@ -19,14 +19,14 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> printer = new Escpos(fopen("/dev/null", "wb"));
 	}
 
-	private function setupOutputTest($name) {
+	protected function setupOutputTest($name) {
 		/* Print to a file - for checking output strings */
 		$this -> outputFn = "test-$name";
 		$this -> outputFp = fopen($this -> outputFn, "wb");
 		$this -> printer = new Escpos($this -> outputFp);
 	}
 
-	private function checkOutput($expected = null) {
+	protected function checkOutput($expected = null) {
 		/* Check those output strings */
 		fclose($this -> outputFp);
 		$outp = file_get_contents($this -> outputFn);

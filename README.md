@@ -141,6 +141,9 @@ Currently supported barcode standards are (depending on your printer):
 
 Note that some barcode standards can only encode numbers, so attempting to print non-numeric codes with them may result in strange behaviour.
 
+### bitImage(EscposImage $image)
+See graphics() below.
+
 ### cut($mode, $lines)
 Cut the paper.
 
@@ -162,6 +165,32 @@ Print and reverse feed n lines.
 Parameters:
 
 - `int $lines`: number of lines to feed. If not specified, 1 line will be fed.
+
+### graphics(EscposImage $image, $size)
+Print an image to the printer.
+
+Parameters:
+
+- `EscposImage $img`: The image to print.
+- `int $size`: Output size modifier for the image.
+
+Size modifiers are:
+
+- `IMG_DEFAULT` (leave image at original size)
+- `IMG_DOUBLE_WIDTH`
+- `IMG_DOUBLE_HEIGHT`
+
+A minimal example:
+
+```php
+<?php
+$img = new EscposImage("logo.png");
+$printer -> graphics($img);
+```
+
+See the `example/` folder for detailed examples.
+
+The function bitImage() takes the same parameters, and can be used if your printer doesn't support the newer graphics commands.
 
 ### initialize()
 Initialize printer. This resets formatting back to the defaults.

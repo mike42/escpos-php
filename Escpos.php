@@ -41,7 +41,7 @@
  * 		- select character code table
  * 		- code93 and code128 barcodes
  */
-require_once(dirname(__FILE__) . "/src/EscposImage.php");
+require_once(dirname(__FILE__) . "/EscposImage.php");
 
 class Escpos {
 	/* ASCII codes */
@@ -130,10 +130,10 @@ class Escpos {
 	 * 
 	 * @param EscposImage $img The image to print
 	 */
-	function bitImage(EscposImage $img, $mode = self::IMG_DEFAULT) {
-		self::validateInteger($mode, 0, 3, __FUNCTION__);
+	function bitImage(EscposImage $img, $size = self::IMG_DEFAULT) {
+		self::validateInteger($size, 0, 3, __FUNCTION__);
 		$header = self::dataHeader(array($img -> getWidthBytes(), $img -> getHeight()), true);
-		fwrite($this -> fp, self::GS . "v0" . chr($mode) . $header);
+		fwrite($this -> fp, self::GS . "v0" . chr($size) . $header);
 		fwrite($this -> fp, $img -> toRasterFormat());
 	}
 	
@@ -173,76 +173,33 @@ class Escpos {
 	}
 	
 	/**
-	 * @param EscposImage $img
-	 * @param int $mode
+	 * Print an image to the printer.
+	 * 
+	 * Size modifiers are:
+	 * - IMG_DEFAULT (leave image at original size)
+	 * - IMG_DOUBLE_WIDTH
+	 * - IMG_DOUBLE_HEIGHT
+	 * 
+	 * See the example/ folder for detailed examples.
+	 * 
+	 * The function bitImage() takes the same parameters, and can be used if
+	 * your printer doesn't support the newer graphics commands.
+	 * 
+	 * @param EscposImage $img The image to print.
+	 * @param int $size Output size modifier for the image.
 	 */
-	function graphics(EscposImage $img, $mode = self::IMG_DEFAULT) {
-		self::validateInteger($mode, 0, 3, __FUNCTION__);
+	function graphics(EscposImage $img, $size = self::IMG_DEFAULT) {
+		self::validateInteger($size, 0, 3, __FUNCTION__);
 		$imgHeader = self::dataHeader(array($img -> getWidth(), $img -> getHeight()), true);
 		$tone = '0';
 		$colors = '1';
-		$xm = (($mode & self::IMG_DOUBLE_WIDTH) == self::IMG_DOUBLE_WIDTH) ? chr(2) : chr(1);
-		$ym = (($mode & self::IMG_DOUBLE_HEIGHT) == self::IMG_DOUBLE_HEIGHT) ? chr(2) : chr(1);
+		$xm = (($size & self::IMG_DOUBLE_WIDTH) == self::IMG_DOUBLE_WIDTH) ? chr(2) : chr(1);
+		$ym = (($size & self::IMG_DOUBLE_HEIGHT) == self::IMG_DOUBLE_HEIGHT) ? chr(2) : chr(1);
 		$header = $tone . $xm . $ym . $colors . $imgHeader;
 		$this -> graphicsSendData('0', 'p', $header . $img -> toRasterFormat());
 		$this -> graphicsSendData('0', '2');
 	}
 	
-	function graphicsDlDefine(EscposImage $img, $kc1 = 32, $kc2 = 32) {
-		self::validateInteger($kc1, 32, 126, __FUNCTION__);
-		self::validateInteger($kc2, 32, 126, __FUNCTION__);
-		if($img -> isWindowsBMP()) {
-			// GS D   <Function 83> (bitmap format)
-			throw new Exception("Bitmap graphics not implemented");
-		}
-		$tone = '0';
-		$colors = chr(1);
-		$thisColor = '1';
-		$imgHeader = self::dataHeader(array($img -> getWidth(), $img -> getHeight()), true);
-		$header = $tone . chr($kc1) . chr($kc2) . $colors . $thisColor . $imgHeader;
-		$this -> graphicsSendData('0', 'S', $header . $img -> toRasterFormat());
-	}
-	
-	function graphicsDlDelete() {
-		/// TODO GS ( L   <Function 82>
-		throw new Exception("Not implemented");
-	}
-	
-	function graphicsDlDeleteAll() {
-		// TODO GS ( L   <Function 81>
-		throw new Exception("Not implemented");
-	}
-	
-	function graphicsDlPrint($kc1 = 32, $kc2 = 32, $mode = self::IMG_DEFAULT) {
-		self::validateInteger($kc1, 32, 126, __FUNCTION__);
-		self::validateInteger($kc2, 32, 126, __FUNCTION__);
-		self::validateInteger($mode, 0, 3, __FUNCTION__);
-		$xm = (($mode & self::IMG_DOUBLE_WIDTH) == self::IMG_DOUBLE_WIDTH) ? chr(2) : chr(1);
-		$ym = (($mode & self::IMG_DOUBLE_HEIGHT) == self::IMG_DOUBLE_HEIGHT) ? chr(2) : chr(1);
-		$this -> graphicsSendData('0', 'U', chr($kc1) . chr($kc2) . $xm . $ym);
-	}
-
-	function graphicsNvDefine() {
-		// TODO GS ( L   /   GS 8 L   <Function 67> (raster format)
-		// GS D   <Function 67> (bitmap format)
-		throw new Exception("Not implemented");
-	}
-	
-	function graphicsNvDelete() {
-		// TODO GS ( L   <Function 66>
-		throw new Exception("Not implemented");
-	}
-	
-	function graphicsNvDeleteAll() {
-		// TODO GS ( L   <Function 65>
-		throw new Exception("Not implemented");
-	}
-	
-	function graphicsNvPrint() {
-		// TODO GS ( L   <Function 69>
-		throw new Exception("Not implemented");
-	}
-
 	/**
 	 * Wrapper for GS ( L, to set correct data length.
 	 * 
@@ -338,12 +295,6 @@ class Escpos {
 	function setFont($font = self::FONT_A) {
 		self::validateInteger($font, 0, 2, __FUNCTION__);
 		fwrite($this -> fp, self::ESC . "M" . chr($font));
-	}
-	
-	private function setGraphicsDensity() {
-		// TODO Set density
-		// GS ( L   <Function 49>
-		throw new Exception("Not implemented");
 	}
 	
 	/**
