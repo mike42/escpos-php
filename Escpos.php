@@ -1,5 +1,4 @@
 <?php
-
 /**
  * escpos-php, a Thermal receipt printer library, for use with
  * ESC/POS compatible printers.
@@ -28,18 +27,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  * 
- * Class for generating ESC/POS printer control commands, as documented at the following URL:
- * http://content.epson.de/fileadmin/content/files/RSD/downloads/escpos.pdf
+ * This class generates ESC/POS printer control commands for compatible printers.
+ * See README.md for a summary of compatible printers and supported commands, and
+ * basic usage.
  * 
- * And supplemented with more advanced commands from:
- * http://www.goodson.com.au/download/manual/cino/user/MP3200%20Programming%20Reference%20Rev.%2002.pdf
+ * See example/demo.php for a detailed print-out demonstrating the range of commands
+ * implemented in this project.
  * 
- * See test.php for example usage.
- * Some functions have not been implemented:
- * 		- set paper sensors
- * 		- select print colour
- * 		- select character code table
- * 		- code93 and code128 barcodes
+ * Note that some functions have not been implemented:
+ * 		- Set paper sensors
+ * 		- Select print colour
+ * 		- Select character code table
+ * 		- Code93 and code128 barcodes
+ * 
+ * Please direct feature requests, bug reports and contributions to escpos-php
+ * on Github:
+ * 		- https://github.com/mike42/escpos-php
  */
 require_once(dirname(__FILE__) . "/EscposImage.php");
 
@@ -129,6 +132,7 @@ class Escpos {
 	 * Should only be used if your printer does not support the graphics() command.
 	 * 
 	 * @param EscposImage $img The image to print
+	 * @param EscposImage $size Size modifier for the image.
 	 */
 	function bitImage(EscposImage $img, $size = self::IMG_DEFAULT) {
 		self::validateInteger($size, 0, 3, __FUNCTION__);
