@@ -219,7 +219,7 @@ class Escpos {
 		self::validateInteger($mode, 0, 3, __FUNCTION__);
 		$xm = (($mode & self::IMG_DOUBLE_WIDTH) == self::IMG_DOUBLE_WIDTH) ? chr(2) : chr(1);
 		$ym = (($mode & self::IMG_DOUBLE_HEIGHT) == self::IMG_DOUBLE_HEIGHT) ? chr(2) : chr(1);
-		$this -> graphicsSendData('0', 'U', chr($kc1) . chr($kc2) . chr(1) . chr(1));
+		$this -> graphicsSendData('0', 'U', chr($kc1) . chr($kc2) . $xm . $ym);
 	}
 
 	function graphicsNvDefine() {

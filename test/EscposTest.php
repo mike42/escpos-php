@@ -435,6 +435,7 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> printer -> setReverseColors(7);
 	}
 
+	/* Bit image print */
 	public function testBitImageBlack() {
 		$this -> setupOutputTest(__FUNCTION__);
 		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_black.png");
@@ -449,27 +450,36 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x01\x00\x00");
 	}
 	
+	public function testBitImageBoth() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$img = new EscposImage(dirname(__FILE__)."/resources/black_white.png");
+		$this -> printer -> bitImage($img);
+		$this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x02\x00\xc0\x00");
+	}
+	
+	/* Graphics print */
 	public function testGraphicsWhite() {
 		$this -> setupOutputTest(__FUNCTION__);
 		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_white.png");
 		$this -> printer -> graphics($img);
-		$this -> checkOutput();
+		$this -> checkOutput("\x1b@\x1d(L\x0b\x000p0\x01\x011\x01\x00\x01\x00\x00\x1d(L\x02\x0002");
 	}
 	
 	public function testGraphicsBlack() {
 		$this -> setupOutputTest(__FUNCTION__);
 		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_black.png");
 		$this -> printer -> graphics($img);
-		$this -> checkOutput();
+		$this -> checkOutput("\x1b@\x1d(L\x0b\x000p0\x01\x011\x01\x00\x01\x00\x80\x1d(L\x02\x0002");
 	}
 	
-	public function testGraphicsDlDefine() {
+		
+	public function testGraphicsBoth() {
 		$this -> setupOutputTest(__FUNCTION__);
-		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_white.png");
-		$this -> printer -> graphicsDlDefine($img);
-		$this -> printer -> graphicsDlPrint();
-		$this -> checkOutput();
+		$img = new EscposImage(dirname(__FILE__)."/resources/black_white.png");
+		$this -> printer -> graphics($img);
+		$this -> checkOutput("\x1b@\x1d(L\x0c\x000p0\x01\x011\x02\x00\x02\x00\xc0\x00\x1d(L\x02\x0002");
 	}
+	
 }
 
 /*

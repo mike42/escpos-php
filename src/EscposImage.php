@@ -38,15 +38,16 @@ class EscposImage {
 		}
 		
 		/* Make a string of 1's and 0's */
+		imagefilter($im, IMG_FILTER_NEGATE);
   		imagefilter($im, IMG_FILTER_GRAYSCALE);
-  		imagefilter($im, IMG_FILTER_NEGATE);
 		$this -> imgHeight = imagesy($im);
 		$this -> imgWidth = imagesx($im);
 		$this -> imgData = str_repeat("0", $this -> imgHeight * $this -> imgWidth);
  		for($y = 0; $y < $this -> imgHeight; $y++) {
  			for($x = 0; $x < $this -> imgWidth; $x++) {
  				$cols = imagecolorsforindex($im, imagecolorat($im, $x, $y));
- 				$this -> imgData[$y * $this -> imgWidth + $x] = ($cols['red'] >> 7);
+ 				$darkness = $cols['red'] >> (7 + ($cols['alpha'] >> 6));
+ 				$this -> imgData[$y * $this -> imgWidth + $x] = $darkness;
  			}
  		}
 	}
