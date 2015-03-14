@@ -98,8 +98,8 @@ class EscposImage {
  				/* Faster to average channels, blend alpha and negate the image here than via filters (tested!) */
  				$cols = imagecolorsforindex($im, imagecolorat($im, $x, $y));
  				$greyness = (int)($cols['red'] + $cols['red'] + $cols['blue']) / 3;
- 				$white = $greyness >> (7 + ($cols['alpha'] >> 6));
- 				$this -> imgData[$y * $this -> imgWidth + $x] = $white == 1 ? 0 : 1;
+ 				$black = (255 - $greyness) >> (7 + ($cols['alpha'] >> 6));
+ 				$this -> imgData[$y * $this -> imgWidth + $x] = $black;
  			}
  		}
 	}
