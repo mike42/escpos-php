@@ -77,7 +77,7 @@ class item {
 	
 	public function __toString() {
 		$rightCols = 10;
-		$leftCols = 36;
+		$leftCols = 38;
 		if($this -> dollarSign) {
 			$leftCols = $leftCols / 2 - $rightCols / 2;
 		}
