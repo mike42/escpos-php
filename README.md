@@ -69,13 +69,13 @@ This driver is known to work with the following OS/interface combinations:
 </tr>
 <tr>
 <th>Ethernet</th>
-<td>Yes</td>
-<td>Yes</td>
-<td>Yes</td>
+<td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/ethernet.php">Yes</a></td>
+<td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/ethernet.php">Yes</a></td>
+<td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/ethernet.php">Yes</a></td>
 </tr>
 <tr>
 <th>USB</th>
-<td>Yes</td>
+<td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/linux-usb.php">Yes</a></td>
 <td>Not tested</td>
 <td>Not tested</td>
 </tr>
@@ -141,6 +141,9 @@ Currently supported barcode standards are (depending on your printer):
 
 Note that some barcode standards can only encode numbers, so attempting to print non-numeric codes with them may result in strange behaviour.
 
+### bitImage(EscposImage $image, $size)
+See [graphics()](#graphicsescposimage-image-size) below.
+
 ### cut($mode, $lines)
 Cut the paper.
 
@@ -162,6 +165,32 @@ Print and reverse feed n lines.
 Parameters:
 
 - `int $lines`: number of lines to feed. If not specified, 1 line will be fed.
+
+### graphics(EscposImage $image, $size)
+Print an image to the printer.
+
+Parameters:
+
+- `EscposImage $img`: The image to print.
+- `int $size`: Output size modifier for the image.
+
+Size modifiers are:
+
+- `IMG_DEFAULT` (leave image at original size)
+- `IMG_DOUBLE_WIDTH`
+- `IMG_DOUBLE_HEIGHT`
+
+A minimal example:
+
+```php
+<?php
+$img = new EscposImage("logo.png");
+$printer -> graphics($img);
+```
+
+See the [example/](https://github.com/mike42/escpos-php/blob/master/example/) folder for detailed examples.
+
+The function [bitImage()](#bitimageescposimage-image-size) takes the same parameters, and can be used if your printer doesn't support the newer graphics commands.
 
 ### initialize()
 Initialize printer. This resets formatting back to the defaults.

@@ -2,12 +2,12 @@
 require_once(dirname(__FILE__) . "/../Escpos.php");
 
 class EscposTest extends PHPUnit_Framework_TestCase {
-	private $printer;
+	protected $printer;
 
-	private $outputFn;
-	private $outputFp;
+	protected $outputFn;
+	protected $outputFp;
 
-	private $expectedOutputFn;
+	protected $expectedOutputFn;
 
 	protected function setup() {
 		$this -> outputFn = null;
@@ -19,14 +19,14 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> printer = new Escpos(fopen("/dev/null", "wb"));
 	}
 
-	private function setupOutputTest($name) {
+	protected function setupOutputTest($name) {
 		/* Print to a file - for checking output strings */
 		$this -> outputFn = "test-$name";
 		$this -> outputFp = fopen($this -> outputFn, "wb");
 		$this -> printer = new Escpos($this -> outputFp);
 	}
 
-	private function checkOutput($expected = null) {
+	protected function checkOutput($expected = null) {
 		/* Check those output strings */
 		fclose($this -> outputFp);
 		$outp = file_get_contents($this -> outputFn);
@@ -36,7 +36,7 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		}
 		$this -> outputFn = null;
 		$this -> outputFp = null;
-		$this -> assertEquals($outp, $expected);
+		$this -> assertEquals($expected, $outp);
 	}
 
 	private function friendlyBinary($in) {
@@ -434,6 +434,66 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> setExpectedException('InvalidArgumentException');
 		$this -> printer -> setReverseColors(7);
 	}
+
+	/* Bit image print */
+	public function testBitImageBlack() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_black.png");
+		$this -> printer -> bitImage($img);
+		$this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x01\x00\x80");
+	}
+
+	public function testBitImageWhite() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_white.png");
+		$this -> printer -> bitImage($img);
+		$this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x01\x00\x00");
+	}
+	
+	public function testBitImageBoth() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$img = new EscposImage(dirname(__FILE__)."/resources/black_white.png");
+		$this -> printer -> bitImage($img);
+		$this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x02\x00\xc0\x00");
+	}
+	
+	public function testBitImageTransparent() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$img = new EscposImage(dirname(__FILE__)."/resources/black_transparent.png");
+		$this -> printer -> bitImage($img);
+		$this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x02\x00\xc0\x00");
+	}
+	
+	/* Graphics print */
+	public function testGraphicsWhite() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_white.png");
+		$this -> printer -> graphics($img);
+		$this -> checkOutput("\x1b@\x1d(L\x0b\x000p0\x01\x011\x01\x00\x01\x00\x00\x1d(L\x02\x0002");
+	}
+	
+	public function testGraphicsBlack() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_black.png");
+		$this -> printer -> graphics($img);
+		$this -> checkOutput("\x1b@\x1d(L\x0b\x000p0\x01\x011\x01\x00\x01\x00\x80\x1d(L\x02\x0002");
+	}
+	
+		
+	public function testGraphicsBoth() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$img = new EscposImage(dirname(__FILE__)."/resources/black_white.png");
+		$this -> printer -> graphics($img);
+		$this -> checkOutput("\x1b@\x1d(L\x0c\x000p0\x01\x011\x02\x00\x02\x00\xc0\x00\x1d(L\x02\x0002");
+	}
+	
+	public function testGraphicsTransparent() {
+		$this -> setupOutputTest(__FUNCTION__);
+		$img = new EscposImage(dirname(__FILE__)."/resources/black_transparent.png");
+		$this -> printer -> graphics($img);
+		$this -> checkOutput("\x1b@\x1d(L\x0c\x000p0\x01\x011\x02\x00\x02\x00\xc0\x00\x1d(L\x02\x0002");
+	}
+	
 }
 
 /*
