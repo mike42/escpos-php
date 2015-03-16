@@ -1,7 +1,11 @@
 escpos-php, a Thermal receipt printer library, for use with
-ESC/POS compatible printers
+ESC/POS compatible printers.
 
-Copyright (c) 2014 Michael Billington <michael.billington@gmail.com>
+Copyright (c) 2014-15 Michael Billington <michael.billington@gmail.com>,
+incorporating modifications by:
+- Roni Saha <roni.cse@gmail.com>
+- Gergely Radics <gerifield@ustream.tv>
+- Warren Doyle <w.doyle@fuelled.co>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
