@@ -37,7 +37,6 @@
  * Note that some functions have not been implemented:
  * 		- Set paper sensors
  * 		- Select print colour
- * 		- Select character code table
  * 		- Code93 and code128 barcodes
  * 
  * Please direct feature requests, bug reports and contributions to escpos-php
@@ -54,14 +53,11 @@ class Escpos {
 	const FS = "\x1c";
 	const GS = "\x1d";
 	
-	/* Code pages */
-	// TODO selectCharacterTable()
-	// ESC t $code
-	//32 CP_720: Arabic
-	//37 CP_864: Arabic
-	//50 WCP_1256: Arabic
-	//0	CP437: USA, Standard Europe
-	// TODO textRaw()
+	/* Character tables */
+	const CP_437 = 0;
+	const CP_720 = 32;
+	const CP_864 = 37;
+	const WCP_1256 = 50;
 
 	/* Barcode types */
 	const BARCODE_UPCA = 0;
@@ -248,6 +244,11 @@ class Escpos {
 		fwrite($this -> fp, self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
 	}
 	
+	function selectCharacterTable($table = self::CP_437) {
+		self::validateInteger($table, 0, 255, __FUNCTION__);
+		fwrite($this -> fp, self::ESC . "t" . chr($table));
+	}
+	
 	/**
 	 * Select print mode(s).
 	 * 
@@ -353,11 +354,25 @@ class Escpos {
 	/**
 	 * Add text to the buffer.
 	 *
-	 * Text should either be followed by a line-break, or feed() should be called after this.
+	 * Text should either be followed by a line-break, or feed() should be called
+	 * after this to clear the print buffer.
 	 *
 	 * @param string $str Text to print
 	 */
 	function text($str = "") {
+		self::validateString($str, __FUNCTION__);
+		fwrite($this -> fp, (string)$str);
+	}
+	
+	/**
+	 * Add text to the buffer without attempting to interpret chararacter codes.
+	 *
+	 * Text should either be followed by a line-break, or feed() should be called
+	 * after this to clear the print buffer.
+	 *
+	 * @param string $str Text to print
+	 */
+	function textRaw($str = "") {
 		self::validateString($str, __FUNCTION__);
 		fwrite($this -> fp, (string)$str);
 	}
@@ -421,7 +436,7 @@ class Escpos {
 	 */
 	private static function validateInteger($test, $min, $max, $source) {
 		if(!is_integer($test) || $test < $min || $test > $max) {
-			throw new InvalidArgumentException("Argument to $source must be a number between $min and $max");
+			throw new InvalidArgumentException("Argument to $source must be a number between $min and $max, but $test was given.");
 		}
 	}
 	
