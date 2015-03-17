@@ -54,6 +54,15 @@ class Escpos {
 	const FS = "\x1c";
 	const GS = "\x1d";
 	
+	/* Code pages */
+	// TODO selectCharacterTable()
+	// ESC t $code
+	//32 CP_720: Arabic
+	//37 CP_864: Arabic
+	//50 WCP_1256: Arabic
+	//0	CP437: USA, Standard Europe
+	// TODO textRaw()
+
 	/* Barcode types */
 	const BARCODE_UPCA = 0;
 	const BARCODE_UPCE = 1;
