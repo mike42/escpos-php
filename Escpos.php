@@ -43,7 +43,8 @@
  * on Github:
  * 		- https://github.com/mike42/escpos-php
  */
-require_once(dirname(__FILE__) . "/EscposImage.php");
+require_once(dirname(__FILE__) . "/src/EscposImage.php");
+require_once(dirname(__FILE__) . "/src/EscposPrintBuffer.php");
 
 class Escpos {
 	/* ASCII codes */
