@@ -7,8 +7,6 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 	protected $outputFn;
 	protected $outputFp;
 
-	protected $expectedOutputFn;
-
 	protected function setup() {
 		$this -> outputFn = null;
 		$this -> outputFp = null;
@@ -37,6 +35,13 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> outputFn = null;
 		$this -> outputFp = null;
 		$this -> assertEquals($expected, $outp);
+	}
+
+	protected function tearDown() {
+		/* Remove test files when a case doesn't finish properly */
+		if($this -> outputFn != null) {
+			unlink($this -> outputFn);
+		}
 	}
 
 	private function friendlyBinary($in) {
