@@ -1,0 +1,10 @@
+# Eclipse files
+.settings/*
+.project
+.buildpath
+
+# doxygen files
+doc/html
+doc/latex
+doc/doxygen_sqlite3.db
+
