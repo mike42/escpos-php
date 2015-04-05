@@ -3,7 +3,7 @@
 	"type": "library",
 	"description": "Thermal receipt printer library, for use with ESC/POS compatible printers",
 	"homepage": "https://github.com/mike42/escpos-php",
-	"keywords": ["receipt", "print", "escpos", "ESC/POS", "driver"],
+	"keywords": ["receipt", "print", "escpos", "ESC-POS", "driver"],
 	"license": "MIT",
 	"authors": [
 		{
