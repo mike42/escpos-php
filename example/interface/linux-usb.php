@@ -6,17 +6,27 @@ require_once(dirname(__FILE__) . "/../../Escpos.php");
  * file. This is generally the default behaviour if you don't install any
  * vendor drivers.
  *
+ * Once this is done, use a FilePrintConnector to open the device.
+ *
  * Troubleshooting: On Debian, you must be in the lp group to access this file.
  * dmesg to see what happens when you plug in your printer to make sure no
  * other drivers are unloading the module.
  */
-//$fp = fopen("/dev/usb/lp0", "w+");
-$fp = fopen("/dev/usb/lp1", "w+");
-//$fp = fopen("/dev/usb/lp2", "w+");
+try {
+	// Enter the device file for your USB printer here
+	$connector = new FilePrintConnector("/dev/null");
+	//$connector = new FilePrintConnector("/dev/usb/lp0");
+	//$connector = new FilePrintConnector("/dev/usb/lp1");
+	//$connector = new FilePrintConnector("/dev/usb/lp2");
 
-/* Print a "Hello world" receipt" */
-$printer = new Escpos($fp);
-$printer -> text("Hello World!\n");
-$printer -> cut();
-fclose($fp);
+	/* Print a "Hello world" receipt" */
+	$printer = new Escpos($connector);
+	$printer -> text("Hello World!\n");
+	$printer -> cut();
+	
+	/* Close printer */
+	$printer -> close();
+} catch(Exception $e) {
+	echo "Couldn't print to this printer: " . $e -> getMessage();
+}
 

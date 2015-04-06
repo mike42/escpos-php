@@ -21,4 +21,6 @@ $printer -> graphics($tux, Escpos::IMG_DOUBLE_WIDTH | Escpos::IMG_DOUBLE_HEIGHT)
 $printer -> text("Large Tux in correct proportion.\n");
 
 $printer -> cut();
+
+$printer -> close();
 ?>

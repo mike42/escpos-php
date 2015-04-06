@@ -15,6 +15,7 @@ foreach($tables as $table) {
 	compactCharTable($printer, 8);
 }
 $printer -> cut();
+$printer -> close();
 
 function compactCharTable($printer, $start = 2) {
 	/* Output a compact character table */

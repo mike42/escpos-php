@@ -149,4 +149,7 @@ $printer -> cut();
 
 /* Pulse */
 $printer -> pulse();
+
+/* Always close the printer */
+$printer -> close();
 ?>
