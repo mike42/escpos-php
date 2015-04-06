@@ -2,12 +2,14 @@
 /* Change to the correct path if you copy this example! */
 require_once(dirname(__FILE__) . "/../../Escpos.php");
 
-/* Most printers are open on port 9100, so you just need to know the IP 
- * address of your receipt printer, and then fsockopen() it on that port.
+/**
+ * TODO: A brief explanation of how to set up a USB receipt printer
+ * so that ESCPOS/PHP can see it.
  */
 try {
-	$connector = new NetworkPrintConnector("10.x.x.x", 9100);
-	
+	// Enter the share name for your USB printer here
+	$connector = new WindowsPrintConnector("Epson");
+
 	/* Print a "Hello world" receipt" */
 	$printer = new Escpos($connector);
 	$printer -> text("Hello World!\n");

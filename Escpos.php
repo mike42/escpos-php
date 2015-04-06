@@ -180,7 +180,9 @@ class Escpos {
 // 	private static $charsets = array();
 	
 	/**
-	 * @param resource $fp File pointer to print to // TODO
+	 * Construct a new print object
+	 * 
+	 * @param PrintConnector $connector The PrintConnector to send data to. If not set, output is sent to standard output.
 	 */
 	function __construct(PrintConnector $connector = null) {
 		if(is_null($connector) && php_sapi_name() == 'cli') {

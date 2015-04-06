@@ -15,6 +15,7 @@ require_once(dirname(__FILE__) . "/Escpos.php");
 $printer = new Escpos();
 $printer -> text("Hello World!\n");
 $printer -> cut();
+$printer -> close();
 ```
 This would be executed as:
 ```
@@ -28,22 +29,22 @@ From your web app, you would pass the output directly to a socket:
 ```php
 <?php
 require_once(dirname(__FILE__) . "/Escpos.php");
-$fp = fsockopen("10.x.x.x", 9100);
-$printer = new Escpos($fp);
+$connector = new NetworkPrintConnector("10.x.x.x", 9100);
+$printer = new Escpos($connector);
 $printer -> text("Hello World!\n");
 $printer -> cut();
-fclose($fp);
+$printer -> close();
 ```
 
 Or to a local printer:
 ```php
 <?php
 require_once(dirname(__FILE__) . "/Escpos.php");
-$fp = fopen("/dev/ttyS0", "w+");
-$printer = new Escpos($fp);
+$connector = new FilePrintConnector("/dev/ttyS0", 9100);
+$printer = new Escpos($connector);
 $printer -> text("Hello World!\n");
 $printer -> cut();
-fclose($fp);
+$printer -> close();
 ```
 
 On Linux, your printer device file will be somewhere like `/dev/lp0` (parallel), `/dev/usb/lp1` (USB), `/dev/ttyUSB0` (USB-Serial), `/dev/ttyS0` (serial).
@@ -77,7 +78,7 @@ This driver is known to work with the following OS/interface combinations:
 <th>USB</th>
 <td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/linux-usb.php">Yes</a></td>
 <td>Not tested</td>
-<td>Not tested</td>
+<td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/windows-usb.php">Yes</a></td>
 </tr>
 <tr>
 <th>USB-serial</th>
@@ -95,7 +96,7 @@ This driver is known to work with the following OS/interface combinations:
 <th>Parallel</th>
 <td>Yes</td>
 <td>Not tested</td>
-<td>Not tested</td>
+<td>Yes</td>
 </tr>
 </table>
 
@@ -115,11 +116,13 @@ If you use any other printer with this code, please let me know so I can add it 
 Available methods
 -----------------
 
-### __construct($fp)
+### __construct(PrintConnector $connector)
 Construct new print object.
 
 Parameters:
-- `resource $fp`: File pointer to print to. Will open `php://stdout` if none is specified.
+- `PrintConnector $connector`: The PrintConnector to send data to. If not set, output is sent to standard output.
+
+See [example/interface/]("https://github.com/mike42/escpos-php/tree/master/example/interface/) for ways to open connections for different platforms and interfaces.
 
 ### barcode($content, $type)
 Print a barcode.

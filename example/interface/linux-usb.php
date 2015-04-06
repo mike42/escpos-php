@@ -2,7 +2,8 @@
 /* Change to the correct path if you copy this example! */
 require_once(dirname(__FILE__) . "/../../Escpos.php");
 
-/* On Linux, use the usblp module to make your printer available as a device
+/**
+ * On Linux, use the usblp module to make your printer available as a device
  * file. This is generally the default behaviour if you don't install any
  * vendor drivers.
  *
@@ -27,6 +28,6 @@ try {
 	/* Close printer */
 	$printer -> close();
 } catch(Exception $e) {
-	echo "Couldn't print to this printer: " . $e -> getMessage();
+	echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
 }
 
