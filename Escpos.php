@@ -146,6 +146,8 @@ class Escpos {
 		fwrite($this -> fp, $img -> toRasterFormat());
 	}
 	
+	// TODO Download bitImage, NV bitImage functions
+	
 	/**
 	 * Cut the paper.
 	 *
@@ -222,6 +224,69 @@ class Escpos {
 		}
 		$header = $this -> intLowHigh(strlen($data) + 2, 2);
 		fwrite($this -> fp, self::GS . "(L" . $header . $m . $fn . $data);
+	}
+	
+	function graphicsDlDefine(EscposImage $img, $kc1 = 32, $kc2 = 32) {
+		self::validateInteger($kc1, 32, 126, __FUNCTION__);
+		self::validateInteger($kc2, 32, 126, __FUNCTION__);
+		if($img -> isWindowsBMP()) {
+			// GS D fn 83 (bitmap format)
+			throw new Exception("Bitmap graphics not implemented");
+		}
+		$tone = '0';
+		$colors = chr(1);
+		$thisColor = '1';
+		$imgHeader = self::dataHeader(array($img -> getWidth(), $img -> getHeight()), true);
+		$header = $tone . chr($kc1) . chr($kc2) . $colors . $thisColor . $imgHeader;
+		$this -> graphicsSendData('0', 'S', $header . $img -> toRasterFormat());
+		// TODO try column format
+	}
+	
+	function graphicsDlDelete() {
+		/// TODO GS ( L fn 82
+		throw new Exception("Not implemented");
+	}
+	
+	function graphicsDlDeleteAll() {
+		// TODO GS ( L fn 81
+		throw new Exception("Not implemented");
+	}
+	
+	function graphicsDlPrint($kc1 = 32, $kc2 = 32, $mode = self::IMG_DEFAULT) {
+		self::validateInteger($kc1, 32, 126, __FUNCTION__);
+		self::validateInteger($kc2, 32, 126, __FUNCTION__);
+		self::validateInteger($mode, 0, 3, __FUNCTION__);
+		$xm = (($mode & self::IMG_DOUBLE_WIDTH) == self::IMG_DOUBLE_WIDTH) ? chr(2) : chr(1);
+		$ym = (($mode & self::IMG_DOUBLE_HEIGHT) == self::IMG_DOUBLE_HEIGHT) ? chr(2) : chr(1);
+		$this -> graphicsSendData('0', 'U', chr($kc1) . chr($kc2) . $xm . $ym);
+	}
+
+	function graphicsNvDefine() {
+		// TODO GS ( L   /   GS 8 L   fn 67 (raster format)
+		// GS D   fn 67 (bitmap format)
+		throw new Exception("Not implemented");
+	}
+	
+	function graphicsNvDelete() {
+		// TODO GS ( L   fn 66
+		throw new Exception("Not implemented");
+	}
+	
+	function graphicsNvDeleteAll() {
+		// TODO GS ( L   fn 65
+		throw new Exception("Not implemented");
+	}
+	
+	function graphicsNvPrint() {
+		// TODO GS ( L   fn 69
+		throw new Exception("Not implemented");
+	}
+	
+		
+	private function setGraphicsDensity() {
+		// TODO Set density
+		// GS ( L   fn 49
+		throw new Exception("Not implemented");
 	}
 	
 	/**
