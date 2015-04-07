@@ -99,9 +99,9 @@ This driver is known to work with the following OS/interface combinations:
 <td>Yes</td>
 </tr>
 <tr>
-<th>SMB</th>
-<td>Not tested</td>
-<td>Not tested</td>
+<th>SMB shared</th>
+<td>No</td>
+<td>No</td>
 <td>Yes</td>
 </tr>
 </table>
