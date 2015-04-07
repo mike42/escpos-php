@@ -43,7 +43,12 @@
  * on Github:
  * 		- https://github.com/mike42/escpos-php
  */
-require_once(dirname(__FILE__) . "/EscposImage.php");
+require_once(dirname(__FILE__) . "/src/EscposImage.php");
+require_once(dirname(__FILE__) . "/src/EscposPrintBuffer.php");
+require_once(dirname(__FILE__) . "/src/PrintConnector.php");
+require_once(dirname(__FILE__) . "/src/WindowsPrintConnector.php");
+require_once(dirname(__FILE__) . "/src/FilePrintConnector.php");
+require_once(dirname(__FILE__) . "/src/NetworkPrintConnector.php");
 
 class Escpos {
 	/* ASCII codes */
@@ -52,12 +57,6 @@ class Escpos {
 	const ESC = "\x1b";
 	const FS = "\x1c";
 	const GS = "\x1d";
-	
-	/* Character tables */
-	const CP_437 = 0;
-	const CP_720 = 32;
-	const CP_864 = 37;
-	const WCP_1256 = 50;
 
 	/* Barcode types */
 	const BARCODE_UPCA = 0;
@@ -67,6 +66,76 @@ class Escpos {
 	const BARCODE_CODE39 = 4;
 	const BARCODE_ITF = 5;
 	const BARCODE_CODABAR = 6;
+	
+	/*
+	 * All character tables. Only a subset of these are automatically
+	 * switched to (see EscposPrintBuffer), but all can be manually applied
+	 * and accessed via textRaw();
+	 */
+// TODO not yet used, see issue #9
+// 	const CHARSET_AUTO = -1;
+// 	const CHARSET_CP437 = 0;
+// 	const CHARSET_KATAKANA = 1;
+// 	const CHARSET_CP850 = 2;
+// 	const CHARSET_CP860 = 3;
+// 	const CHARSET_CP863 = 4;
+// 	const CHARSET_CP865 = 5;
+// 	const CHARSET_HIRAGANA = 6;
+// 	const CHARSET_KANJI_1 = 7;
+// 	const CHARSET_KANJI_2 = 8;
+// 	const CHARSET_CP851 = 11;
+// 	const CHARSET_CP853 = 12;
+// 	const CHARSET_CP857 = 13;
+// 	const CHARSET_CP737 = 14;
+// 	const CHARSET_ISO8859_7 = 15;
+// 	const CHARSET_CP1252 = 16;
+// 	const CHARSET_CP866 = 17;
+// 	const CHARSET_CP852 = 18;
+// 	const CHARSET_CP858 = 19;
+// 	const CHARSET_THAI_42 = 20;
+// 	const CHARSET_THAI_11 = 21;
+// 	const CHARSET_THAI_13 = 22;
+// 	const CHARSET_THAI_14 = 23;
+// 	const CHARSET_THAI_16 = 24;
+// 	const CHARSET_THAI_17 = 25;
+// 	const CHARSET_THAI_18 = 26;
+// 	const CHARSET_TCVN3_1 = 30;
+// 	const CHARSET_TCVN3_2 = 31;
+// 	const CHARSET_CP720 = 32;
+// 	const CHARSET_CP775 = 33;
+// 	const CHARSET_CP855 = 34;
+// 	const CHARSET_CP861 = 35;
+// 	const CHARSET_CP862 = 36;
+// 	const CHARSET_CP864 = 37;
+// 	const CHARSET_CP869 = 38;
+// 	const CHARSET_ISO8859_2 = 39;
+// 	const CHARSET_ISO8859_15 = 40;
+// 	const CHARSET_CP1098 = 41;
+// 	const CHARSET_CP1118 = 42;
+// 	const CHARSET_CP1119 = 43;
+// 	const CHARSET_CP1125 = 44;
+// 	const CHARSET_CP1250 = 45;
+// 	const CHARSET_CP1251 = 46;
+// 	const CHARSET_CP1253 = 47;
+// 	const CHARSET_CP1254 = 48;
+// 	const CHARSET_CP1255 = 49;
+// 	const CHARSET_CP1256 = 50;
+// 	const CHARSET_CP1257 = 51;
+// 	const CHARSET_CP1258 = 52;
+// 	const CHARSET_RK1048 = 53;
+// 	const CHARSET_ISCII_DEVANAGARI = 66;
+// 	const CHARSET_ISCII_BENGALI = 67;
+// 	const CHARSET_ISCII_TAMIL = 68;
+// 	const CHARSET_ISCII_TELUGU = 69;
+// 	const CHARSET_ISCII_ASSAMESE = 70;
+// 	const CHARSET_ISCII_ORIYA = 71;
+// 	const CHARSET_ISCII_KANNADA = 72;
+// 	const CHARSET_ISCII_MALAYALAM = 73;
+// 	const CHARSET_ISCII_GUJARATI = 74;
+// 	const CHARSET_ISCII_PUNJABI = 75;
+// 	const CHARSET_ISCII_MARATHI = 82;
+// 	const CHARSET_254 = 254;
+// 	const CHARSET_255 = 255;
 	
 	/* Cut types */
 	const CUT_FULL = 65;
@@ -101,21 +170,25 @@ class Escpos {
 	const UNDERLINE_DOUBLE = 2;
 	
 	/**
-	 * @var resource File pointer for printing to
+	 * @var EscposPrintBuffer The printer's output buffer.
 	 */
-	private $fp;
+	private $buffer;
+	
+// 	/**
+// 	 * @var array The list of accepted character sets. This is used only for validation.
+// 	 */
+// 	private static $charsets = array();
 	
 	/**
-	 * @param resource $fp File pointer to print to
+	 * Construct a new print object
+	 * 
+	 * @param PrintConnector $connector The PrintConnector to send data to. If not set, output is sent to standard output.
 	 */
-	function __construct($fp = null) {
-		if(is_null($fp) && php_sapi_name() == 'cli') {
-			$fp = fopen("php://stdout", "wb");
+	function __construct(PrintConnector $connector = null) {
+		if(is_null($connector) && php_sapi_name() == 'cli') {
+			$connector = new FilePrintConnector("php://stdout");
 		}
-		if(!$fp) {
-			throw new Exception("Cannot initialise printer. Please check that you are passing escpos-php a valid file pointer resource.");
-		}
-		$this -> fp = $fp;
+		$this -> buffer = new EscposPrintBuffer($this, $connector);
 		$this -> initialize();
 	}
 	
@@ -127,7 +200,7 @@ class Escpos {
 	 */
 	function barcode($content, $type = self::BARCODE_CODE39) {
 		// TODO validation on barcode() inputs
-		fwrite($this -> fp, self::GS . "k" . chr($type) . $content . self::NUL);
+		$this -> buffer -> write(self::GS . "k" . chr($type) . $content . self::NUL);
 	}
 	
 	/**
@@ -142,8 +215,16 @@ class Escpos {
 	function bitImage(EscposImage $img, $size = self::IMG_DEFAULT) {
 		self::validateInteger($size, 0, 3, __FUNCTION__);
 		$header = self::dataHeader(array($img -> getWidthBytes(), $img -> getHeight()), true);
-		fwrite($this -> fp, self::GS . "v0" . chr($size) . $header);
-		fwrite($this -> fp, $img -> toRasterFormat());
+		$this -> buffer -> write(self::GS . "v0" . chr($size) . $header);
+		$this -> buffer -> write($img -> toRasterFormat());
+	}
+	
+	/**
+	 * Close the underlying buffer. With some connectors, the
+	 * job will not actually be sent to the printer until this is called.
+	 */
+	function close() {
+		$this -> buffer -> finalize();
 	}
 	
 	/**
@@ -154,7 +235,7 @@ class Escpos {
 	 */
 	function cut($mode = self::CUT_FULL, $lines = 3) {
 		// TODO validation on cut() inputs
-		fwrite($this -> fp, self::GS . "V" . chr($mode) . chr($lines));
+		$this -> buffer -> write(self::GS . "V" . chr($mode) . chr($lines));
 	}
 	
 	/**
@@ -165,9 +246,9 @@ class Escpos {
 	function feed($lines = 1) {
 		self::validateInteger($lines, 1, 255, __FUNCTION__);
 		if($lines <= 1) {
-			fwrite($this -> fp, self::LF);
+			$this -> buffer -> write(self::LF);
 		} else {
-			fwrite($this -> fp, self::ESC . "d" . chr($lines));
+			$this -> buffer -> write(self::ESC . "d" . chr($lines));
 		}
 	}
 	
@@ -178,7 +259,7 @@ class Escpos {
 	 */
 	function feedReverse($lines = 1) {
 		self::validateInteger($lines, 1, 255, __FUNCTION__);
-		fwrite($this -> fp, self::ESC . "e" . chr($lines));
+		$this -> buffer -> write(self::ESC . "e" . chr($lines));
 	}
 	
 	/**
@@ -221,14 +302,14 @@ class Escpos {
 			throw new IllegalArgumentException("graphicsSendData: m and fn must be one character each.");
 		}
 		$header = $this -> intLowHigh(strlen($data) + 2, 2);
-		fwrite($this -> fp, self::GS . "(L" . $header . $m . $fn . $data);
+		$this -> buffer -> write(self::GS . "(L" . $header . $m . $fn . $data);
 	}
 	
 	/**
 	 * Initialize printer. This resets formatting back to the defaults.
 	 */
 	function initialize() {
-		fwrite($this -> fp, self::ESC . "@");
+		$this -> buffer -> write(self::ESC . "@");
 	}
 	
 	/**
@@ -241,12 +322,12 @@ class Escpos {
 	 */
 	function pulse($pin = 0, $on_ms = 120, $off_ms = 240) {
 		// TODO validation on pulse() inputs
-		fwrite($this -> fp, self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
+		$this -> buffer -> write(self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
 	}
 	
 	function selectCharacterTable($table = self::CP_437) {
 		self::validateInteger($table, 0, 255, __FUNCTION__);
-		fwrite($this -> fp, self::ESC . "t" . chr($table));
+		$this -> buffer -> write(self::ESC . "t" . chr($table));
 	}
 	
 	/**
@@ -268,7 +349,7 @@ class Escpos {
 			throw new InvalidArgumentException("Test");
 		}
 
-		fwrite($this -> fp, self::ESC . "!" . chr($mode));
+		$this -> buffer -> write(self::ESC . "!" . chr($mode));
 	}
 	
 	/**
@@ -278,7 +359,7 @@ class Escpos {
 	 */
 	function setBarcodeHeight($height = 8) {
 		self::validateInteger($height, 1, 255, __FUNCTION__);
-		fwrite($this -> fp, self::GS . "h" . chr($height));
+		$this -> buffer -> write(self::GS . "h" . chr($height));
 	}
 	
 	/**
@@ -288,7 +369,7 @@ class Escpos {
 	 */
 	function setDoubleStrike($on = true) {
 		self::validateBoolean($on, __FUNCTION__);
-		fwrite($this -> fp, self::ESC . "G". ($on ? chr(1) : chr(0)));
+		$this -> buffer -> write(self::ESC . "G". ($on ? chr(1) : chr(0)));
 	}
 	
 	/**
@@ -298,7 +379,7 @@ class Escpos {
 	 */
 	function setEmphasis($on = true) {
 		self::validateBoolean($on, __FUNCTION__);
-		fwrite($this -> fp, self::ESC . "E". ($on ? chr(1) : chr(0)));
+		$this -> buffer -> write(self::ESC . "E". ($on ? chr(1) : chr(0)));
 	}
 	
 	/**
@@ -308,7 +389,7 @@ class Escpos {
 	 */
 	function setFont($font = self::FONT_A) {
 		self::validateInteger($font, 0, 2, __FUNCTION__);
-		fwrite($this -> fp, self::ESC . "M" . chr($font));
+		$this -> buffer -> write(self::ESC . "M" . chr($font));
 	}
 	
 	/**
@@ -318,7 +399,7 @@ class Escpos {
 	 */
 	function setJustification($justification = self::JUSTIFY_LEFT) {
 		self::validateInteger($justification, 0, 2, __FUNCTION__);
-		fwrite($this -> fp, self::ESC . "a" . chr($justification));
+		$this -> buffer -> write(self::ESC . "a" . chr($justification));
 	}
 	
 	/**
@@ -328,7 +409,7 @@ class Escpos {
 	 */
 	function setReverseColors($on = true) {
 		self::validateBoolean($on, __FUNCTION__);
-		fwrite($this -> fp, self::GS . "B" . ($on ? chr(1) : chr(0)));
+		$this -> buffer -> write(self::GS . "B" . ($on ? chr(1) : chr(0)));
 	}
 	
 	/**
@@ -348,7 +429,7 @@ class Escpos {
 		}
 		/* Set the underline */
 		self::validateInteger($underline, 0, 2, __FUNCTION__);
-		fwrite($this -> fp, self::ESC . "-". chr($underline));
+		$this -> buffer -> write(self::ESC . "-". chr($underline));
 	}
 	
 	/**
@@ -361,7 +442,7 @@ class Escpos {
 	 */
 	function text($str = "") {
 		self::validateString($str, __FUNCTION__);
-		fwrite($this -> fp, (string)$str);
+		$this -> buffer -> writeText((string)$str);
 	}
 	
 	/**
@@ -374,7 +455,7 @@ class Escpos {
 	 */
 	function textRaw($str = "") {
 		self::validateString($str, __FUNCTION__);
-		fwrite($this -> fp, (string)$str);
+		$this -> buffer -> writeTextRaw((string)$str);
 	}
 	
 	/**

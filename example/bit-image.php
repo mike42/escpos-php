@@ -22,4 +22,5 @@ $printer -> bitImage($tux, Escpos::IMG_DOUBLE_WIDTH | Escpos::IMG_DOUBLE_HEIGHT)
 $printer -> text("Large Tux in correct proportion (bit image).\n");
 
 $printer -> cut();
+$printer -> close();
 ?>
