@@ -135,7 +135,7 @@ class WindowsPrintConnector implements PrintConnector {
  			passthru($cmd, $retval);
  			$outp = ob_get_contents();
  			ob_end_clean();
-			if($retval != 0 || strpos($outp, $device) >= 0) {
+			if($retval != 0 || strpos($outp, $device) !== false) {
 				trigger_error("Failed to print. Command '$cmd' returned $retval: $outp", E_USER_NOTICE);
 			}
 			unlink($filename);
