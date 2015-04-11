@@ -49,14 +49,44 @@ class WindowsPrintConnector implements PrintConnector {
 	private $isLocal;
 
 	/**
-	 * @var boolean True if this script is running on Windows, false otherwise.
+	 * @var int Platform we're running on, for selecting different commands. See PLATFORM_* constants.
 	 */
-	private $isWindows;
+	private $platform;
 
 	/**
 	 * @var string The name of the target printer (eg "Foo Printer") or port ("COM1", "LPT1").
 	 */
 	private $printerName;
+
+	/**
+	 * @var string Login name for network printer, or null if not using authentication.
+	 */
+	private $userName;
+
+	/**
+	 * @var string Password for network printer, or null if no password is required.
+	 */
+	private $userPassword;
+
+	/**
+	 * @var string Workgroup that the printer is located on
+	 */
+	private $workgroup;
+
+	/**
+	 * @var int represents Linux
+	 */
+	const PLATFORM_LINUX = 0;
+
+	/**
+	 * @var int represents Mac
+	 */
+	const PLATFORM_MAC = 1;
+
+	/**
+	 * @var int represents Windows
+	 */
+	const PLATFORM_WIN = 2;
 
 	/**
 	 * @var string Valid local ports.
@@ -69,32 +99,50 @@ class WindowsPrintConnector implements PrintConnector {
 	const REGEX_PRINTERNAME = "/^(\w+)(\s\w*)*$/";
 
 	/**
-	 * @var string Valid smb:// URI containing hostname & printer name only.
+	 * @var string Valid smb:// URI containing hostname & printer with optional user & optional password only.
 	 */
-	const REGEX_SMB = "/^smb:\/\/(\w*)/";
+	const REGEX_SMB = "/^smb:\/\/(\w+(:\w+)?@)?[\w-]+\/([\w-]+\/)?(\w+)(\s\w+)*$/";
 
 	/**
 	 * @param string $dest
 	 * @throws BadMethodCallException
 	 */
 	public function __construct($dest) {
-		$this -> isWindows = (PHP_OS == "WINNT");
+		$this -> platform = $this -> getCurrentPlatform();	
 		$this -> isLocal = false;
 		$this -> buffer = null;
-		if(preg_match(self::REGEX_LOCAL, $dest)) {
+		$this -> userName = null;
+		$this -> userPassword = null;
+		$this -> workgroup = null;
+		if(preg_match(self::REGEX_LOCAL, $dest) == 1) {
 			// Straight to LPT1, COM1 or other local port. Allowed only if we are actually on windows.
-			if(!$this -> isWindows) {
+			if($this -> platform !== self::PLATFORM_WIN) {
 				throw new BadMethodCallException("WindowsPrintConnector can only be used to print to a local printer ('".$dest."') on a Windows computer.");
 			}
 			$this -> isLocal = true;
 			$this -> hostname = null;
 			$this -> printerName = $dest;
-		} else if(preg_match(self::REGEX_SMB, $dest)) {
-			// Connect to samba share. smb://host/printer
+		} else if(preg_match(self::REGEX_SMB, $dest) == 1) {
+			// Connect to samba share, eg smb://host/printer
 			$part = parse_url($dest);
 			$this -> hostname = $part['host'];
-			$this -> printerName = ltrim($part['path'], '/');
-		} else if(preg_match(self::REGEX_PRINTERNAME, $dest)) {
+			/* Printer name and optional workgroup */
+			$path = ltrim($part['path'], '/');
+			if(strpos($path, "/") !== false) {
+				$pathPart = explode("/", $path);
+				$this -> workgroup = $pathPart[0];
+				$this -> printerName = $pathPart[1];
+			} else {
+				$this -> printerName = $path;
+			}
+			/* Username and password if set */
+			if(isset($part['user'])) {
+				$this -> userName = $part['user'];
+				if(isset($part['pass'])) {
+					$this -> userPassword = $part['pass'];
+				}
+			}
+		} else if(preg_match(self::REGEX_PRINTERNAME, $dest) == 1) {
 			// Just got a printer name. Assume it's on the current computer.
 			$hostname = gethostname();
 			if(!$hostname) {
@@ -113,28 +161,164 @@ class WindowsPrintConnector implements PrintConnector {
 			trigger_error("Print connector was not finalized. Did you forget to close the printer?", E_USER_NOTICE);
 		}
 	}
-	
+
 	public function finalize() {
 		$data = implode($this -> buffer);
 		$this -> buffer = null;
-		if($this -> isWindows) {
-			/* Windows-friendly printing of all sorts */
-			if(!$this -> isLocal) {
-				/* Networked printing */
-				$filename = tempnam(sys_get_temp_dir(), "escpos");
-				file_put_contents($filename, $data);
-				$device = "\\\\" . $this -> hostname . "\\" . $this -> printerName;
-				copy($filename, $device);
-				unlink($filename);
+		if($this -> platform == self::PLATFORM_WIN) {
+			$this -> finalizeWin($data);
+		} else if($this -> platform == self::PLATFORM_LINUX) {
+			$this -> finalizeLinux($data);
+		} else {
+			$this -> finalizeMac($data);
+		}
+	}
+
+	/**
+	 * Send job to printer -- platform-specific Linux code.
+	 * 
+	 * @param string $data Print data
+	 * @throws Exception
+	 */
+	protected function finalizeLinux($data) {
+		/* Non-Windows samba printing */
+		$device = "//" . $this -> hostname . "/" . $this -> printerName;
+		if($this -> userName !== null) {
+			$user = ($this -> workgroup != null ? ($this -> workgroup . "\\") : "") . $this -> userName;
+			if($this -> userPassword == null) {
+				// Passworded
+				$command = sprintf("smbclient %s -U %s -c %s -N",
+						escapeshellarg($device),
+						escapeshellarg($user),
+						escapeshellarg("print -"));
 			} else {
-				/* Drop data straight on the printer */
-				file_put_contents($filename,  $this -> printerName);
+				// No password
+				$command = sprintf("smbclient %s %s -U %s -c %s -N",
+						escapeshellarg($device),
+						escapeshellarg($this -> userPassword),
+						escapeshellarg($user),
+						escapeshellarg("print -"));
 			}
 		} else {
-			throw new Exception("Linux printing over Samba not implemented");
-			// smbspool (Linux).
-			$cmd = "";
+			// No authentication information at all
+			$command = sprintf("smbclient %s -c %s -N",
+					escapeshellarg($device),
+					escapeshellarg("print -"));
 		}
+		$retval = $this -> runCommand($command, $outputStr, $errorStr, $data);
+		if($retval != 0) {
+			throw new Exception("Failed to print. Command returned $retval:\n$outputStr");
+		}
+	}
+	
+	protected function finalizeMac($data) {
+		throw new Exception("Mac printing not implemented.");
+	}
+	
+	/**
+	 * Send data to printer -- platform-specific Windows code.
+	 * 
+	 * @param string $data
+	 */
+	protected function finalizeWin($data) {
+		/* Windows-friendly printing of all sorts */
+		if(!$this -> isLocal) {
+			/* Networked printing */
+			$device = "\\\\" . $this -> hostname . "\\" . $this -> printerName;
+			if($this -> userName !== null) {
+				/* Log in */
+				$user = "/user:" . ($this -> workgroup != null ? ($this -> workgroup . "\\") : "") . $this -> userName;
+				if($this -> userPassword == null) {
+					$command = sprintf("net use %s %s",
+							escapeshellarg($device),
+							escapeshellarg($user));
+				} else {
+					$command = sprintf("net use %s %s %s",
+							escapeshellarg($device),
+							escapeshellarg($user),
+							escapeshellarg($this -> userPassword));
+				}
+				$this -> runCommand($command, $outputStr, $errorStr);
+			}
+			/* Final print-out */
+			$filename = tempnam(sys_get_temp_dir(), "escpos");
+			file_put_contents($filename, $data);
+			$this -> runCopy($filename, $device);
+			unlink($filename);
+		} else {
+			/* Drop data straight on the printer */
+			$this -> runWrite($data,  $this -> printerName);
+		}
+	}
+	
+	/**
+	 * @return string Current platform. Separated out for testing purposes.
+	 */
+	protected function getCurrentPlatform() {
+		if(PHP_OS == "WINNT") {
+			return self::PLATFORM_WIN;
+		}
+		if(PHP_OS == "Darwin") {
+			return self::PLATFORM_MAC;
+		}
+		return self::PLATFORM_LINUX;
+	}
+	
+	/**
+	 * Run a command, pass it data, and retrieve its return value, standard output, and standard error.
+	 * 
+	 * @param string $command the command to run.
+	 * @param string $outputStr variable to fill with standard output.
+	 * @param string $errorStr variable to fill with standard error.
+	 * @param string $inputStr text to pass to the command's standard input (optional).
+	 * @return number
+	 */
+	protected function runCommand($command, &$outputStr, &$errorStr, $inputStr = null) {
+		$descriptors = array(
+				0 => array("pipe", "r"),
+				1 => array("pipe", "w"),
+				2 => array("pipe", "w"),
+		);
+		$process = proc_open($command, $descriptors, $fd);
+		if (is_resource($process)) {
+			/* Write to input */
+			if($inputStr !== null) {
+				fwrite($fd[0], $inputStr);
+			}
+			fclose($fd[0]);
+			/* Read stdout */
+			$outputStr = stream_get_contents($fd[1]);
+			fclose($fd[1]);
+			/* Read stderr */
+			$errorStr = stream_get_contents($fd[2]);
+			fclose($fd[2]);
+			/* Finish up */
+			$retval = proc_close($process);
+			return $retval;
+		} else {
+			$errorStr = "Failed to start process '$cmd'.";
+			return -1;
+		}
+	}
+	
+	/**
+	 * Copy a file. Separated out so that nothing is actually printed during test runs.
+	 * 
+	 * @param string $from Source file
+	 * @param string $to Destination file
+	 */
+	protected function runCopy($from, $to) {
+		copy($filename, $device);
+	}
+	
+	/**
+	 * Write data to a file. Separated out so that nothing is actually printed during test runs.
+	 * 
+	 * @param string $data Data to print
+	 * @param string $to Destination file
+	 */
+	protected function runWrite($data, $to) {
+		file_put_contents($data, $to);
 	}
 
 	public function write($data) {
