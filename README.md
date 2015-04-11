@@ -110,7 +110,7 @@ This driver is known to work with the following OS/interface combinations:
 </tr>
 <tr>
 <th>SMB shared</th>
-<td>No</td>
+<td>Yes</td>
 <td>No</td>
 <td>Yes</td>
 </tr>
