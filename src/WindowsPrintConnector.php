@@ -186,16 +186,22 @@ class WindowsPrintConnector implements PrintConnector {
 		if($this -> userName !== null) {
 			$user = ($this -> workgroup != null ? ($this -> workgroup . "\\") : "") . $this -> userName;
 			if($this -> userPassword == null) {
-				// Passworded
+				// No password
 				$command = sprintf("smbclient %s -U %s -c %s -N",
 						escapeshellarg($device),
 						escapeshellarg($user),
 						escapeshellarg("print -"));
+				$redactedCommand = $command;
 			} else {
-				// No password
-				$command = sprintf("smbclient %s %s -U %s -c %s -N",
+				// With password
+				$command = sprintf("smbclient %s %s -U %s -c %s",
 						escapeshellarg($device),
 						escapeshellarg($this -> userPassword),
+						escapeshellarg($user),
+						escapeshellarg("print -"));
+				$redactedCommand = sprintf("smbclient %s %s -U %s -c %s",
+						escapeshellarg($device),
+						escapeshellarg("*****"),
 						escapeshellarg($user),
 						escapeshellarg("print -"));
 			}
@@ -204,10 +210,11 @@ class WindowsPrintConnector implements PrintConnector {
 			$command = sprintf("smbclient %s -c %s -N",
 					escapeshellarg($device),
 					escapeshellarg("print -"));
+			$redactedCommand = $command;
 		}
 		$retval = $this -> runCommand($command, $outputStr, $errorStr, $data);
 		if($retval != 0) {
-			throw new Exception("Failed to print. Command returned $retval:\n$outputStr");
+			throw new Exception("Failed to print. Command \"$redactedCommand\" failed with exit code $retval: " . trim($outputStr));
 		}
 	}
 	
@@ -232,13 +239,21 @@ class WindowsPrintConnector implements PrintConnector {
 					$command = sprintf("net use %s %s",
 							escapeshellarg($device),
 							escapeshellarg($user));
+					$redactedCommand = $command;
 				} else {
 					$command = sprintf("net use %s %s %s",
 							escapeshellarg($device),
 							escapeshellarg($user),
 							escapeshellarg($this -> userPassword));
+					$redactedCommand = sprintf("net use %s %s %s",
+							escapeshellarg($device),
+							escapeshellarg($user),
+							escapeshellarg("*****"));
 				}
-				$this -> runCommand($command, $outputStr, $errorStr);
+				$retval = $this -> runCommand($command, $outputStr, $errorStr);
+				if($retval != 0) {
+					throw new Exception("Failed to print. Command \"$redactedCommand\" failed with exit code $retval: " . trim($outputStr));
+				}
 			}
 			/* Final print-out */
 			$filename = tempnam(sys_get_temp_dir(), "escpos");

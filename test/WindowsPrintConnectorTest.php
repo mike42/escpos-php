@@ -188,7 +188,7 @@ class WindowsPrintConnectorTest extends PHPUnit_Framework_TestCase {
 		$connector = $this -> getMockConnector("smb://bob:secret@example-pc/Printer", WindowsPrintConnector::PLATFORM_LINUX);
 		$connector -> expects($this -> once())
 				-> method('runCommand')
-				-> with($this -> equalTo('smbclient \'//example-pc/Printer\' \'secret\' -U \'bob\' -c \'print -\' -N'));
+				-> with($this -> equalTo('smbclient \'//example-pc/Printer\' \'secret\' -U \'bob\' -c \'print -\''));
 		$connector -> expects($this -> exactly(0))
 				-> method('runCopy');
 		$connector -> expects($this -> exactly(0))
