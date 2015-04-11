@@ -252,7 +252,7 @@ class WindowsPrintConnector implements PrintConnector {
 				}
 				$retval = $this -> runCommand($command, $outputStr, $errorStr);
 				if($retval != 0) {
-					throw new Exception("Failed to print. Command \"$redactedCommand\" failed with exit code $retval: " . trim($outputStr));
+					throw new Exception("Failed to print. Command \"$redactedCommand\" failed with exit code $retval: " . trim($errorStr));
 				}
 			}
 			/* Final print-out */
@@ -323,7 +323,7 @@ class WindowsPrintConnector implements PrintConnector {
 	 * @param string $to Destination file
 	 */
 	protected function runCopy($from, $to) {
-		copy($filename, $device);
+		copy($from, $to);
 	}
 	
 	/**
