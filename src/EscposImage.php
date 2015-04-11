@@ -84,6 +84,9 @@ class EscposImage {
 		$this -> imgRasterData = null;
 		
 		/* Load up using GD */
+		if(!function_exists(imagecreatefrompng)) {
+			throw new Exception("Images are not supported on your PHP. Please install the gd extension.");
+		}
 		$im = imagecreatefrompng($imgPath);
 		if(!$im) {
 			throw new Exception("Failed to load image '$imgPath'. Must be a PNG file.");

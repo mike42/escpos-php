@@ -2,7 +2,13 @@
 require_once(dirname(__FILE__) . "/../Escpos.php");
 $printer = new Escpos();
 compactCharTable($printer);
+$printer -> close();
 
+/*
+ * Note: The remainder of this  script was created for demonstrating
+ * an i18n idea, which is not yet production-ready.
+ */
+exit(0);
 $tables = array(
 	Escpos::CP_437,
 	Escpos::CP_720,

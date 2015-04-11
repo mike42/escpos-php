@@ -121,35 +121,45 @@ for($i = 0; $i < count($barcodes); $i++) {
 $printer -> cut();
 
 /* Graphics */
-$logo = new EscposImage("images/escpos-php.png");
-$imgModes = array(
-	Escpos::IMG_DEFAULT,
-	Escpos::IMG_DOUBLE_WIDTH,
-	Escpos::IMG_DOUBLE_HEIGHT,
-	Escpos::IMG_DOUBLE_WIDTH | 	Escpos::IMG_DOUBLE_HEIGHT
-);
-foreach($imgModes as $mode) {
-	$printer -> graphics($logo, $mode);
+try {
+	$logo = new EscposImage("images/escpos-php.png");
+	$imgModes = array(
+		Escpos::IMG_DEFAULT,
+		Escpos::IMG_DOUBLE_WIDTH,
+		Escpos::IMG_DOUBLE_HEIGHT,
+		Escpos::IMG_DOUBLE_WIDTH | 	Escpos::IMG_DOUBLE_HEIGHT
+	);
+	foreach($imgModes as $mode) {
+		$printer -> graphics($logo, $mode);
+	}
+} catch(Exception $e) {
+	/* Images not supported on your PHP, or image file not found */
+	$printer -> text($e -> getMessage() . "\n");
 }
 $printer -> cut();
 
-
 /* Bit image */
-$logo = new EscposImage("images/escpos-php.png");
-$imgModes = array(
-	Escpos::IMG_DEFAULT,
-	Escpos::IMG_DOUBLE_WIDTH,
-	Escpos::IMG_DOUBLE_HEIGHT,
-	Escpos::IMG_DOUBLE_WIDTH | 	Escpos::IMG_DOUBLE_HEIGHT
-);
-foreach($imgModes as $mode) {
-	$printer -> bitImage($logo, $mode);
+try {
+	$logo = new EscposImage("images/escpos-php.png");
+	$imgModes = array(
+		Escpos::IMG_DEFAULT,
+		Escpos::IMG_DOUBLE_WIDTH,
+		Escpos::IMG_DOUBLE_HEIGHT,
+		Escpos::IMG_DOUBLE_WIDTH | 	Escpos::IMG_DOUBLE_HEIGHT
+	);
+	foreach($imgModes as $mode) {
+		$printer -> bitImage($logo, $mode);
+	}
+} catch(Exception $e) {
+	/* Images not supported on your PHP, or image file not found */
+	$printer -> text($e -> getMessage() . "\n");
 }
 $printer -> cut();
 
 /* Pulse */
 $printer -> pulse();
 
-/* Always close the printer */
+/* Always close the printer! On some PrintConnectors, no actual
+ * data is sent until the printer is closed. */
 $printer -> close();
 ?>
