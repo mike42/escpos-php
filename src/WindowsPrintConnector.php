@@ -1,21 +1,82 @@
 <?php
+/**
+ * escpos-php, a Thermal receipt printer library, for use with
+ * ESC/POS compatible printers.
+ *
+ * Copyright (c) 2014-2015 Michael Billington <michael.billington@gmail.com>,
+ * 	incorporating modifications by:
+ *  - Roni Saha <roni.cse@gmail.com>
+ *  - Gergely Radics <gerifield@ustream.tv>
+ *  - Warren Doyle <w.doyle@fuelled.co>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * 
+ * Connector for sending print jobs to
+ * - local ports on windows (COM1, LPT1, etc)
+ * - shared (SMB) printers from any platform (\\server\foo)
+ * For USB printers or other ports, the trick is to share the printer with a generic text driver, then access it locally.
+ */
 class WindowsPrintConnector implements PrintConnector {
+	/**
+	 * @var array Accumulated lines of output for later use.
+	 */
 	private $buffer;
-	
-	private $printerName;
 
+	/**
+	 * @var string The hostname of the target machine, or null if this is a local connection.
+	 */
 	private $hostname;
 
+	/**
+	 * @var boolean True if a port is being used directly (must be Windows), false if network shares will be used.
+	 */
 	private $isLocal;
 
+	/**
+	 * @var boolean True if this script is running on Windows, false otherwise.
+	 */
 	private $isWindows;
-	
+
+	/**
+	 * @var string The name of the target printer (eg "Foo Printer") or port ("COM1", "LPT1").
+	 */
+	private $printerName;
+
+	/**
+	 * @var string Valid local ports.
+	 */
 	const REGEX_LOCAL = "/^(LPT\d|COM\d)$/";
-	
+
+	/**
+	 * @var string Valid printer name.
+	 */
 	const REGEX_PRINTERNAME = "/^(\w+)(\s\w*)*$/";
 
+	/**
+	 * @var string Valid smb:// URI containing hostname & printer name only.
+	 */
 	const REGEX_SMB = "/^smb:\/\/(\w*)/";
-	
+
+	/**
+	 * @param string $dest
+	 * @throws BadMethodCallException
+	 */
 	public function __construct($dest) {
 		$this -> isWindows = (PHP_OS == "WINNT");
 		$this -> isLocal = false;
@@ -46,9 +107,11 @@ class WindowsPrintConnector implements PrintConnector {
 		}
 		$this -> buffer = array();
 	}
-	
-	public function write($data) {
-		$this -> buffer[] = $data;
+
+	public function __destruct() {
+		if($this -> buffer !== null) {
+			trigger_error("Print connector was not finalized. Did you forget to close the printer?", E_USER_NOTICE);
+		}
 	}
 	
 	public function finalize() {
@@ -73,10 +136,8 @@ class WindowsPrintConnector implements PrintConnector {
 			$cmd = "";
 		}
 	}
-	
-	public function __destruct() {
-		if($this -> buffer !== null) {
-			trigger_error("Print connector was not finalized. Did you forget to close the printer?", E_USER_NOTICE);
-		}
+
+	public function write($data) {
+		$this -> buffer[] = $data;
 	}
 }

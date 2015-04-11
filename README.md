@@ -6,9 +6,7 @@ The library was developed to add drop-in support for receipt printing to any PHP
 
 Basic usage
 -----------
-The library should be initialised with a file pointer to the printer. For a networked printer, this can be opened via [fsockopen()](http://www.php.net/manual/en/function.fsockopen.php). For a local printer, use [fopen()](http://www.php.net/manual/en/function.fopen.php) to open the printer's device file. If no file pointer is specified, then standard output is used.
-
-A "hello world" receipt can be printed easily (Call this `hello-world.php`):
+A "hello world" receipt can be generated easily (Call this `hello-world.php`):
 ```php
 <?php
 require_once(dirname(__FILE__) . "/Escpos.php");
@@ -17,15 +15,19 @@ $printer -> text("Hello World!\n");
 $printer -> cut();
 $printer -> close();
 ```
-This would be executed as:
+This would be printed as:
 ```
 # Networked printer
 php hello-world.php | nc 10.x.x.x. 9100
 # Local printer
 php hello-world.php > /dev/...
+# Windows local printer
+php hello-world.php > foo.txt
+print /D:... foo.txt
+del foo.txt
 ```
 
-From your web app, you would pass the output directly to a socket:
+From your web app, you could pass the output directly to a socket if your printer is networked:
 ```php
 <?php
 require_once(dirname(__FILE__) . "/Escpos.php");
@@ -47,9 +49,17 @@ $printer -> cut();
 $printer -> close();
 ```
 
+### Basic workflow
+The library should be initialised with a PrintConnector, which will pass on the data to your printer.
+Use the table under "Compatibility", or the examples below to choose the appropriate connector for your
+platform & interface. If no connector is specified, then standard output is used.
+
+When you have finished using the print object, call `close()` to finalize any data transfers.
+
+### Tips & examples
 On Linux, your printer device file will be somewhere like `/dev/lp0` (parallel), `/dev/usb/lp1` (USB), `/dev/ttyUSB0` (USB-Serial), `/dev/ttyS0` (serial).
 
-On Windows, the device files will be along the lines of `LPT1` (parallel), `COM1` (serial).
+On Windows, the device files will be along the lines of `LPT1` (parallel), `COM1` (serial). Use the WindowsPrintConnector () to tap into system printing on Windows (eg. [Windows USB](https://github.com/mike42/escpos-php/tree/master/example/interface/windows-usb.php)).
 
 A complete real-world receipt can be found in the code of [Auth](https://github.com/mike42/Auth) in [ReceiptPrinter.php](https://github.com/mike42/Auth/blob/master/lib/misc/ReceiptPrinter.php). It includes justification, boldness, and a barcode.
 
@@ -99,9 +109,9 @@ This driver is known to work with the following OS/interface combinations:
 <td>Yes</td>
 </tr>
 <tr>
-<th>SMB</th>
-<td>Not tested</td>
-<td>Not tested</td>
+<th>SMB shared</th>
+<td>No</td>
+<td>No</td>
 <td>Yes</td>
 </tr>
 </table>
@@ -116,6 +126,11 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Epson TM-T20
 - Epson TM-T70II
 - EPOS TEP 220M
+- Okipos 80 Plus III
+- Xprinter XP-Q800
+- Zijang NT-58H
+- Zijang ZJ-5870
+- Zijang ZJ-5890T
 
 If you use any other printer with this code, please let me know so I can add it to the list.
 
