@@ -110,9 +110,9 @@ This driver is known to work with the following OS/interface combinations:
 </tr>
 <tr>
 <th>SMB shared</th>
-<td>Yes</td>
+<td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/smb.php">Yes</a></td>
 <td>No</td>
-<td>Yes</td>
+<td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/smb.php">Yes</a></td>
 </tr>
 </table>
 

@@ -11,9 +11,9 @@ require_once(dirname(__FILE__) . "/../../Escpos.php");
  * Troubleshooting: Fire up a command prompt, and ensure that (if your printer is shared as
  * "Receipt Printer), the following commands work:
  * 
- *		echo "Hello World" > testfile
- *		print /D:"\\%COMPUTERNAME%\Receipt Printer" testfile
- *		del testfile
+ * 	echo "Hello World" > testfile
+ * 	copy testfile "\\%COMPUTERNAME%\Receipt Printer"
+ * 	del testfile
  */
 try {
 	// Enter the share name for your USB printer here

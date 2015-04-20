@@ -49,10 +49,15 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 		$outp = $this -> runExample("interface/linux-usb.php");
 		$this -> outpTest($outp, "interface-linux-usb.bin");
 	}
-
+	
 	public function testInterfaceWindowsUSB() {
 		// Output varies between platforms, not checking.
 		$outp = $this -> runExample("interface/windows-usb.php");
+	}
+	
+	public function testInterfaceSMB() {
+		// Output varies between platforms, not checking.
+		$outp = $this -> runExample("interface/smb.php");
 	}
 	
 	private function runExample($fn) {
