@@ -60,6 +60,11 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 		$outp = $this -> runExample("interface/smb.php");
 	}
 	
+	public function testInterfaceWindowsLPT() {
+		// Output varies between platforms, not checking.
+		$outp = $this -> runExample("interface/windows-lpt.php");
+	}
+	
 	private function runExample($fn) {
 		// Change directory and check script
 		chdir($this -> exampleDir);

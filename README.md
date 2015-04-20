@@ -104,7 +104,7 @@ This driver is known to work with the following OS/interface combinations:
 </tr>
 <tr>
 <th>Parallel</th>
-<td>Yes</td>
+<td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/windows-lpt.php">Yes</a></td>
 <td>Not tested</td>
 <td>Yes</td>
 </tr>
