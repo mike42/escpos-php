@@ -185,8 +185,12 @@ class Escpos {
 	 * @param PrintConnector $connector The PrintConnector to send data to. If not set, output is sent to standard output.
 	 */
 	function __construct(PrintConnector $connector = null) {
-		if(is_null($connector) && php_sapi_name() == 'cli') {
-			$connector = new FilePrintConnector("php://stdout");
+		if(is_null($connector)) {
+			if(php_sapi_name() == 'cli') {
+				$connector = new FilePrintConnector("php://stdout");
+			} else {
+				throw new InvalidArgumentException("Argument passed to Escpos::__construct() must implement interface PrintConnector, null given.");
+			}
 		}
 		$this -> buffer = new EscposPrintBuffer($this, $connector);
 		$this -> initialize();
@@ -299,7 +303,7 @@ class Escpos {
 	 */
 	private function graphicsSendData($m, $fn, $data = '') {
 		if(strlen($m) != 1 || strlen($fn) != 1) {
-			throw new IllegalArgumentException("graphicsSendData: m and fn must be one character each.");
+			throw new InvalidArgumentException("graphicsSendData: m and fn must be one character each.");
 		}
 		$header = $this -> intLowHigh(strlen($data) + 2, 2);
 		$this -> buffer -> write(self::GS . "(L" . $header . $m . $fn . $data);
