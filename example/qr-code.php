@@ -66,7 +66,7 @@ $models = array(
 	Escpos::QR_MICRO => "Micro QR code\n(not supported on all printers)");
 foreach($models as $model => $name) {
 	$printer -> qrcode($testStr, Escpos::QR_ECLEVEL_L, 3, $model);
-	$printer -> text("$label\n");
+	$printer -> text("$name\n");
 	$printer -> feed();
 }
 
