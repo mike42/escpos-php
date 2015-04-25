@@ -74,7 +74,7 @@ class Escpos {
 	 */
 // TODO not yet used, see issue #9
 // 	const CHARSET_AUTO = -1;
-// 	const CHARSET_CP437 = 0;
+ 	const CHARSET_CP437 = 0;
 // 	const CHARSET_KATAKANA = 1;
 // 	const CHARSET_CP850 = 2;
 // 	const CHARSET_CP860 = 3;
@@ -329,7 +329,14 @@ class Escpos {
 		$this -> buffer -> write(self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
 	}
 	
-	function selectCharacterTable($table = self::CP_437) {
+	
+	/**
+	 * Switch character table (code page) manually. Used in conjunction with textRaw() to
+	 * print special characters which can't be encoded automatically.
+	 * 
+	 * @param int $table The table to select. Available code tables are model-specific.
+	 */
+	function selectCharacterTable($table = self::CHARSET_CP437) {
 		self::validateInteger($table, 0, 255, __FUNCTION__);
 		$this -> buffer -> write(self::ESC . "t" . chr($table));
 	}
