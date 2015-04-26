@@ -228,7 +228,7 @@ Parameters:
 - `int $on_ms`: pulse ON time, in milliseconds.
 - `int $off_ms`: pulse OFF time, in milliseconds.
 
-### qrcode($content, $ec, $size, $model)
+### qrCode($content, $ec, $size, $model)
 Print the given data as a QR code on the printer.
 
 - `string $content`: The content of the code. Numeric data will be more efficiently compacted.

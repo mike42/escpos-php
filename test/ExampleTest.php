@@ -40,6 +40,11 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 		$this -> outpTest($outp, "receipt-with-logo.bin");
 	}
 	
+	public function testQrCode() {
+		$outp = $this -> runExample("qr-code.php");
+		$this -> outpTest($outp, "qr-code.bin");
+	}
+	
 	public function testInterfaceEthernet() {
 		$outp = $this -> runExample("interface/ethernet.php");
 		$this -> outpTest($outp, "interface-ethernet.bin");

@@ -402,7 +402,6 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> printer -> graphics($img);
 		$this -> checkOutput("\x1b@\x1d(L\x0b\x000p0\x01\x011\x01\x00\x01\x00\x80\x1d(L\x02\x0002");
 	}
-	
 		
 	public function testGraphicsBoth() {
 		$img = new EscposImage(dirname(__FILE__)."/resources/black_white.png");
@@ -415,7 +414,39 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> printer -> graphics($img);
 		$this -> checkOutput("\x1b@\x1d(L\x0c\x000p0\x01\x011\x02\x00\x02\x00\xc0\x00\x1d(L\x02\x0002");
 	}
+
+	/* QR code */
+	public function testQRCodeDefaults() {
+		// Test will fail if default values change
+		$this -> printer -> qrCode("1234");
+		$this -> checkOutput("\x1b@\x1d(k\x04\x001A2\x00\x1d(k\x03\x001C\x03\x1d(k\x03\x001E0\x1d(k\x07\x001P01234\x1d(k\x03\x001Q0");
+	}
 	
+	public function testQRCodeDefaultsAreCorrect() {
+		// Below tests assume that defaults are as written here (output string should be same as above)
+		$this -> printer -> qrCode("1234", Escpos::QR_ECLEVEL_L, 3, Escpos::QR_MODEL_2);
+		$this -> checkOutput("\x1b@\x1d(k\x04\x001A2\x00\x1d(k\x03\x001C\x03\x1d(k\x03\x001E0\x1d(k\x07\x001P01234\x1d(k\x03\x001Q0");
+	}
+	
+	public function testQRCodeEmpty() {
+		$this -> printer -> qrCode('');
+		$this -> checkOutput("\x1b@"); // No commands actually sent
+	}
+	
+	public function testQRCodeChangeEC() {
+		$this -> printer -> qrCode("1234", Escpos::QR_ECLEVEL_H);
+		$this -> checkOutput("\x1b@\x1d(k\x04\x001A2\x00\x1d(k\x03\x001C\x03\x1d(k\x03\x001E3\x1d(k\x07\x001P01234\x1d(k\x03\x001Q0");
+	}
+	
+	public function testQRCodeChangeSize() {
+		$this -> printer -> qrCode("1234", Escpos::QR_ECLEVEL_L, 7);
+		$this -> checkOutput("\x1b@\x1d(k\x04\x001A2\x00\x1d(k\x03\x001C\x07\x1d(k\x03\x001E0\x1d(k\x07\x001P01234\x1d(k\x03\x001Q0");
+	}
+	
+	public function testQRCodeChangeModel() {
+		$this -> printer -> qrCode("1234", Escpos::QR_ECLEVEL_L, 3, Escpos::QR_MODEL_1);
+		$this -> checkOutput("\x1b@\x1d(k\x04\x001A1\x00\x1d(k\x03\x001C\x03\x1d(k\x03\x001E0\x1d(k\x07\x001P01234\x1d(k\x03\x001Q0");
+	}
 }
 
 /*

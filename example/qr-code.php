@@ -1,18 +1,18 @@
 <?php
-/* Demonstration of available options on the qrcode() command */
+/* Demonstration of available options on the qrCode() command */
 require_once(dirname(__FILE__) . "/../Escpos.php");
 $printer = new Escpos();
 
 // Most simple example
 title($printer, "QR code demo\n");
 $testStr = "Testing 123";
-$printer -> qrcode($testStr);
+$printer -> qrCode($testStr);
 $printer -> text("Most simple example\n");
 $printer -> feed();
 
 // Demo that alignment is the same as text
 $printer -> setJustification(Escpos::JUSTIFY_CENTER);
-$printer -> qrcode($testStr);
+$printer -> qrCode($testStr);
 $printer -> text("Same example, centred\n");
 $printer -> setJustification();
 $printer -> feed();
@@ -24,7 +24,7 @@ $test = array(
 	"Alphanumeric" => "abcdefghijklmnopqrstuvwxyzabcdefghijklmn",
 	"Binary"       => str_repeat("\0", 40));
 foreach($test as $type => $data) {
-	$printer -> qrcode($data);
+	$printer -> qrCode($data);
 	$printer -> text("$type\n");
 	$printer -> feed();
 }
@@ -37,7 +37,7 @@ $ec = array(
 	Escpos::QR_ECLEVEL_Q => "Q",
 	Escpos::QR_ECLEVEL_H => "H");
 foreach($ec as $level => $name) {
-	$printer -> qrcode($testStr, $level);
+	$printer -> qrCode($testStr, $level);
 	$printer -> text("Error correction $name\n");
 	$printer -> feed();
 }
@@ -53,7 +53,7 @@ $sizes = array(
 	10 => "",
 	16 => "(maximum)");
 foreach($sizes as $size => $label) {
-	$printer -> qrcode($testStr, Escpos::QR_ECLEVEL_L, $size);
+	$printer -> qrCode($testStr, Escpos::QR_ECLEVEL_L, $size);
 	$printer -> text("Pixel size $size $label\n");
 	$printer -> feed();
 }
@@ -65,7 +65,7 @@ $models = array(
 	Escpos::QR_MODEL_2 => "QR Model 2 (default)",
 	Escpos::QR_MICRO => "Micro QR code\n(not supported on all printers)");
 foreach($models as $model => $name) {
-	$printer -> qrcode($testStr, Escpos::QR_ECLEVEL_L, 3, $model);
+	$printer -> qrCode($testStr, Escpos::QR_ECLEVEL_L, 3, $model);
 	$printer -> text("$name\n");
 	$printer -> feed();
 }

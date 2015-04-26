@@ -334,7 +334,7 @@ class Escpos {
 	 * @param int $size Pixel size to use. Must be 1-16 (default 3)
 	 * @param int $model QR code model to use. Must be one of Escpos::QR_MODEL_1, Escpos::QR_MODEL_2 (default) or Escpos::QR_MICRO (not supported by all printers).
 	 */
-	function qrcode($content, $ec = self::QR_ECLEVEL_L, $size = 3, $model = self::QR_MODEL_2) {
+	function qrCode($content, $ec = self::QR_ECLEVEL_L, $size = 3, $model = self::QR_MODEL_2) {
 		self::validateString($content, __FUNCTION__);
 		self::validateInteger($ec, 0, 3, __FUNCTION__);
 		self::validateInteger($size, 1, 16, __FUNCTION__);
