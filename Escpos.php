@@ -569,7 +569,7 @@ class Escpos {
 	 * @param boolean $test the input to test
 	 * @param string $source the name of the function calling this
 	 */
-	private static function validateBoolean($test, $source) {
+	protected static function validateBoolean($test, $source) {
 		if(!($test === true || $test === false)) {
 			throw new InvalidArgumentException("Argument to $source must be a boolean");
 		}
@@ -583,7 +583,7 @@ class Escpos {
 	 * @param int $max the maximum allowable value (inclusive)
 	 * @param string $source the name of the function calling this
 	 */
-	private static function validateInteger($test, $min, $max, $source) {
+	protected static function validateInteger($test, $min, $max, $source) {
 		if(!is_integer($test) || $test < $min || $test > $max) {
 			throw new InvalidArgumentException("Argument to $source must be a number between $min and $max, but $test was given.");
 		}
@@ -595,7 +595,7 @@ class Escpos {
 	 * @param string $test the input to test
 	 * @param string $source the name of the function calling this
 	 */
-	private static function validateString($test, $source) {
+	protected static function validateString($test, $source) {
 		if (is_object($test) && !method_exists($test, '__toString')) {
 			throw new InvalidArgumentException("Argument to $source must be a string");
 		}
