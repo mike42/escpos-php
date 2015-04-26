@@ -228,6 +228,13 @@ Parameters:
 - `int $on_ms`: pulse ON time, in milliseconds.
 - `int $off_ms`: pulse OFF time, in milliseconds.
 
+### qrCode($content, $ec, $size, $model)
+Print the given data as a QR code on the printer.
+
+- `string $content`: The content of the code. Numeric data will be more efficiently compacted.
+- `int $ec` Error-correction level to use. One of `Escpos::QR_ECLEVEL_L` (default), `Escpos::QR_ECLEVEL_M`, `Escpos::QR_ECLEVEL_Q` or `Escpos::QR_ECLEVEL_H`. Higher error correction results in a less compact code.
+- `int $size`: Pixel size to use. Must be 1-16 (default 3)
+- `int $model`: QR code model to use. Must be one of `Escpos::QR_MODEL_1`, `Escpos::QR_MODEL_2` (default) or `Escpos::QR_MICRO` (not supported by all printers).
 
 ### selectPrintMode($mode)
 Select print mode(s).

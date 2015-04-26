@@ -74,7 +74,7 @@ class Escpos {
 	 */
 // TODO not yet used, see issue #9
 // 	const CHARSET_AUTO = -1;
-// 	const CHARSET_CP437 = 0;
+ 	const CHARSET_CP437 = 0;
 // 	const CHARSET_KATAKANA = 1;
 // 	const CHARSET_CP850 = 2;
 // 	const CHARSET_CP860 = 3;
@@ -163,6 +163,17 @@ class Escpos {
 	const MODE_DOUBLE_HEIGHT = 16;
 	const MODE_DOUBLE_WIDTH = 32;
 	const MODE_UNDERLINE = 128;
+	
+	/* QR code error correction levels */
+	const QR_ECLEVEL_L = 0;
+	const QR_ECLEVEL_M = 1;
+	const QR_ECLEVEL_Q = 2;
+	const QR_ECLEVEL_H = 3;
+	
+	/* QR code models */
+	const QR_MODEL_1 = 1;
+	const QR_MODEL_2 = 2;
+	const QR_MICRO = 3;
 	
 	/* Underline */
 	const UNDERLINE_NONE = 0;
@@ -290,23 +301,8 @@ class Escpos {
 		$xm = (($size & self::IMG_DOUBLE_WIDTH) == self::IMG_DOUBLE_WIDTH) ? chr(2) : chr(1);
 		$ym = (($size & self::IMG_DOUBLE_HEIGHT) == self::IMG_DOUBLE_HEIGHT) ? chr(2) : chr(1);
 		$header = $tone . $xm . $ym . $colors . $imgHeader;
-		$this -> graphicsSendData('0', 'p', $header . $img -> toRasterFormat());
-		$this -> graphicsSendData('0', '2');
-	}
-	
-	/**
-	 * Wrapper for GS ( L, to set correct data length.
-	 * 
-	 * @param int $m
-	 * @param int $fn
-	 * @param string $data
-	 */
-	private function graphicsSendData($m, $fn, $data = '') {
-		if(strlen($m) != 1 || strlen($fn) != 1) {
-			throw new InvalidArgumentException("graphicsSendData: m and fn must be one character each.");
-		}
-		$header = $this -> intLowHigh(strlen($data) + 2, 2);
-		$this -> buffer -> write(self::GS . "(L" . $header . $m . $fn . $data);
+		$this -> wrapperSendGraphicsData('0', 'p', $header . $img -> toRasterFormat());
+		$this -> wrapperSendGraphicsData('0', '2');
 	}
 	
 	/**
@@ -329,7 +325,42 @@ class Escpos {
 		$this -> buffer -> write(self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
 	}
 	
-	function selectCharacterTable($table = self::CP_437) {
+	
+	/**
+	 * Print the given data as a QR code on the printer.
+	 * 
+	 * @param string $content The content of the code. Numeric data will be more efficiently compacted.
+	 * @param int $ec Error-correction level to use. One of Escpos::QR_ECLEVEL_L (default), Escpos::QR_ECLEVEL_M, Escpos::QR_ECLEVEL_Q or Escpos::QR_ECLEVEL_H. Higher error correction results in a less compact code.
+	 * @param int $size Pixel size to use. Must be 1-16 (default 3)
+	 * @param int $model QR code model to use. Must be one of Escpos::QR_MODEL_1, Escpos::QR_MODEL_2 (default) or Escpos::QR_MICRO (not supported by all printers).
+	 */
+	function qrCode($content, $ec = self::QR_ECLEVEL_L, $size = 3, $model = self::QR_MODEL_2) {
+		self::validateString($content, __FUNCTION__);
+		self::validateInteger($ec, 0, 3, __FUNCTION__);
+		self::validateInteger($size, 1, 16, __FUNCTION__);
+		self::validateInteger($model, 1, 3, __FUNCTION__);
+		if($content == "") {
+			return;
+		}
+		$cn = '1'; // Code type for QR code
+		// Select model: 1, 2 or micro.
+		$this -> wrapperSend2dCodeData(chr(65), $cn, chr(48 + $model) . chr(0));
+		// Set dot size.
+		$this -> wrapperSend2dCodeData(chr(67), $cn, chr($size));
+		// Set error correction level: L, M, Q, or H
+		$this -> wrapperSend2dCodeData(chr(69), $cn, chr(48 + $ec));
+		// Send content & print
+		$this -> wrapperSend2dCodeData(chr(80), $cn, $content, '0');
+		$this -> wrapperSend2dCodeData(chr(81), $cn, '', '0');
+	}
+	
+	/**
+	 * Switch character table (code page) manually. Used in conjunction with textRaw() to
+	 * print special characters which can't be encoded automatically.
+	 * 
+	 * @param int $table The table to select. Available code tables are model-specific.
+	 */
+	function selectCharacterTable($table = self::CHARSET_CP437) {
 		self::validateInteger($table, 0, 255, __FUNCTION__);
 		$this -> buffer -> write(self::ESC . "t" . chr($table));
 	}
@@ -460,6 +491,39 @@ class Escpos {
 	function textRaw($str = "") {
 		self::validateString($str, __FUNCTION__);
 		$this -> buffer -> writeTextRaw((string)$str);
+	}
+	
+	/**
+	 * Wrapper for GS ( k, to calculate and send correct data length.
+	 * 
+	 * @param string $fn Function to use
+	 * @param string $cn Output code type. Affects available data
+	 * @param string $data Data to send.
+	 * @param string $m Modifier/variant for function. Often '0' where used.
+	 * @throws InvalidArgumentException Where the input lengths are bad.
+	 */
+	private function wrapperSend2dCodeData($fn, $cn, $data = '', $m = '') {
+		if(strlen($m) > 1 || strlen($cn) != 1 || strlen($fn) != 1) {
+			throw new InvalidArgumentException("wrapperSend2dCodeData: cn and fn must be one character each.");
+		}
+		$header = $this -> intLowHigh(strlen($data) + strlen($m) + 2, 2);
+		$this -> buffer -> write(self::GS . "(k" . $header . $cn . $fn . $m . $data);
+	}
+	
+	/**
+	 * Wrapper for GS ( L, to calculate and send correct data length.
+	 *
+	 * @param string $m Modifier/variant for function. Usually '0'.
+	 * @param string $fn Function number to use, as character.
+	 * @param string $data Data to send.
+	 * @throws InvalidArgumentException Where the input lengths are bad.
+	 */
+	private function wrapperSendGraphicsData($m, $fn, $data = '') {
+		if(strlen($m) != 1 || strlen($fn) != 1) {
+			throw new InvalidArgumentException("wrapperSendGraphicsData: m and fn must be one character each.");
+		}
+		$header = $this -> intLowHigh(strlen($data) + 2, 2);
+		$this -> buffer -> write(self::GS . "(L" . $header . $m . $fn . $data);
 	}
 	
 	/**
