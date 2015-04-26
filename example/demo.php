@@ -57,11 +57,10 @@ $printer -> setUnderline(0); // Reset
 $printer -> cut();
 
 /* Cuts */
-for($i = 0; $i < 5; $i++) {
-	$printer -> cut(Escpos::CUT_PARTIAL);
-	$printer -> cut(Escpos::CUT_FULL);
-}
-$printer -> cut();
+$printer -> text("Partial cut\n(not available on all printers)\n");
+$printer -> cut(Escpos::CUT_PARTIAL);
+$printer -> text("Full cut\n");
+$printer -> cut(Escpos::CUT_FULL);
 
 /* Emphasis */
 for($i = 0; $i < 2; $i++) {
@@ -120,14 +119,14 @@ for($i = 0; $i < count($barcodes); $i++) {
 }
 $printer -> cut();
 
-/* Graphics */
+/* Graphics - this demo will not work on some non-Epson printers */
 try {
 	$logo = new EscposImage("images/escpos-php.png");
 	$imgModes = array(
 		Escpos::IMG_DEFAULT,
 		Escpos::IMG_DOUBLE_WIDTH,
 		Escpos::IMG_DOUBLE_HEIGHT,
-		Escpos::IMG_DOUBLE_WIDTH | 	Escpos::IMG_DOUBLE_HEIGHT
+		Escpos::IMG_DOUBLE_WIDTH | Escpos::IMG_DOUBLE_HEIGHT
 	);
 	foreach($imgModes as $mode) {
 		$printer -> graphics($logo, $mode);
@@ -145,7 +144,7 @@ try {
 		Escpos::IMG_DEFAULT,
 		Escpos::IMG_DOUBLE_WIDTH,
 		Escpos::IMG_DOUBLE_HEIGHT,
-		Escpos::IMG_DOUBLE_WIDTH | 	Escpos::IMG_DOUBLE_HEIGHT
+		Escpos::IMG_DOUBLE_WIDTH | Escpos::IMG_DOUBLE_HEIGHT
 	);
 	foreach($imgModes as $mode) {
 		$printer -> bitImage($logo, $mode);
@@ -153,6 +152,19 @@ try {
 } catch(Exception $e) {
 	/* Images not supported on your PHP, or image file not found */
 	$printer -> text($e -> getMessage() . "\n");
+}
+$printer -> cut();
+
+/* QR Code - see also the more in-depth demo at qr-code.php */
+$testStr = "Testing 123";
+$models = array(
+	Escpos::QR_MODEL_1 => "QR Model 1",
+	Escpos::QR_MODEL_2 => "QR Model 2 (default)",
+	Escpos::QR_MICRO => "Micro QR code\n(not supported on all printers)");
+foreach($models as $model => $name) {
+	$printer -> qrCode($testStr, Escpos::QR_ECLEVEL_L, 3, $model);
+	$printer -> text("$name\n");
+	$printer -> feed();
 }
 $printer -> cut();
 
