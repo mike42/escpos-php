@@ -81,10 +81,10 @@ class RTLBuffer {
 		$curEncoding = "";
 		$chunks = array();
 		// Read string order and split into directional and encoding chunks
-		$len = mb_strlen($str);
+		$len = mb_strlen($str, 'UTF8');
 
 		for($i = 0; $i < $len; $i++) {
-			$c = mb_substr($str, $i, 1);
+			$c = mb_substr($str, $i, 1, 'UTF8');
 			if(defined("RTL_DEBUG")) {
 				echo "- '$c'\n";
 			}
@@ -182,9 +182,9 @@ class RTLChunk {
 
 	public function canEncodeAs(array $map) {
 		$str = $this -> text;
-		$len = mb_strlen($str);
+		$len = mb_strlen($str, 'UTF8');
 		for($i = 0; $i < $len; $i++) {
-			$utf8 = mb_substr($str, $i, 1);
+			$utf8 = mb_substr($str, $i, 1, 'UTF8');
 			if(!isset($map[$utf8])) {
 				return false;
 			}
@@ -195,10 +195,10 @@ class RTLChunk {
 	public function encode(array $map) {
 		// Convert UTF8 to the target encoding
 		$str = $this -> text;
-		$len = mb_strlen($str);
+		$len = mb_strlen($str, 'UTF8');
 		$outp = str_repeat("?", $len);
 		for($i = 0; $i < $len; $i++) {
-			$utf8 = mb_substr($str, $i, 1);
+			$utf8 = mb_substr($str, $i, 1, 'UTF8');
 			if(isset($map[$utf8])) {
 				$outp[$i] = $map[$utf8];
 			}

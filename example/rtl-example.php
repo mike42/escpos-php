@@ -2,6 +2,10 @@
 require_once(dirname(__FILE__) . "/../Escpos.php");
 require_once(dirname(__FILE__) . "/../src/RTLBuffer.php");
 
+/*
+ * Example of how to use the current work-around for bi-directional text.
+ */
+
 // Instantiate printer as normal
 $printer = new Escpos();
 
