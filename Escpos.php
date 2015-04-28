@@ -321,10 +321,11 @@ class Escpos {
 	 * @param int $off_ms pulse OFF time, in milliseconds.
 	 */
 	function pulse($pin = 0, $on_ms = 120, $off_ms = 240) {
-		// TODO validation on pulse() inputs
+		self::validateInteger($pin, 0, 1, __FUNCTION__);
+		self::validateInteger($on_ms, 1, 511, __FUNCTION__);
+		self::validateInteger($off_ms, 1, 511, __FUNCTION__);
 		$this -> buffer -> write(self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
 	}
-	
 	
 	/**
 	 * Print the given data as a QR code on the printer.

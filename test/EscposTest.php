@@ -338,10 +338,38 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 
 	/* Pulse */
 	function testPulseDefault() {
-		// TODO add tests for range of acceptable values
-		// pulse($pin = 0, $on_ms = 120, $off_ms = 240)
 		$this -> printer -> pulse();
 		$this -> checkOutput("\x1b@\x1bp0<x");
+	}
+
+	function testPulse1() {
+		$this -> printer -> pulse(1);
+		$this -> checkOutput("\x1b@\x1bp1<x");
+	}
+	
+	function testPulseEvenMs() {
+		$this -> printer -> pulse(0, 2, 2);
+		$this -> checkOutput("\x1b@\x1bp0\x01\x01");
+	}
+	
+	function testPulseOddMs() {
+		$this -> printer -> pulse(0, 3, 3); // Should be rounded down and give same output
+		$this -> checkOutput("\x1b@\x1bp0\x01\x01");
+	}
+	
+	function testPulseTooHigh() {
+		$this -> setExpectedException('InvalidArgumentException');
+		$this -> printer -> pulse(0, 512, 2);
+	}
+	
+	function testPulseTooLow() {
+		$this -> setExpectedException('InvalidArgumentException');
+		$this -> printer -> pulse(0, 0, 2);
+	}
+	
+	function testPulseNotANumber() {
+		$this -> setExpectedException('InvalidArgumentException');
+		$this -> printer -> pulse("fish");
 	}
 	
 	/* Set reverse */
