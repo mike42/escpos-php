@@ -50,63 +50,80 @@ class EscposImage {
 	/**
 	 * @var string The image's bitmap data (if it is a Windows BMP).
 	 */
-	private $imgBmpData;
-	
+	protected $imgBmpData;
 	
 	/**
 	 * @var string image data in rows: 1 for black, 0 for white.
 	 */
-	private $imgData;
+	protected $imgData;
 	
 	/**
 	 * @var string cached raster format data to avoid re-computation
 	 */
-	private $imgRasterData;
+	protected $imgRasterData;
 	
 	/**
 	 * @var int height of the image
 	 */
-	private $imgHeight;
+	protected $imgHeight;
 
 	/**
 	 * @var int width of the image
 	 */
-	private $imgWidth;
+	protected $imgWidth;
 	
 	/**
-	 * Load up an image
+	 * Load up an image from a filename
 	 * 
-	 * @param string $imgPath The path to the image to load. Currently only PNG graphics are supported.
+	 * @param string $imgPath The path to the image to load, or null to skip
+	 * 			loading the image (some other functions are available for
+	 * 			populating the data). Supported graphics types depend on your PHP configuration.
 	 */
 	public function __construct($imgPath) {
 		/* Can't use bitmaps yet */
 		$this -> imgBmpData = null;
 		$this -> imgRasterData = null;
-		
+		if($imgPath == null) {
+			// Blank image
+			$this -> imgHeight = 0;
+			$this -> imgWidth = 0;
+			$this -> imgData = "";
+		}
+
 		/* Load up using GD */
-		if(!function_exists('imagecreatefrompng')) {
-			throw new Exception("Images are not supported on your PHP. Please install the gd extension.");
+		$ext = pathinfo($imgPath, PATHINFO_EXTENSION);
+		if($ext == "bmp") {
+			// The plan is to implement BMP handling directly in
+			// PHP, as some printers understand this format themselves.
+			// TODO implement PHP bitmap handling
+			throw new Exception("Native bitmaps not yet supported. Please convert the file to a supported raster format.");
 		}
-		$im = imagecreatefrompng($imgPath);
-		if(!$im) {
-			throw new Exception("Failed to load image '$imgPath'. Must be a PNG file.");
+		if($this -> isGdSupported()) {
+			// Prefer to use gd. It is installed by default, so
+			// most systems will have it, giving a consistent UX.
+			switch($ext) {
+				case "png":
+					$im = imagecreatefrompng($imgPath);
+					$this -> readImageFromGdResource($im);
+					return;
+				case "jpg":
+					$im = imagecreatefromjpg($imgPath);
+					$this -> readImageFromGdResource($im);
+					return;
+				case "gif":
+					$im = imagecreatefromgif($imgPath);
+					$this -> readImageFromGdResource($im);
+					return;
+			}
 		}
-		
-		/* Make a string of 1's and 0's */
-		$this -> imgHeight = imagesy($im);
-		$this -> imgWidth = imagesx($im);
-		$this -> imgData = str_repeat("\0", $this -> imgHeight * $this -> imgWidth);
- 		for($y = 0; $y < $this -> imgHeight; $y++) {
- 			for($x = 0; $x < $this -> imgWidth; $x++) {
- 				/* Faster to average channels, blend alpha and negate the image here than via filters (tested!) */
- 				$cols = imagecolorsforindex($im, imagecolorat($im, $x, $y));
- 				$greyness = (int)($cols['red'] + $cols['red'] + $cols['blue']) / 3;
- 				$black = (255 - $greyness) >> (7 + ($cols['alpha'] >> 6));
- 				$this -> imgData[$y * $this -> imgWidth + $x] = $black;
- 			}
- 		}
+		if(isImagickSupported()) {
+			$im = new Imagick();
+			$im -> readImage($imgPath); // This line throws an ImagickException if the format is not supported or file is not found
+			$this -> readImageFromImagick($im);
+		}
+		throw new Exception("Images are not supported on your PHP. Please install either the gd or imagick extension.");
 	}
-	
+
 	/**
 	 * @return int height of the image in pixels
 	 */
@@ -147,6 +164,35 @@ class EscposImage {
 	 */
 	public function isWindowsBMP() {
 		return $this -> imgBmpData != null;
+	}
+
+	/**
+	 * Load actual image pixels from GD resource.
+	 *
+	 * @param resouce $im GD resource to use
+	 * @throws Exception Where the image can't be read.
+	 */
+	public function readImageFromGdResource($im) {
+		if(!is_resource($im)) {
+			throw new Exception("Failed to load image.");
+		}
+		/* Make a string of 1's and 0's */
+		$this -> imgHeight = imagesy($im);
+		$this -> imgWidth = imagesx($im);
+		$this -> imgData = str_repeat("\0", $this -> imgHeight * $this -> imgWidth);
+		for($y = 0; $y < $this -> imgHeight; $y++) {
+			for($x = 0; $x < $this -> imgWidth; $x++) {
+				/* Faster to average channels, blend alpha and negate the image here than via filters (tested!) */
+				$cols = imagecolorsforindex($im, imagecolorat($im, $x, $y));
+				$greyness = (int)($cols['red'] + $cols['red'] + $cols['blue']) / 3;
+				$black = (255 - $greyness) >> (7 + ($cols['alpha'] >> 6));
+				$this -> imgData[$y * $this -> imgWidth + $x] = $black;
+			}
+		}
+	}
+	
+	public function readImageFromImagick(Imagick $im) {
+		throw new Exception("ImageMagick file loading not implemented");
 	}
 	
 	/**
@@ -198,7 +244,7 @@ class EscposImage {
 	 * Output image in column format. This format results in padding at the base and right of the image, if its height and width are not divisible by 8.
 	 */
 	private function toColumnFormat() {
-		/* Note: This function is marked private, as it is not yet used and may be buggy. */
+		/* Note: This function is marked private, as it is not yet used/tested and may be buggy. */
 		$widthPixels = $this -> getWidth();
 		$heightPixels = $this -> getHeight();
 		$widthBytes = $this -> getWidthBytes();
@@ -229,5 +275,18 @@ class EscposImage {
   			throw new Exception("Bug in " . __FUNCTION__ . ", wrong number of bytes. Should be " . ($widthBytes * $heightBytes * 8) . " but was " . strlen($data));
   		}
 		return $data;
+	}
+	
+	protected function isGdSupported() {
+		return extension_loaded('gd');
+	}
+	
+	protected function isImagickSupported() {
+		return extension_loaded('imagick');
+	}
+	
+	public static function loadPdf($pdfFile, $pageWidth = 500) {
+		// Load file, re-size, appendImages, construct, loadfromimagick
+		throw new Exception("Unimplemented");
 	}
 }
