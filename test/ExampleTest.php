@@ -35,14 +35,19 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 		$this -> outpTest($outp, "graphics.bin");
 	}
 	
+	public function testQrCode() {
+		$outp = $this -> runExample("qr-code.php");
+		$this -> outpTest($outp, "qr-code.bin");
+	}
+	
 	public function testReceiptWithLogo() {
 		$outp = $this -> runExample("receipt-with-logo.php");
 		$this -> outpTest($outp, "receipt-with-logo.bin");
 	}
 	
-	public function testQrCode() {
-		$outp = $this -> runExample("qr-code.php");
-		$this -> outpTest($outp, "qr-code.bin");
+	public function testRtlExample() {
+		$outp = $this -> runExample("rtl-example.php");
+		$this -> outpTest($outp, "rtl-example.bin");
 	}
 	
 	public function testInterfaceEthernet() {
