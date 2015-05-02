@@ -79,7 +79,7 @@ class EscposImage {
 	 * 			loading the image (some other functions are available for
 	 * 			populating the data). Supported graphics types depend on your PHP configuration.
 	 */
-	public function __construct($imgPath) {
+	public function __construct($imgPath = null) {
 		/* Can't use bitmaps yet */
 		$this -> imgBmpData = null;
 		$this -> imgRasterData = null;
@@ -88,6 +88,7 @@ class EscposImage {
 			$this -> imgHeight = 0;
 			$this -> imgWidth = 0;
 			$this -> imgData = "";
+			return;
 		}
 
 		/* Load up using GD */
@@ -116,7 +117,7 @@ class EscposImage {
 					return;
 			}
 		}
-		if(isImagickSupported()) {
+		if($this -> isImagickSupported()) {
 			$im = new Imagick();
 			$im -> readImage($imgPath); // This line throws an ImagickException if the format is not supported or file is not found
 			$this -> readImageFromImagick($im);
@@ -184,7 +185,7 @@ class EscposImage {
 			for($x = 0; $x < $this -> imgWidth; $x++) {
 				/* Faster to average channels, blend alpha and negate the image here than via filters (tested!) */
 				$cols = imagecolorsforindex($im, imagecolorat($im, $x, $y));
-				$greyness = (int)($cols['red'] + $cols['red'] + $cols['blue']) / 3;
+				$greyness = (int)($cols['red'] + $cols['green'] + $cols['blue']) / 3;
 				$black = (255 - $greyness) >> (7 + ($cols['alpha'] >> 6));
 				$this -> imgData[$y * $this -> imgWidth + $x] = $black;
 			}
@@ -192,7 +193,24 @@ class EscposImage {
 	}
 	
 	public function readImageFromImagick(Imagick $im) {
-		throw new Exception("ImageMagick file loading not implemented");
+		/* Make a string of 1's and 0's */
+		$geometry = $im -> getimagegeometry();
+		$this -> imgHeight = $geometry['height'];
+		$this -> imgWidth = $geometry['width'];
+		$this -> imgData = str_repeat("\0", $this -> imgHeight * $this -> imgWidth);
+		/* Threshold */
+		$max = $im->getQuantumRange();
+		$max = $max["quantumRangeLong"];
+		$im->thresholdImage(0.5 * $max);
+		for($y = 0; $y < $this -> imgHeight; $y++) {
+			for($x = 0; $x < $this -> imgWidth; $x++) {
+				/* Faster to average channels, blend alpha and negate the image here than via filters (tested!) */
+				$cols = $im -> getImagePixelColor($x, $y) -> getcolor();
+				$greyness = (int)($cols['r'] + $cols['g'] + $cols['b']) / 3;
+				$black = (255 - $greyness) >> (7 + ($cols['a'] >> 6));
+				$this -> imgData[$y * $this -> imgWidth + $x] = $black;
+			}
+		}
 	}
 	
 	/**
@@ -285,8 +303,34 @@ class EscposImage {
 		return extension_loaded('imagick');
 	}
 	
-	public static function loadPdf($pdfFile, $pageWidth = 500) {
-		// Load file, re-size, appendImages, construct, loadfromimagick
-		throw new Exception("Unimplemented");
+	public static function loadPdf($pdfFile, $pageWidth = 570, array $range = null) {
+		// TODO clean this up, it works but 
+		if(!extension_loaded('imagick')) {
+			throw new Exception(__FUNCTION__ . " requires imagick extension.");
+		}
+		$ret = array();
+		$image = new Imagick();
+		$testRes = 2;
+		$image -> setresolution($testRes, $testRes);
+		$image -> readimage("pdf.pdf[0]");
+		$geo = $image -> getimagegeometry();
+		$image -> destroy();
+		$width = $geo['width'];
+		
+		$newRes = $pageWidth / $width * $testRes;
+		$image -> setresolution($newRes, $newRes );
+		$rangeStr = ($range == null ? "" : "[" .  implode($range, ",") . "]");
+		$image -> readImage("pdf.pdf$rangeStr");
+		$pages = $image->getNumberImages();
+		for($i = 0;$i < $pages; $i++) {
+			// Set iterator postion
+			$image->setIteratorIndex($i);
+			$eimg = new EscposImage();
+			$eimg -> readImageFromImagick($image);
+			$ret[] = $eimg;
+		}
+		return $ret;
 	}
+	
+	
 }
