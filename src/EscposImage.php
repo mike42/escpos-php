@@ -92,6 +92,9 @@ class EscposImage {
 		}
 
 		/* Load up using GD */
+		if(!file_exists($imgPath)) {
+			throw new Exception("File '$imgPath' does not exist.");
+		}
 		$ext = pathinfo($imgPath, PATHINFO_EXTENSION);
 		if($ext == "bmp") {
 			// The plan is to implement BMP handling directly in
@@ -104,15 +107,15 @@ class EscposImage {
 			// most systems will have it, giving a consistent UX.
 			switch($ext) {
 				case "png":
-					$im = imagecreatefrompng($imgPath);
+					$im = @imagecreatefrompng($imgPath);
 					$this -> readImageFromGdResource($im);
 					return;
 				case "jpg":
-					$im = imagecreatefromjpg($imgPath);
+					$im = @imagecreatefromjpg($imgPath);
 					$this -> readImageFromGdResource($im);
 					return;
 				case "gif":
-					$im = imagecreatefromgif($imgPath);
+					$im = @imagecreatefromgif($imgPath);
 					$this -> readImageFromGdResource($im);
 					return;
 			}

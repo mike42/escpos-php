@@ -108,6 +108,7 @@ class EscposImageTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * PDF tests - load tiny PDF and check for well-formedness
 	 * These are also skipped if you don't have imagick
+	 * @medium
 	 */
 	public function testPdfAllPages() {
 		$this -> loadAndCheckPdf('doc.pdf', null, 1, 1, array("\x00", "\x80"));
@@ -118,24 +119,39 @@ class EscposImageTest extends PHPUnit_Framework_TestCase {
 		$this -> loadAndCheckPdf('not a real file', null, 1, 1, array());
 	}
 
+	/**
+	 * @medium
+	 */
 	public function testPdfBadRange() {
 		// Start page is after end page.
 		$this -> setExpectedException('Exception');
 		$this -> loadAndCheckPdf('doc.pdf', array(1, 0), 1, 1, array("\x00", "\x80"));
 	}
 
+	/**
+	 * @medium
+	 */
 	public function testPdfFirstPage() {
 		$this -> loadAndCheckPdf('doc.pdf', array(0, 0), 1, 1, array("\x00"));
 	}
-
+	
+	/**
+	 * @medium
+	 */
 	public function testPdfMorePages() {
 		$this -> loadAndCheckPdf('doc.pdf', array(1, 20), 1, 1, array("\x80"));
 	}
 
+	/**
+	 * @medium
+	 */
 	public function testPdfSecondPage() {
 		$this -> loadAndCheckPdf('doc.pdf', array(1, 1), 1, 1, array("\x80"));
 	}
 
+	/**
+	 * @medium
+	 */
 	public function testPdfStartPastEndOfDoc() {
 		// Doc only has pages 0 and 1, can't start reading from 2.
 		$this -> markTestIncomplete("Test needs revising- produces output due to apparent imagick bug.");

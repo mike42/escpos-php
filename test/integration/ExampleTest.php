@@ -48,7 +48,10 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 		$outp = $this -> runExample("qr-code.php");
 		$this -> outpTest($outp, "qr-code.bin");
 	}
-	
+
+	/**
+	 * @large
+	 */
 	public function testPrintFromPdf() {
 		if(!EscposImage::isImagickLoaded()) {
 			$this -> markTestSkipped("imagick plugin required for this test");
