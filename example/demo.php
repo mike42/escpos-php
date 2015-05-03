@@ -34,7 +34,7 @@ $modes = array(
 	Escpos::MODE_DOUBLE_HEIGHT,
 	Escpos::MODE_DOUBLE_WIDTH,
 	Escpos::MODE_UNDERLINE);
-for($i = 0; $i < 2 ** count($modes); $i++) {
+for($i = 0; $i < pow(2, count($modes)); $i++) {
 	$bits = str_pad(decbin($i), count($modes), "0", STR_PAD_LEFT);
 	$mode = 0;
 	for($j = 0; $j < strlen($bits); $j++) {
