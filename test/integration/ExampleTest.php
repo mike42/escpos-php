@@ -4,7 +4,7 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 	private $exampleDir;
 	
 	public function setup() {
-		$this -> exampleDir = dirname(__FILE__) . "/../example/";
+		$this -> exampleDir = dirname(__FILE__) . "/../../example/";
 	}
 	
 	public function testBitImage() {
@@ -43,6 +43,11 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 	public function testQrCode() {
 		$outp = $this -> runExample("qr-code.php");
 		$this -> outpTest($outp, "qr-code.bin");
+	}
+	
+	public function testPrintFromPdf() {
+		$outp = $this -> runExample("print-from-pdf.php");
+		$this -> outpTest(gzcompress($outp, 9), "print-from-pdf.bin.z"); // Compressing output because it's ~1MB
 	}
 	
 	public function testInterfaceEthernet() {

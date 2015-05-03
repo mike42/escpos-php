@@ -1,7 +1,4 @@
 <?php
-require_once(dirname(__FILE__) . "/../Escpos.php");
-require_once(dirname(__FILE__) . "/../src/DummyPrintConnector.php");
-
 /**
  * Example strings are pangrams using different character sets, and are
  * testing correct code-table switching.

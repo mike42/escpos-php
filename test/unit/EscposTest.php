@@ -1,7 +1,4 @@
 <?php
-require_once(dirname(__FILE__) . "/../Escpos.php");
-require_once(dirname(__FILE__) . "/../src/DummyPrintConnector.php");
-
 class EscposTest extends PHPUnit_Framework_TestCase {
 	protected $printer;
 	protected $outputConnector;
