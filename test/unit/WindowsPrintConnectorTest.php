@@ -42,7 +42,15 @@ class WindowsPrintConnectorTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function testComWindows() {
+		// Simple file write
 		$connector = $this -> getMockConnector("COM1", WindowsPrintConnector::PLATFORM_WIN);
+		$connector -> expects($this -> once())
+				-> method('runWrite')
+				-> with($this -> equalTo(''), $this -> equalTo("COM1"));
+		$connector -> expects($this -> exactly(0))
+				-> method('runCommand');
+		$connector -> expects($this -> exactly(0))
+				-> method('runCopy');
 		$connector -> finalize();
 	}
 	

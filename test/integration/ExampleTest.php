@@ -8,13 +8,14 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function testBitImage() {
+		$this -> requireGraphicsLibrary();
 		$outp = $this -> runExample("bit-image.php");
 		$this -> outpTest($outp, "bit-image.bin");
 	}
 	
 	public function testCharacterSet() {
 		// TODO example not yet ready due to character encoding development work
-		$this -> markTestSkipped();
+		$this -> markTestIncomplete("Character set example not yet ready.");
 	}
 	
 	private function outpTest($outp, $fn) {
@@ -26,16 +27,19 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function testDemo() {
+		$this -> requireGraphicsLibrary();
 		$outp = $this -> runExample("demo.php");
 		$this -> outpTest($outp, "demo.bin");
 	}
 	
 	public function testGraphics() {
+		$this -> requireGraphicsLibrary();
 		$outp = $this -> runExample("graphics.php");
 		$this -> outpTest($outp, "graphics.bin");
 	}
 	
 	public function testReceiptWithLogo() {
+		$this -> requireGraphicsLibrary();
 		$outp = $this -> runExample("receipt-with-logo.php");
 		$this -> outpTest($outp, "receipt-with-logo.bin");
 	}
@@ -46,6 +50,9 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function testPrintFromPdf() {
+		if(!EscposImage::isImagickLoaded()) {
+			$this -> markTestSkipped("imagick plugin required for this test");
+		}
 		$outp = $this -> runExample("print-from-pdf.php");
 		$this -> outpTest(gzcompress($outp, 9), "print-from-pdf.bin.z"); // Compressing output because it's ~1MB
 	}
@@ -87,5 +94,11 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 		// Check return value
 		$this -> assertEquals(0, $retval, "Example $fn exited with status $retval");
 		return $outp;
+	}
+	
+	protected function requireGraphicsLibrary() {
+		if(!EscposImage::isGdLoaded() && !EscposImage::isImagickLoaded()) {
+			$this -> markTestSkipped("This test requires a graphics library.");
+		}
 	}
 }

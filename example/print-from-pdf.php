@@ -1,20 +1,31 @@
 <?php
 require_once(dirname(__FILE__) . '/../Escpos.php');
-/* This is three examples in one:
+/*
+ * This is three examples in one:
  *  1: Print an entire PDF, normal quality.
  *  2: Print at a lower quality for speed increase (CPU & transfer)
  *  3: Cache rendered documents for a speed increase (removes CPU image processing completely on subsequent prints)
  */
 
 /* 1: Print an entire PDF, start-to-finish (shorter form of the example) */
-$printer = new Escpos();
 $pdf = 'images/document.pdf';
-$pages = EscposImage::loadPdf($pdf);
-foreach($pages as $page) {
-	$printer -> graphics($page);
+try {
+	$pages = EscposImage::loadPdf($pdf);
+	$printer = new Escpos();
+	foreach($pages as $page) {
+		$printer -> graphics($page);
+	}
+	$printer -> cut();
+	$printer -> close();
+} catch(Exception $e) {
+	/* 
+	 * loadPdf() throws exceptions if files or not found, or you don't have the
+	 * imagick extension to read PDF's
+	 */
+	echo $e -> getMessage() . "\n";
+	exit(0);
 }
-$printer -> cut();
-$printer -> close();
+
 
 /*
  * 2: Speed up printing by roughly halving the resolution, and printing double-size.

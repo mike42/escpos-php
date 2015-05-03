@@ -83,7 +83,7 @@ class EscposImage {
 		/* Can't use bitmaps yet */
 		$this -> imgBmpData = null;
 		$this -> imgRasterData = null;
-		if($imgPath == null) {
+		if($imgPath === null) {
 			// Blank image
 			$this -> imgHeight = 0;
 			$this -> imgWidth = 0;
@@ -119,8 +119,19 @@ class EscposImage {
 		}
 		if($this -> isImagickSupported()) {
 			$im = new Imagick();
-			$im -> readImage($imgPath); // This line throws an ImagickException if the format is not supported or file is not found
-			$this -> readImageFromImagick($im);
+			try {
+				// Throws an ImagickException if the format is not supported or file is not found
+				$im -> readImage($imgPath);
+			} catch(ImagickException $e) {
+				// Wrap in normal exception, so that classes which call this do not themselves require imagick as a dependency.
+				throw new Exception($e);
+			}
+			/* Flatten by doing a composite over white, in case of transparency */
+			$flat = new Imagick();
+			$flat -> newImage($im -> getimagewidth(), $im -> getimageheight(), "white");
+			$flat -> compositeimage($im, Imagick::COMPOSITE_OVER, 0, 0);
+			$this -> readImageFromImagick($flat);
+			return;
 		}
 		throw new Exception("Images are not supported on your PHP. Please install either the gd or imagick extension.");
 	}
@@ -201,14 +212,14 @@ class EscposImage {
 	 */
 	public function readImageFromImagick(Imagick $im) {
 		/* Threshold */
-		$im -> setImageType (Imagick::IMGTYPE_TRUECOLOR); // Remove transparency
+		$im -> setImageType(Imagick::IMGTYPE_TRUECOLOR); // Remove transparency (good for PDF's)
 		$max = $im->getQuantumRange();
 		$max = $max["quantumRangeLong"];
-		$im->thresholdImage(0.5 * $max);
+		$im -> thresholdImage(0.5 * $max);
 		/* Make a string of 1's and 0's */
 		$geometry = $im -> getimagegeometry();
-		$this -> imgHeight = $geometry['height'];
-		$this -> imgWidth = $geometry['width'];
+		$this -> imgHeight = $im -> getimageheight();
+		$this -> imgWidth = $im -> getimagewidth();
 		$this -> imgData = str_repeat("\0", $this -> imgHeight * $this -> imgWidth);
 
 		for($y = 0; $y < $this -> imgHeight; $y++) {
@@ -241,6 +252,9 @@ class EscposImage {
 		$heightBytes = $this -> getHeightBytes();
 		$x = $y = $bit = $byte = $byteVal = 0;
 		$data = str_repeat("\0", $widthBytes * $heightPixels);
+		if(strlen($data) == 0) {
+			return $data;
+		}
 		do {
 			$byteVal |= (int)$this -> imgData[$y * $widthPixels + $x] << (7 - $bit);
 			$x++;
@@ -340,8 +354,7 @@ class EscposImage {
 	 * @param string $pdfFile The file to load
 	 * @param string $pageWidth The width, in pixels, of the printer's output. The first page of the PDF will be scaled to approximately fit in this area.
 	 * @param array $range array indicating the first and last page (starting from 0) to load. If not set, the entire document is loaded.
-	 * @throws Exception Where Imagick is not loaded.
-	 * @throws ImagickException Where a missing file or invalid page number is requested.
+	 * @throws Exception Where Imagick is not loaded, or where a missing file or invalid page number is requested.
 	 * @return multitype:EscposImage Array of images, retrieved from the PDF file.
 	 */
 	public static function loadPdf($pdfFile, $pageWidth = 550, array $range = null) {
@@ -352,33 +365,38 @@ class EscposImage {
 		 * Load first page at very low density (resolution), to figure out what
 		 * density to use to achieve $pageWidth
 		 */
-		$image = new Imagick();
-		$testRes = 2; // Test resolution
-		$image -> setresolution($testRes, $testRes);
-		$image -> readimage($pdfFile."[0]");
-		$geo = $image -> getimagegeometry();
-		$image -> destroy();
-		$width = $geo['width'];
-		$newRes = $pageWidth / $width * $testRes;
-		/* Load actual document (can be very slow!) */
-		$rangeStr = ""; // Set to [0] [0-1] page range if $range is set
-		if($range != null) {
-			if(count($range) != 2 || !isset($range[0]) || !is_integer($range[0]) || !isset($range[1]) || !is_integer($range[1]) || $range[0] > $range[1]) {
-				throw new Exception("Invalid range");
+		try {
+			$image = new Imagick();
+			$testRes = 2; // Test resolution
+			$image -> setresolution($testRes, $testRes);
+			$image -> readimage($pdfFile."[0]");
+			$geo = $image -> getimagegeometry();
+			$image -> destroy();
+			$width = $geo['width'];
+			$newRes = $pageWidth / $width * $testRes;
+			/* Load actual document (can be very slow!) */
+			$rangeStr = ""; // Set to [0] [0-1] page range if $range is set
+			if($range != null) {
+				if(count($range) != 2 || !isset($range[0]) || !is_integer($range[0]) || !isset($range[1]) || !is_integer($range[1]) || $range[0] > $range[1]) {
+					throw new Exception("Invalid range. Must be two numbers in the array: The start and finish page indexes, starting from 0.");
+				}
+				$rangeStr = "[" .  ($range[0] == $range[1] ? $range[0] : implode($range, "-")) . "]";
 			}
-			$rangeStr = "[" .  ($range[0] == $range[1] ? $range[0] : implode($range, "-")) . "]";
+			$image -> setresolution($newRes, $newRes);
+			$image -> readImage($pdfFile."$rangeStr");
+			$pages = $image -> getNumberImages();
+			/* Convert images to Escpos objects */
+			$ret = array();
+			for($i = 0;$i < $pages; $i++) {
+				$image -> setIteratorIndex($i);
+				$ep = new EscposImage();
+				$ep -> readImageFromImagick($image);
+				$ret[] = $ep;
+			}
+			return $ret;
+		} catch(ImagickException $e) {
+			// Wrap in normal exception, so that classes which call this do not themselves require imagick as a dependency.
+			throw new Exception($e);
 		}
-		$image -> setresolution($newRes, $newRes);
-		$image -> readImage($pdfFile."$rangeStr");
-		$pages = $image -> getNumberImages();
-		/* Convert images to Escpos objects */
-		$ret = array();
-		for($i = 0;$i < $pages; $i++) {
-			$image -> setIteratorIndex($i);
-			$ep = new EscposImage();
-			$ep -> readImageFromImagick($image);
-			$ret[] = $ep;
-		}
-		return $ret;
 	}
 }

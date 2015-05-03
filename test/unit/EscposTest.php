@@ -13,7 +13,7 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		/* Check those output strings */
 		$outp = $this -> outputConnector -> getData();
 		if($expected === null) {
-			echo "\nOutput was:\n\"" . $this -> friendlyBinary($outp) . "\"\n";
+			echo "\nOutput was:\n\"" . friendlyBinary($outp) . "\"\n";
 		}
 		$this -> assertEquals($expected, $outp);
 	}
@@ -21,18 +21,13 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 	protected function tearDown() {
 		$this -> outputConnector -> finalize();
 	}
-
-	private function friendlyBinary($in) {
-		/* Print out binary data with PHP \x00 escape codes,
-			for builting test cases. */
-		$chars = str_split($in);
-		foreach($chars as $i => $c) {
-			$code = ord($c);
-			if($code < 32 || $code > 126) {
-				$chars[$i] = "\\x" . bin2hex($c);
-			}
+	
+	protected function requireGraphicsLibrary() {
+		if(!EscposImage::isGdLoaded() && !EscposImage::isImagickLoaded()) {
+			// If the test is about to do something which requires a library,
+			// something must throw an exception.
+			$this -> setExpectedException('Exception');
 		}
-		return implode($chars);
 	}
 
     public function testInitializeOutput() {
@@ -43,7 +38,6 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> printer -> text("The quick brown fox jumps over the lazy dog\n");
 		$this -> checkOutput("\x1b@The quick brown fox jumps over the lazy dog\n");
     }
-
 
     public function testTextDefault() {
 		$this -> printer -> text();
@@ -57,6 +51,7 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> printer -> text(null);
 		$this -> printer -> text(1.2);
 		$this -> printer -> text(new FooBar("FooBar"));
+		$this -> checkOutput("\x1b@String1231.2FooBar");
     }
 
     public function testTextObject() {
@@ -140,6 +135,7 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		/* These map to 0 & 1 for interchangeability with setEmphasis */
 		$this -> printer -> setUnderline(true);
 		$this -> printer -> setUnderline(false);
+		$this -> checkOutput("\x1b@\x1b-\x00\x1b-\x01\x1b-\x02\x1b-\x01\x1b-\x00");
 	}
 
     public function testSetUnderlineTooLarge() {
@@ -392,24 +388,28 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 
 	/* Bit image print */
 	public function testBitImageBlack() {
+		$this -> requireGraphicsLibrary();
 		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_black.png");
 		$this -> printer -> bitImage($img);
 		$this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x01\x00\x80");
 	}
 
 	public function testBitImageWhite() {
+		$this -> requireGraphicsLibrary();
 		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_white.png");
 		$this -> printer -> bitImage($img);
 		$this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x01\x00\x00");
 	}
 	
 	public function testBitImageBoth() {
+		$this -> requireGraphicsLibrary();
 		$img = new EscposImage(dirname(__FILE__)."/resources/black_white.png");
 		$this -> printer -> bitImage($img);
 		$this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x02\x00\xc0\x00");
 	}
 	
 	public function testBitImageTransparent() {
+		$this -> requireGraphicsLibrary();
 		$img = new EscposImage(dirname(__FILE__)."/resources/black_transparent.png");
 		$this -> printer -> bitImage($img);
 		$this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x02\x00\xc0\x00");
@@ -417,24 +417,28 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 	
 	/* Graphics print */
 	public function testGraphicsWhite() {
+		$this -> requireGraphicsLibrary();
 		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_white.png");
 		$this -> printer -> graphics($img);
 		$this -> checkOutput("\x1b@\x1d(L\x0b\x000p0\x01\x011\x01\x00\x01\x00\x00\x1d(L\x02\x0002");
 	}
 	
 	public function testGraphicsBlack() {
+		$this -> requireGraphicsLibrary();
 		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_black.png");
 		$this -> printer -> graphics($img);
 		$this -> checkOutput("\x1b@\x1d(L\x0b\x000p0\x01\x011\x01\x00\x01\x00\x80\x1d(L\x02\x0002");
 	}
 		
 	public function testGraphicsBoth() {
+		$this -> requireGraphicsLibrary();
 		$img = new EscposImage(dirname(__FILE__)."/resources/black_white.png");
 		$this -> printer -> graphics($img);
 		$this -> checkOutput("\x1b@\x1d(L\x0c\x000p0\x01\x011\x02\x00\x02\x00\xc0\x00\x1d(L\x02\x0002");
 	}
 	
 	public function testGraphicsTransparent() {
+		$this -> requireGraphicsLibrary();
 		$img = new EscposImage(dirname(__FILE__)."/resources/black_transparent.png");
 		$this -> printer -> graphics($img);
 		$this -> checkOutput("\x1b@\x1d(L\x0c\x000p0\x01\x011\x02\x00\x02\x00\xc0\x00\x1d(L\x02\x0002");
