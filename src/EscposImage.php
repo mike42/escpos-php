@@ -176,6 +176,8 @@ class EscposImage {
 	public function readImageFromGdResource($im) {
 		if(!is_resource($im)) {
 			throw new Exception("Failed to load image.");
+		} else if(!$this -> isGdSupported()) {
+			throw new Exception(__FUNCTION__ . " requires 'gd' extension.");
 		}
 		/* Make a string of 1's and 0's */
 		$this -> imgHeight = imagesy($im);
@@ -185,32 +187,40 @@ class EscposImage {
 			for($x = 0; $x < $this -> imgWidth; $x++) {
 				/* Faster to average channels, blend alpha and negate the image here than via filters (tested!) */
 				$cols = imagecolorsforindex($im, imagecolorat($im, $x, $y));
-				$greyness = (int)($cols['red'] + $cols['green'] + $cols['blue']) / 3;
-				$black = (255 - $greyness) >> (7 + ($cols['alpha'] >> 6));
+				$greyness = (int)(($cols['red'] + $cols['green'] + $cols['blue']) / 3) >> 7; // 1 for white, 0 for black
+				$black = (1 - $greyness) >> ($cols['alpha'] >> 6); // 1 for black, 0 for white, taking into account transparency
 				$this -> imgData[$y * $this -> imgWidth + $x] = $black;
 			}
 		}
 	}
-	
+
+	/**
+	 * Load actual image pixels from Imagick object
+	 * 
+	 * @param Imagick $im Image to load from
+	 */
 	public function readImageFromImagick(Imagick $im) {
+		/* Threshold */
+		$im -> setImageType (Imagick::IMGTYPE_TRUECOLOR); // Remove transparency
+		$max = $im->getQuantumRange();
+		$max = $max["quantumRangeLong"];
+		$im->thresholdImage(0.5 * $max);
 		/* Make a string of 1's and 0's */
 		$geometry = $im -> getimagegeometry();
 		$this -> imgHeight = $geometry['height'];
 		$this -> imgWidth = $geometry['width'];
 		$this -> imgData = str_repeat("\0", $this -> imgHeight * $this -> imgWidth);
-		/* Threshold */
-		$max = $im->getQuantumRange();
-		$max = $max["quantumRangeLong"];
-		$im->thresholdImage(0.5 * $max);
+
 		for($y = 0; $y < $this -> imgHeight; $y++) {
 			for($x = 0; $x < $this -> imgWidth; $x++) {
 				/* Faster to average channels, blend alpha and negate the image here than via filters (tested!) */
-				$cols = $im -> getImagePixelColor($x, $y) -> getcolor();
-				$greyness = (int)($cols['r'] + $cols['g'] + $cols['b']) / 3;
-				$black = (255 - $greyness) >> (7 + ($cols['a'] >> 6));
-				$this -> imgData[$y * $this -> imgWidth + $x] = $black;
+				$cols = $im -> getImagePixelColor($x, $y);
+				$cols = $cols -> getcolor();
+				$greyness = (int)(($cols['r'] + $cols['g'] + $cols['b']) / 3) >> 7;  // 1 for white, 0 for black
+				$this -> imgData[$y * $this -> imgWidth + $x] = (1 - $greyness); // 1 for black, 0 for white
 			}
 		}
+
 	}
 	
 	/**
@@ -295,42 +305,80 @@ class EscposImage {
 		return $data;
 	}
 	
+	/**
+	 * @return boolean True if GD is supported, false otherwise (a wrapper for the static version, for mocking in tests)
+	 */
 	protected function isGdSupported() {
+		return self::isGdLoaded();
+	}
+	
+	/**
+	 * @return boolean True if Imagick is supported, false otherwise (a wrapper for the static version, for mocking in tests)
+	 */
+	protected function isImagickSupported() {
+		return self::isImagickLoaded();
+	}
+	
+	
+	/**
+	 * @return boolean True if GD is loaded, false otherwise
+	 */
+	public static function isGdLoaded() {
 		return extension_loaded('gd');
 	}
 	
-	protected function isImagickSupported() {
+	/**
+	 * @return boolean True if Imagick is loaded, false otherwise
+	 */
+	public static function isImagickLoaded() {
 		return extension_loaded('imagick');
 	}
 	
-	public static function loadPdf($pdfFile, $pageWidth = 570, array $range = null) {
-		// TODO clean this up, it works but 
+	/**
+	 * Load a PDF for use on the printer
+	 *
+	 * @param string $pdfFile The file to load
+	 * @param string $pageWidth The width, in pixels, of the printer's output. The first page of the PDF will be scaled to approximately fit in this area.
+	 * @param array $range array indicating the first and last page (starting from 0) to load. If not set, the entire document is loaded.
+	 * @throws Exception Where Imagick is not loaded.
+	 * @throws ImagickException Where a missing file or invalid page number is requested.
+	 * @return multitype:EscposImage Array of images, retrieved from the PDF file.
+	 */
+	public static function loadPdf($pdfFile, $pageWidth = 550, array $range = null) {
 		if(!extension_loaded('imagick')) {
 			throw new Exception(__FUNCTION__ . " requires imagick extension.");
 		}
-		$ret = array();
+		/*
+		 * Load first page at very low density (resolution), to figure out what
+		 * density to use to achieve $pageWidth
+		 */
 		$image = new Imagick();
-		$testRes = 2;
+		$testRes = 2; // Test resolution
 		$image -> setresolution($testRes, $testRes);
-		$image -> readimage("pdf.pdf[0]");
+		$image -> readimage($pdfFile."[0]");
 		$geo = $image -> getimagegeometry();
 		$image -> destroy();
 		$width = $geo['width'];
-		
 		$newRes = $pageWidth / $width * $testRes;
-		$image -> setresolution($newRes, $newRes );
-		$rangeStr = ($range == null ? "" : "[" .  implode($range, ",") . "]");
-		$image -> readImage("pdf.pdf$rangeStr");
-		$pages = $image->getNumberImages();
+		/* Load actual document (can be very slow!) */
+		$rangeStr = ""; // Set to [0] [0-1] page range if $range is set
+		if($range != null) {
+			if(count($range) != 2 || !isset($range[0]) || !is_integer($range[0]) || !isset($range[1]) || !is_integer($range[1]) || $range[0] > $range[1]) {
+				throw new Exception("Invalid range");
+			}
+			$rangeStr = "[" .  ($range[0] == $range[1] ? $range[0] : implode($range, "-")) . "]";
+		}
+		$image -> setresolution($newRes, $newRes);
+		$image -> readImage($pdfFile."$rangeStr");
+		$pages = $image -> getNumberImages();
+		/* Convert images to Escpos objects */
+		$ret = array();
 		for($i = 0;$i < $pages; $i++) {
-			// Set iterator postion
-			$image->setIteratorIndex($i);
-			$eimg = new EscposImage();
-			$eimg -> readImageFromImagick($image);
-			$ret[] = $eimg;
+			$image -> setIteratorIndex($i);
+			$ep = new EscposImage();
+			$ep -> readImageFromImagick($image);
+			$ret[] = $ep;
 		}
 		return $ret;
 	}
-	
-	
 }
