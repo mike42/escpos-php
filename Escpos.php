@@ -185,6 +185,8 @@ class Escpos {
 	 */
 	private $buffer;
 	
+	private $connector;
+	
 // 	/**
 // 	 * @var array The list of accepted character sets. This is used only for validation.
 // 	 */
@@ -203,7 +205,10 @@ class Escpos {
 				throw new InvalidArgumentException("Argument passed to Escpos::__construct() must implement interface PrintConnector, null given.");
 			}
 		}
-		$this -> buffer = new EscposPrintBuffer($this, $connector);
+		$this -> connector = $connector;
+		$buffer = new EscposPrintBuffer();
+		$this -> buffer = null;
+		$this -> setPrintBuffer($buffer);
 		$this -> initialize();
 	}
 	
@@ -215,7 +220,7 @@ class Escpos {
 	 */
 	function barcode($content, $type = self::BARCODE_CODE39) {
 		// TODO validation on barcode() inputs
-		$this -> buffer -> write(self::GS . "k" . chr($type) . $content . self::NUL);
+		$this -> connector -> write(self::GS . "k" . chr($type) . $content . self::NUL);
 	}
 	
 	/**
@@ -230,8 +235,8 @@ class Escpos {
 	function bitImage(EscposImage $img, $size = self::IMG_DEFAULT) {
 		self::validateInteger($size, 0, 3, __FUNCTION__);
 		$header = self::dataHeader(array($img -> getWidthBytes(), $img -> getHeight()), true);
-		$this -> buffer -> write(self::GS . "v0" . chr($size) . $header);
-		$this -> buffer -> write($img -> toRasterFormat());
+		$this -> connector -> write(self::GS . "v0" . chr($size) . $header);
+		$this -> connector -> write($img -> toRasterFormat());
 	}
 	
 	/**
@@ -239,7 +244,7 @@ class Escpos {
 	 * job will not actually be sent to the printer until this is called.
 	 */
 	function close() {
-		$this -> buffer -> finalize();
+		$this -> connector -> finalize();
 	}
 	
 	/**
@@ -250,7 +255,7 @@ class Escpos {
 	 */
 	function cut($mode = self::CUT_FULL, $lines = 3) {
 		// TODO validation on cut() inputs
-		$this -> buffer -> write(self::GS . "V" . chr($mode) . chr($lines));
+		$this -> connector -> write(self::GS . "V" . chr($mode) . chr($lines));
 	}
 	
 	/**
@@ -261,9 +266,9 @@ class Escpos {
 	function feed($lines = 1) {
 		self::validateInteger($lines, 1, 255, __FUNCTION__);
 		if($lines <= 1) {
-			$this -> buffer -> write(self::LF);
+			$this -> connector -> write(self::LF);
 		} else {
-			$this -> buffer -> write(self::ESC . "d" . chr($lines));
+			$this -> connector -> write(self::ESC . "d" . chr($lines));
 		}
 	}
 	
@@ -274,7 +279,15 @@ class Escpos {
 	 */
 	function feedReverse($lines = 1) {
 		self::validateInteger($lines, 1, 255, __FUNCTION__);
-		$this -> buffer -> write(self::ESC . "e" . chr($lines));
+		$this -> connector -> write(self::ESC . "e" . chr($lines));
+	}
+	
+	function getBuffer() {
+		return $this -> buffer;
+	}
+	
+	function getConnector() {
+		return $this -> connector;
 	}
 	
 	/**
@@ -309,7 +322,7 @@ class Escpos {
 	 * Initialize printer. This resets formatting back to the defaults.
 	 */
 	function initialize() {
-		$this -> buffer -> write(self::ESC . "@");
+		$this -> connector -> write(self::ESC . "@");
 	}
 	
 	/**
@@ -324,7 +337,7 @@ class Escpos {
 		self::validateInteger($pin, 0, 1, __FUNCTION__);
 		self::validateInteger($on_ms, 1, 511, __FUNCTION__);
 		self::validateInteger($off_ms, 1, 511, __FUNCTION__);
-		$this -> buffer -> write(self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
+		$this -> connector -> write(self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
 	}
 	
 	/**
@@ -363,7 +376,7 @@ class Escpos {
 	 */
 	function selectCharacterTable($table = self::CHARSET_CP437) {
 		self::validateInteger($table, 0, 255, __FUNCTION__);
-		$this -> buffer -> write(self::ESC . "t" . chr($table));
+		$this -> connector -> write(self::ESC . "t" . chr($table));
 	}
 	
 	/**
@@ -385,7 +398,7 @@ class Escpos {
 			throw new InvalidArgumentException("Test");
 		}
 
-		$this -> buffer -> write(self::ESC . "!" . chr($mode));
+		$this -> connector -> write(self::ESC . "!" . chr($mode));
 	}
 	
 	/**
@@ -395,7 +408,7 @@ class Escpos {
 	 */
 	function setBarcodeHeight($height = 8) {
 		self::validateInteger($height, 1, 255, __FUNCTION__);
-		$this -> buffer -> write(self::GS . "h" . chr($height));
+		$this -> connector -> write(self::GS . "h" . chr($height));
 	}
 	
 	/**
@@ -405,7 +418,7 @@ class Escpos {
 	 */
 	function setDoubleStrike($on = true) {
 		self::validateBoolean($on, __FUNCTION__);
-		$this -> buffer -> write(self::ESC . "G". ($on ? chr(1) : chr(0)));
+		$this -> connector -> write(self::ESC . "G". ($on ? chr(1) : chr(0)));
 	}
 	
 	/**
@@ -415,7 +428,7 @@ class Escpos {
 	 */
 	function setEmphasis($on = true) {
 		self::validateBoolean($on, __FUNCTION__);
-		$this -> buffer -> write(self::ESC . "E". ($on ? chr(1) : chr(0)));
+		$this -> connector -> write(self::ESC . "E". ($on ? chr(1) : chr(0)));
 	}
 	
 	/**
@@ -425,7 +438,7 @@ class Escpos {
 	 */
 	function setFont($font = self::FONT_A) {
 		self::validateInteger($font, 0, 2, __FUNCTION__);
-		$this -> buffer -> write(self::ESC . "M" . chr($font));
+		$this -> connector -> write(self::ESC . "M" . chr($font));
 	}
 	
 	/**
@@ -435,7 +448,18 @@ class Escpos {
 	 */
 	function setJustification($justification = self::JUSTIFY_LEFT) {
 		self::validateInteger($justification, 0, 2, __FUNCTION__);
-		$this -> buffer -> write(self::ESC . "a" . chr($justification));
+		$this -> connector -> write(self::ESC . "a" . chr($justification));
+	}
+	
+	function setPrintBuffer(EscposPrintBuffer $buffer) {
+		if($buffer -> getPrinter() != null) {
+			throw new InvalidArgumentException("This buffer is already attached to a printer.");
+		}
+		if($this -> buffer !== null) {
+			$this -> buffer -> setPrinter(null);
+		}
+		$this -> buffer = $buffer;
+		$this -> buffer -> setPrinter($this);
 	}
 	
 	/**
@@ -445,7 +469,7 @@ class Escpos {
 	 */
 	function setReverseColors($on = true) {
 		self::validateBoolean($on, __FUNCTION__);
-		$this -> buffer -> write(self::GS . "B" . ($on ? chr(1) : chr(0)));
+		$this -> connector -> write(self::GS . "B" . ($on ? chr(1) : chr(0)));
 	}
 	
 	/**
@@ -465,7 +489,7 @@ class Escpos {
 		}
 		/* Set the underline */
 		self::validateInteger($underline, 0, 2, __FUNCTION__);
-		$this -> buffer -> write(self::ESC . "-". chr($underline));
+		$this -> connector -> write(self::ESC . "-". chr($underline));
 	}
 	
 	/**
@@ -508,7 +532,7 @@ class Escpos {
 			throw new InvalidArgumentException("wrapperSend2dCodeData: cn and fn must be one character each.");
 		}
 		$header = $this -> intLowHigh(strlen($data) + strlen($m) + 2, 2);
-		$this -> buffer -> write(self::GS . "(k" . $header . $cn . $fn . $m . $data);
+		$this -> connector -> write(self::GS . "(k" . $header . $cn . $fn . $m . $data);
 	}
 	
 	/**
@@ -524,7 +548,7 @@ class Escpos {
 			throw new InvalidArgumentException("wrapperSendGraphicsData: m and fn must be one character each.");
 		}
 		$header = $this -> intLowHigh(strlen($data) + 2, 2);
-		$this -> buffer -> write(self::GS . "(L" . $header . $m . $fn . $data);
+		$this -> connector -> write(self::GS . "(L" . $header . $m . $fn . $data);
 	}
 	
 	/**

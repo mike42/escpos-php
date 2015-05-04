@@ -80,16 +80,13 @@ class EscposPrintBuffer {
 	// Current character table (ESC/POS table number)
 	private $characterTable;
 
-	// File pointer for output
-	private $connector;
-	
 	// Printer for output
 	private $printer;
 
-	function __construct(Escpos $printer, PrintConnector $connector) {
+	function __construct() {
 // 		ini_set('mbstring.substitute_character', "?");
-		$this -> connector = $connector;
-		$this -> printer = $printer;
+		
+		$this -> printer = null;
 
 // 	TODO Not yet used
 // 		$this -> auto = true;
@@ -97,14 +94,6 @@ class EscposPrintBuffer {
 //  		if(self::$available == null) {
 //  			self::$available = self::loadAvailableCharacters();
 //  		}
-	}
-
-	/**
-	 * Finalize the underlying connector
-	 */
-	function finalize() {
-		// TODO final line break if needed
-		$this -> connector -> finalize();
 	}
 	
 	static function generateAvailableCharacters() {
@@ -213,7 +202,15 @@ class EscposPrintBuffer {
 		
 // 		// Return any remaining characters.
 	}
+	
+	function getPrinter() {
+		return $this -> printer;
+	}
 
+	function setPrinter(Escpos $printer = null) {
+		$this -> printer = $printer;
+	}
+	
 	// Single-byte, in current encoding. Non-printable characters will be stripped out here.
 	function writeTextRaw($text) {
 		
@@ -221,8 +218,11 @@ class EscposPrintBuffer {
 		$this -> write($text);
 	}
 
-	function write($data) {
-		$this -> connector -> write($data);
+	private function write($data) {
+		if($this -> printer == null) {
+			throw new LogicException("Not attached to a printer.");
+		}
+		$this -> printer -> getConnector() -> write($data);
 	}
 
 	// Figure out what encoding some text is

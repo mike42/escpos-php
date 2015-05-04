@@ -16,7 +16,7 @@ class EscposPrintBufferTest extends PHPUnit_Framework_TestCase {
 	protected function setup() {
 		$this -> outputConnector = new DummyPrintConnector();
 		$printer = new Escpos($this -> outputConnector);
-		$this -> buffer = new EscposPrintBuffer($printer, $this -> outputConnector);
+		$this -> buffer = $printer -> getBuffer();
 	}
 	
 	protected function checkOutput($expected = null) {
