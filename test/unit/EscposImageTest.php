@@ -42,19 +42,27 @@ class EscposImageTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testGdBlack() {
-		$this -> loadAndCheckImg('canvas_black.png', true, false, 1, 1, "\x80");
+		foreach(array('png', 'jpg', 'gif') as $format) {
+			$this -> loadAndCheckImg('canvas_black.' . $format, true, false, 1, 1, "\x80");
+		}
 	}
 
 	public function testGdBlackTransparent() {
-		$this -> loadAndCheckImg('black_transparent.png', true, false, 2, 2, "\xc0\x00");
+		foreach(array('png', 'gif') as $format) {
+			$this -> loadAndCheckImg('black_transparent.' . $format, true, false, 2, 2, "\xc0\x00");
+		}
 	}
 
 	public function testGdBlackWhite() {
-		$this -> loadAndCheckImg('black_white.png', true, false, 2, 2, "\xc0\x00");
+		foreach(array('png', 'jpg', 'gif') as $format) {
+			$this -> loadAndCheckImg('black_white.' . $format, true, false, 2, 2, "\xc0\x00");
+		}
 	}
 
 	public function testGdWhite() {
-		$this -> loadAndCheckImg('canvas_white.png', true, false, 1, 1, "\x00");
+		foreach(array('png', 'jpg', 'gif') as $format) {
+			$this -> loadAndCheckImg('canvas_white.' . $format, true, false, 1, 1, "\x00");
+		}
 	}
 
 	/**
@@ -67,19 +75,27 @@ class EscposImageTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testImagickBlack() {
-		$this -> loadAndCheckImg('canvas_black.png', false, true, 1, 1, "\x80");
+		foreach(array('png', 'jpg', 'gif') as $format) {
+			$this -> loadAndCheckImg('canvas_black.' . $format, false, true, 1, 1, "\x80");
+		}
 	}
 
 	public function testImagickBlackTransparent() {
-		$this -> loadAndCheckImg('black_transparent.png', false, true, 2, 2, "\xc0\x00");
+		foreach(array('png', 'gif') as $format) {
+			$this -> loadAndCheckImg('black_transparent.' . $format, false, true, 2, 2, "\xc0\x00");
+		}	
 	}
 
 	public function testImagickBlackWhite() {
-		$this -> loadAndCheckImg('black_white.png', false, true, 2, 2, "\xc0\x00");
+		foreach(array('png', 'jpg', 'gif') as $format) {
+			$this -> loadAndCheckImg('black_white.' . $format, false, true, 2, 2, "\xc0\x00");
+		}
 	}
 
 	public function testImagickWhite() {
-		$this -> loadAndCheckImg('canvas_white.png', false, true, 1, 1, "\x00");
+		foreach(array('png', 'jpg', 'gif') as $format) {
+			$this -> loadAndCheckImg('canvas_white.' . $format, false, true, 1, 1, "\x00");
+		}		
 	}
 
 	/**

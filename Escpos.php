@@ -53,6 +53,7 @@ require_once(dirname(__FILE__) . "/src/AbstractCapabilityProfile.php");
 require_once(dirname(__FILE__) . "/src/DefaultCapabilityProfile.php");
 require_once(dirname(__FILE__) . "/src/SimpleCapabilityProfile.php");
 require_once(dirname(__FILE__) . "/src/EposTepCapabilityProfile.php");
+require_once(dirname(__FILE__) . "/src/CodePage.php");
 
 class Escpos {
 	/* ASCII codes */
@@ -119,8 +120,14 @@ class Escpos {
 	 */
 	private $buffer;
 	
+	/**
+	 * @var PrintConnector
+	 */
 	private $connector;
 
+	/**
+	 * @var AbstractCapabilityProfile
+	 */
 	private $profile;
 	
 	/**
@@ -312,7 +319,7 @@ class Escpos {
 		$this -> wrapperSend2dCodeData(chr(80), $cn, $content, '0');
 		$this -> wrapperSend2dCodeData(chr(81), $cn, '', '0');
 	}
-	
+
 	/**
 	 * Switch character table (code page) manually. Used in conjunction with textRaw() to
 	 * print special characters which can't be encoded automatically.
@@ -323,7 +330,7 @@ class Escpos {
 		self::validateInteger($table, 0, 255, __FUNCTION__);
 		$this -> connector -> write(self::ESC . "t" . chr($table));
 	}
-	
+
 	/**
 	 * Select print mode(s).
 	 * 
@@ -396,6 +403,12 @@ class Escpos {
 		$this -> connector -> write(self::ESC . "a" . chr($justification));
 	}
 	
+	/**
+	 * Attach a different print buffer to the printer. Buffers are responsible for handling text output to the printer.
+	 * 
+	 * @param EscposPrintBuffer $buffer The buffer to use.
+	 * @throws InvalidArgumentException Where the buffer is already attached to a different printer.
+	 */
 	function setPrintBuffer(EscposPrintBuffer $buffer) {
 		if($buffer -> getPrinter() != null) {
 			throw new InvalidArgumentException("This buffer is already attached to a printer.");
@@ -407,6 +420,11 @@ class Escpos {
 		$this -> buffer -> setPrinter($this);
 	}
 	
+	/**
+	 * Use an alternative capability profile for this printer.
+	 * 
+	 * @param AbstractCapabilityProfile $profile Profile to use
+	 */
 	function setPrinterCapabilityProfile(AbstractCapabilityProfile $profile) {
 		$this -> profile = $profile;
 	}

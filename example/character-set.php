@@ -1,19 +1,9 @@
 <?php
 require_once(dirname(__FILE__) . "/../Escpos.php");
 $printer = new Escpos();
-compactCharTable($printer);
-$printer -> close();
+//compactCharTable($printer);
 
-/*
- * Note: The remainder of this  script was created for demonstrating
- * an i18n idea, which is not yet production-ready.
- */
-exit(0);
-$tables = array(
-	Escpos::CP_437,
-	Escpos::CP_720,
-	Escpos::CP_864,
-	Escpos::WCP_1256);
+$tables = array(6, 7, 8);
 $printer -> selectPrintMode(Escpos::MODE_DOUBLE_WIDTH | Escpos::MODE_DOUBLE_HEIGHT);
 foreach($tables as $table) {
 	$printer -> selectCharacterTable($table);

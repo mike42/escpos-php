@@ -35,40 +35,6 @@ class EscposPrintBuffer {
 	/**
 	 * This array maps Escpos character tables to names iconv encodings
 	 */
-// 	TODO Not yet used
-// 	private static $characterMaps = array(
-// 			Escpos::CHARSET_CP437 => "CP437",
-// 			Escpos::CHARSET_CP850 => "CP850",
-// 			Escpos::CHARSET_CP860 => "CP860",
-// 			Escpos::CHARSET_CP863 => "CP863",
-// 			Escpos::CHARSET_CP865 => "CP865",
-// 			Escpos::CHARSET_CP851 => "CP851",
-// 			Escpos::CHARSET_CP857 => "CP857",
-// 			Escpos::CHARSET_CP737 => "CP737",
-// 			Escpos::CHARSET_ISO8859_7 => "ISO_8859-7",
-// 			Escpos::CHARSET_CP1252 => "CP1252",
-// 			Escpos::CHARSET_CP866 => "CP866",
-// 			Escpos::CHARSET_CP852 => "CP852",
-// 			Escpos::CHARSET_TCVN3_1 => "TCVN",
-// 			Escpos::CHARSET_CP775 => "CP775",
-// 			Escpos::CHARSET_CP855 => "CP855",
-// 			Escpos::CHARSET_CP861 => "CP861",
-// 			Escpos::CHARSET_CP862 => "CP862",
-// 			Escpos::CHARSET_CP864 => "CP864",
-// 			Escpos::CHARSET_CP869 => "CP869",
-// 			Escpos::CHARSET_ISO8859_2 => "ISO_8859-2",
-// 			Escpos::CHARSET_ISO8859_15 => "ISO_8859-15",
-// 			Escpos::CHARSET_CP1125 => "CP1125",
-// 			Escpos::CHARSET_CP1250 => "CP1250",
-// 			Escpos::CHARSET_CP1251 => "CP1251",
-// 			Escpos::CHARSET_CP1253 => "CP1253",
-// 			Escpos::CHARSET_CP1254 => "CP1254",
-// 			Escpos::CHARSET_CP1255 => "CP1255",
-// 			Escpos::CHARSET_CP1256 => "CP1256",
-// 			Escpos::CHARSET_CP1257 => "CP1257",
-// 			Escpos::CHARSET_CP1258 => "CP1258",
-// 			Escpos::CHARSET_RK1048 => "RK1048"
-// 		);
 	// List of available characters
 	private static $available = null;
 
