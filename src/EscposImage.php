@@ -108,7 +108,7 @@ class EscposImage {
 					$this -> readImageFromGdResource($im);
 					return;
 				case "jpg":
-					$im = imagecreatefromjpg($imgPath);
+					$im = imagecreatefromjpeg($imgPath);
 					$this -> readImageFromGdResource($im);
 					return;
 				case "gif":
