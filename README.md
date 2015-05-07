@@ -59,7 +59,7 @@ When you have finished using the print object, call `close()` to finalize any da
 ### Tips & examples
 On Linux, your printer device file will be somewhere like `/dev/lp0` (parallel), `/dev/usb/lp1` (USB), `/dev/ttyUSB0` (USB-Serial), `/dev/ttyS0` (serial).
 
-On Windows, the device files will be along the lines of `LPT1` (parallel) or `COM1` (serial). Use the `WindowsPrintConnector` to tap into system printing on Windows (eg. [Windows USB](https://github.com/mike42/escpos-php/tree/master/example/interface/windows-usb.php), [SMB](https://github.com/mike42/escpos-php/tree/master/example/interface/smb.php)) or [Windows LPT](https://github.com/mike42/escpos-php/tree/master/example/interface/windows-lpt.php))) - this submits print jobs via a queue rather than communicating directly with the printer.
+On Windows, the device files will be along the lines of `LPT1` (parallel) or `COM1` (serial). Use the `WindowsPrintConnector` to tap into system printing on Windows (eg. [Windows USB](https://github.com/mike42/escpos-php/tree/master/example/interface/windows-usb.php), [SMB](https://github.com/mike42/escpos-php/tree/master/example/interface/smb.php) or [Windows LPT](https://github.com/mike42/escpos-php/tree/master/example/interface/windows-lpt.php)) - this submits print jobs via a queue rather than communicating directly with the printer.
 
 A complete real-world receipt can be found in the code of [Auth](https://github.com/mike42/Auth) in [ReceiptPrinter.php](https://github.com/mike42/Auth/blob/master/lib/misc/ReceiptPrinter.php). It includes justification, boldness, and a barcode.
 
@@ -130,7 +130,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Xprinter XP-Q800
 - Zijang NT-58H
 - Zijang ZJ-5870
-- Zijang ZJ-5890T
+- Zijang ZJ-5890T (Marketed as POS 5890T)
 
 If you use any other printer with this code, please let me know so I can add it to the list.
 
