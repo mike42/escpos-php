@@ -16,7 +16,7 @@ class EscposPrintBufferTest extends PHPUnit_Framework_TestCase {
 	protected function setup() {
 		$this -> outputConnector = new DummyPrintConnector();
 		$printer = new Escpos($this -> outputConnector);
-		$this -> buffer = $printer -> getBuffer();
+		$this -> buffer = $printer -> getPrintBuffer();
 	}
 	
 	protected function checkOutput($expected = null) {
@@ -113,6 +113,13 @@ class EscposPrintBufferTest extends PHPUnit_Framework_TestCase {
 	public function testJapaneseKatakana() {
 		$this -> markTestIncomplete("Non-ASCII character sets not yet supported.");
 		$this -> buffer -> writeText(implode("\n", "イロハニホヘト チリヌルヲ ワカヨタレソ ツネナラム", "ウヰノオクヤマ ケフコエテ アサキユメミシ ヱヒモセスン") . "\n");
+		$this -> checkOutput();
+	}
+
+	public function testLavian() {
+		$this -> markTestIncomplete("Non-ASCII character sets not yet supported.");
+		$this -> buffer -> writeText(implode("\n", array("A Ā B C Č D E Ē F G Ģ H I Ī J K Ķ L Ļ M N Ņ O P R S Š T U Ū V Z Ž",
+			"a ā b c č d e ē f g ģ h i ī j k ķ l ļ m n ņ o p r s š t u ū v z ž")));
 		$this -> checkOutput();
 	}
 

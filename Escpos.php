@@ -49,6 +49,10 @@ require_once(dirname(__FILE__) . "/src/PrintConnector.php");
 require_once(dirname(__FILE__) . "/src/WindowsPrintConnector.php");
 require_once(dirname(__FILE__) . "/src/FilePrintConnector.php");
 require_once(dirname(__FILE__) . "/src/NetworkPrintConnector.php");
+require_once(dirname(__FILE__) . "/src/AbstractCapabilityProfile.php");
+require_once(dirname(__FILE__) . "/src/DefaultCapabilityProfile.php");
+require_once(dirname(__FILE__) . "/src/SimpleCapabilityProfile.php");
+require_once(dirname(__FILE__) . "/src/EposTepCapabilityProfile.php");
 
 class Escpos {
 	/* ASCII codes */
@@ -66,77 +70,7 @@ class Escpos {
 	const BARCODE_CODE39 = 4;
 	const BARCODE_ITF = 5;
 	const BARCODE_CODABAR = 6;
-	
-	/*
-	 * All character tables. Only a subset of these are automatically
-	 * switched to (see EscposPrintBuffer), but all can be manually applied
-	 * and accessed via textRaw();
-	 */
-// TODO not yet used, see issue #9
-// 	const CHARSET_AUTO = -1;
- 	const CHARSET_CP437 = 0;
-// 	const CHARSET_KATAKANA = 1;
-// 	const CHARSET_CP850 = 2;
-// 	const CHARSET_CP860 = 3;
-// 	const CHARSET_CP863 = 4;
-// 	const CHARSET_CP865 = 5;
-// 	const CHARSET_HIRAGANA = 6;
-// 	const CHARSET_KANJI_1 = 7;
-// 	const CHARSET_KANJI_2 = 8;
-// 	const CHARSET_CP851 = 11;
-// 	const CHARSET_CP853 = 12;
-// 	const CHARSET_CP857 = 13;
-// 	const CHARSET_CP737 = 14;
-// 	const CHARSET_ISO8859_7 = 15;
-// 	const CHARSET_CP1252 = 16;
-// 	const CHARSET_CP866 = 17;
-// 	const CHARSET_CP852 = 18;
-// 	const CHARSET_CP858 = 19;
-// 	const CHARSET_THAI_42 = 20;
-// 	const CHARSET_THAI_11 = 21;
-// 	const CHARSET_THAI_13 = 22;
-// 	const CHARSET_THAI_14 = 23;
-// 	const CHARSET_THAI_16 = 24;
-// 	const CHARSET_THAI_17 = 25;
-// 	const CHARSET_THAI_18 = 26;
-// 	const CHARSET_TCVN3_1 = 30;
-// 	const CHARSET_TCVN3_2 = 31;
-// 	const CHARSET_CP720 = 32;
-// 	const CHARSET_CP775 = 33;
-// 	const CHARSET_CP855 = 34;
-// 	const CHARSET_CP861 = 35;
-// 	const CHARSET_CP862 = 36;
-// 	const CHARSET_CP864 = 37;
-// 	const CHARSET_CP869 = 38;
-// 	const CHARSET_ISO8859_2 = 39;
-// 	const CHARSET_ISO8859_15 = 40;
-// 	const CHARSET_CP1098 = 41;
-// 	const CHARSET_CP1118 = 42;
-// 	const CHARSET_CP1119 = 43;
-// 	const CHARSET_CP1125 = 44;
-// 	const CHARSET_CP1250 = 45;
-// 	const CHARSET_CP1251 = 46;
-// 	const CHARSET_CP1253 = 47;
-// 	const CHARSET_CP1254 = 48;
-// 	const CHARSET_CP1255 = 49;
-// 	const CHARSET_CP1256 = 50;
-// 	const CHARSET_CP1257 = 51;
-// 	const CHARSET_CP1258 = 52;
-// 	const CHARSET_RK1048 = 53;
-// 	const CHARSET_ISCII_DEVANAGARI = 66;
-// 	const CHARSET_ISCII_BENGALI = 67;
-// 	const CHARSET_ISCII_TAMIL = 68;
-// 	const CHARSET_ISCII_TELUGU = 69;
-// 	const CHARSET_ISCII_ASSAMESE = 70;
-// 	const CHARSET_ISCII_ORIYA = 71;
-// 	const CHARSET_ISCII_KANNADA = 72;
-// 	const CHARSET_ISCII_MALAYALAM = 73;
-// 	const CHARSET_ISCII_GUJARATI = 74;
-// 	const CHARSET_ISCII_PUNJABI = 75;
-// 	const CHARSET_ISCII_MARATHI = 82;
-// 	const CHARSET_254 = 254;
-// 	const CHARSET_255 = 255;
-	
+		
 	/* Cut types */
 	const CUT_FULL = 65;
 	const CUT_PARTIAL = 66;
@@ -186,11 +120,8 @@ class Escpos {
 	private $buffer;
 	
 	private $connector;
-	
-// 	/**
-// 	 * @var array The list of accepted character sets. This is used only for validation.
-// 	 */
-// 	private static $charsets = array();
+
+	private $profile;
 	
 	/**
 	 * Construct a new print object
@@ -206,6 +137,7 @@ class Escpos {
 			}
 		}
 		$this -> connector = $connector;
+		$profile = DefaultCapabilityProfile::getInstance();
 		$buffer = new EscposPrintBuffer();
 		$this -> buffer = null;
 		$this -> setPrintBuffer($buffer);
@@ -281,13 +213,26 @@ class Escpos {
 		self::validateInteger($lines, 1, 255, __FUNCTION__);
 		$this -> connector -> write(self::ESC . "e" . chr($lines));
 	}
-	
-	function getBuffer() {
+
+	/**
+	 * @return EscposPrintBuffer
+	 */
+	function getPrintBuffer() {
 		return $this -> buffer;
 	}
-	
-	function getConnector() {
+
+	/**
+	 * @return PrintConnector
+	 */
+	function getPrintConnector() {
 		return $this -> connector;
+	}
+
+	/**
+	 * @return AbstractCapabilityProfile
+	 */
+	function getPrinterCapabilityProfile() {
+		return $this -> profile;
 	}
 	
 	/**
@@ -460,6 +405,10 @@ class Escpos {
 		}
 		$this -> buffer = $buffer;
 		$this -> buffer -> setPrinter($this);
+	}
+	
+	function setPrinterCapabilityProfile(AbstractCapabilityProfile $profile) {
+		$this -> profile = $profile;
 	}
 	
 	/**

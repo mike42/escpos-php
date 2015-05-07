@@ -222,7 +222,7 @@ class EscposPrintBuffer {
 		if($this -> printer == null) {
 			throw new LogicException("Not attached to a printer.");
 		}
-		$this -> printer -> getConnector() -> write($data);
+		$this -> printer -> getPrintConnector() -> write($data);
 	}
 
 	// Figure out what encoding some text is
