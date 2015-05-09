@@ -53,6 +53,7 @@ require_once(dirname(__FILE__) . "/src/AbstractCapabilityProfile.php");
 require_once(dirname(__FILE__) . "/src/DefaultCapabilityProfile.php");
 require_once(dirname(__FILE__) . "/src/SimpleCapabilityProfile.php");
 require_once(dirname(__FILE__) . "/src/EposTepCapabilityProfile.php");
+require_once(dirname(__FILE__) . "/src/StarCapabilityProfile.php");
 require_once(dirname(__FILE__) . "/src/CodePage.php");
 
 class Escpos {

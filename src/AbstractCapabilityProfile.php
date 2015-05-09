@@ -29,6 +29,11 @@ abstract class AbstractCapabilityProfile {
 	abstract function getSupportsGraphics();
 
 	/**
+	 * True for 'STAR original' commands, false for standard ESC/POS only.
+	 */
+	abstract function getSupportsStartCommands();
+
+	/**
 	 * True if the printer renders its own QR codes, false to send an image.
 	 */
 	abstract function getSupportsQrCode();

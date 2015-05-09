@@ -5,12 +5,9 @@
  * For non-Epson printers, try the SimpleCapabilityProfile.
  */
 class DefaultCapabilityProfile extends AbstractCapabilityProfile {
-	/**
-	 * Return a map of code page numbers to names for this printer. Names
-	 * should match iconv code page names where possible (non-matching names will not be used).
-	 */
 	function getSupportedCodePages() {
-		/* Character code tables matching to known encoding standards we can use on the PC.
+		/* Character code tables which the printer understands, mapping to known encoding standards we may be able to encode to.
+		 * 
 		 * See CodePage.php for the mapping of these standards to encoding names for use in the backing library.
 		 * 
 		 * Any entry with 'false' means I haven't compared the print-out of the code page to a table.
@@ -80,23 +77,18 @@ class DefaultCapabilityProfile extends AbstractCapabilityProfile {
 			255 => false);
 	}
 
-	/**
-	 * True for bitImage support, false for no bitImage support.
-	 */
 	function getSupportsBitImage() {
 		return true;
 	}
 
-	/**
-	 * True for graphics support, false for no graphics support.
-	 */
 	function getSupportsGraphics() {
 		return true;
 	}
 
-	/**
-	 * True if the printer renders its own QR codes, false to send an image.
-	 */
+	function getSupportsStartCommands() {
+		return false;
+	}
+
 	function getSupportsQrCode() {
 		return true;
 	}
