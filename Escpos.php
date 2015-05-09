@@ -132,6 +132,11 @@ class Escpos {
 	private $profile;
 	
 	/**
+	 * @var int Current character code table
+	 */
+	private $characterTable;
+	
+	/**
 	 * Construct a new print object
 	 * 
 	 * @param PrintConnector $connector The PrintConnector to send data to. If not set, output is sent to standard output.
@@ -145,7 +150,7 @@ class Escpos {
 			}
 		}
 		$this -> connector = $connector;
-		$profile = DefaultCapabilityProfile::getInstance();
+		$this -> profile = DefaultCapabilityProfile::getInstance();
 		$buffer = new EscposPrintBuffer();
 		$this -> buffer = null;
 		$this -> setPrintBuffer($buffer);
@@ -223,6 +228,13 @@ class Escpos {
 	}
 
 	/**
+	 * @return number
+	 */
+	function getCharacterTable() {
+		return $this -> characterTable;
+	}
+	
+	/**
 	 * @return EscposPrintBuffer
 	 */
 	function getPrintBuffer() {
@@ -276,6 +288,7 @@ class Escpos {
 	 */
 	function initialize() {
 		$this -> connector -> write(self::ESC . "@");
+		$this -> characterTable = 0;
 	}
 	
 	/**
@@ -309,6 +322,10 @@ class Escpos {
 		if($content == "") {
 			return;
 		}
+		if($this -> profile -> getSupportsQrCode()) {
+			// TODO use software rendering via phpqrcode instead
+			throw new Exception("QR codes are not supported on your printer.");
+		}
 		$cn = '1'; // Code type for QR code
 		// Select model: 1, 2 or micro.
 		$this -> wrapperSend2dCodeData(chr(65), $cn, chr(48 + $model) . chr(0));
@@ -327,8 +344,18 @@ class Escpos {
 	 * 
 	 * @param int $table The table to select. Available code tables are model-specific.
 	 */
-	function selectCharacterTable($table = self::CHARSET_CP437) {
+	function selectCharacterTable($table = 0) {
 		self::validateInteger($table, 0, 255, __FUNCTION__);
+		$supported = $this -> profile -> getSupportedCodePages();
+		if(!isset($supported[$table])) {
+			throw new InvalidArgumentException("There is no code table $table allowed by this printer's capability profile.");
+		}
+		$this -> characterTable = $table;
+		if($this -> profile -> getSupportsStarCommands()) {
+			/* Not an ESC/POS command: STAR printers stash all the extra code pages under a different command. */
+			$this -> connector -> write(self::ESC . self::GS . "t" . chr($table));
+			return;
+		}
 		$this -> connector -> write(self::ESC . "t" . chr($table));
 	}
 

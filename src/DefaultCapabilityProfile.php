@@ -85,7 +85,7 @@ class DefaultCapabilityProfile extends AbstractCapabilityProfile {
 		return true;
 	}
 
-	function getSupportsStartCommands() {
+	function getSupportsStarCommands() {
 		return false;
 	}
 
