@@ -32,7 +32,11 @@
  * It is clearly a work in progress, details at https://github.com/mike42/escpos-php/issues/6
  */
 class EscposPrintBuffer {
+	const INPUT_ENCODING = "UTF-8";
+	
 	const COMPRESS_CACHE = true;
+	
+	const REPLACEMENT_CHAR = "?";
 	
 	/**
 	 * This array maps Escpos character tables to names iconv encodings
@@ -83,11 +87,11 @@ class EscposPrintBuffer {
  				continue;
  			}
  			for($char = 128; $char <= 255; $char++) {
- 				$utf8 = @iconv($characterMap, 'UTF-8', chr($char));
+ 				$utf8 = @iconv($characterMap, self::INPUT_ENCODING, chr($char));
  				if($utf8 == '') {
  					continue;
  				}
- 				if(iconv('UTF-8', $characterMap, $utf8) != chr($char)) {
+ 				if(iconv(self::INPUT_ENCODING, $characterMap, $utf8) != chr($char)) {
  					// Avoid non-canonical conversions
  					continue;
  				}
@@ -118,7 +122,7 @@ class EscposPrintBuffer {
 		if($text == null) {
 			return;
 		}
-		if(!mb_detect_encoding($text, 'UTF-8', true)) {
+		if(!mb_detect_encoding($text, self::INPUT_ENCODING, true)) {
 			// Assume that the user has already put non-UTF8 into the target encoding.
 			return $this -> writeTextRaw($text);
 		}
@@ -129,36 +133,36 @@ class EscposPrintBuffer {
 		}
 		$i = 0;
 		$j = 0;
-		$len = mb_strlen($text, 'UTF-8');
+		$len = mb_strlen($text, self::INPUT_ENCODING);
 		while($i < $len) {
 			$matching = true;
-			if(($encoding = $this -> identify(mb_substr($text, $i, 1, 'UTF-8'))) === false) {
+			if(($encoding = $this -> identify(mb_substr($text, $i, 1, self::INPUT_ENCODING))) === false) {
 				// Un-encodeable text
 				$encoding = $this -> getPrinter() -> getCharacterTable();
 			}
 			$i++;
 			$j = 1;
 			do {
-				$char = mb_substr($text, $i, 1, 'UTF-8');
+				$char = mb_substr($text, $i, 1, self::INPUT_ENCODING);
 				$matching = !isset($this -> available[$char]) || isset($this -> available[$char][$encoding]);
 				if($matching) {
 					$i++;
 					$j++;
 				}
 			} while($matching && $i < $len);
-			$this -> writeTextUsingEncoding(mb_substr($text, $i - $j, $j, 'UTF-8'), $encoding);
+			$this -> writeTextUsingEncoding(mb_substr($text, $i - $j, $j, self::INPUT_ENCODING), $encoding);
 		}	
 	}
 
 	// Multibyte
 	private function writeTextUsingEncoding($text, $encodingNo) {
-		echo "\n$encodingNo: $text\n";
+		//echo "\n$encodingNo: $text\n";
 		
  		$encodeMap = $this -> encode[$encodingNo];
- 		$len = mb_strlen($text, 'UTF-8');
- 		$rawText = str_repeat("?", $len);
+ 		$len = mb_strlen($text, self::INPUT_ENCODING);
+ 		$rawText = str_repeat(self::REPLACEMENT_CHAR, $len);
  		for($i = 0; $i < $len; $i++) {
- 			$char = mb_substr($text, $i, 1, 'UTF-8');
+ 			$char = mb_substr($text, $i, 1, self::INPUT_ENCODING);
  			if(isset($encodeMap[$char])) {
  				$rawText[$i] = $encodeMap[$char];
  			} else if($this -> asciiCheck($char)) {
@@ -171,7 +175,7 @@ class EscposPrintBuffer {
 		$this -> writeTextRaw($rawText);
 	}
 	
-	private function asciiCheck($char) {
+	private function asciiCheck($char, $extended = false) {
 		if(strlen($char) != 1) {
 			// Multi-byte string
 			return false;
@@ -180,7 +184,10 @@ class EscposPrintBuffer {
 		if($num > 31 && $num < 127) { // Printable
 			return true;
 		}
-		if($num == 10) { // New-line (printer will take these
+		if($num == 10) { // New-line (printer will take these)
+			return true;
+		}
+		if($extended && $num > 127) {
 			return true;
 		}
 		return false;
@@ -200,7 +207,16 @@ class EscposPrintBuffer {
 		if($this -> printer == null) {
 			throw new LogicException("Not attached to a printer.");
 		}
-		// TODO Call write, passing on printable characters only!
+		if(strlen($text) == 0) {
+			return;
+		}
+		// Pass only printable characters
+		for($i = 0; $i < strlen($text); $i++) {
+			$c = substr($text, $i, 1);
+			if(!self::asciiCheck($c, true)) {
+				$text[$i] = self::REPLACEMENT_CHAR;
+			}
+		}
 		$this -> write($text);
 	}
 
@@ -211,8 +227,8 @@ class EscposPrintBuffer {
 	// Figure out what encoding some text is
 	private function identify($text) {
 		// TODO instead, count points for each encoding, choose the one which encodes the farthest into the string.
-		$char = mb_substr($text, 0, 1, 'UTF-8');
-		echo $text . $char . "#\n";
+		$char = mb_substr($text, 0, 1, self::INPUT_ENCODING);
+		//echo $text . $char . "#\n";
 		if(!isset($this -> available[$char])) {
 			return false;
 		}

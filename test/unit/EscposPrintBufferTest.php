@@ -32,39 +32,28 @@ class EscposPrintBufferTest extends PHPUnit_Framework_TestCase {
 		$this -> outputConnector -> finalize();
 	}
 
-	private function friendlyBinary($in) {
-		/* Print out binary data with PHP \x00 escape codes,
-			for builting test cases. */
-		$chars = str_split($in);
-		foreach($chars as $i => $c) {
-			$code = ord($c);
-			if($code < 32 || $code > 126) {
-				$chars[$i] = "\\x" . bin2hex($c);
-			}
-		}
-		return implode($chars);
-	}
-
 	public function testRawTextNonprintable() {
 		$this -> markTestIncomplete("Filtering out non-printable characters not yet implemented.");
-		//$this -> buffer -> writeTextRaw("Test" . Escpos::ESC . "v1\n");
+		$this -> buffer -> writeTextRaw("Test" . Escpos::ESC . "v1\n");
 		$this -> checkOutput();
 	}
 
 	public function testDanish() {
-		$this -> markTestIncomplete("Non-ASCII character sets not yet supported.");
-		$this -> buffer -> writeText("Quizdeltagerne spiste jordbær med fløde, mens cirkusklovnen Wolther spillede på xylofon.");
+		$this -> buffer -> writeText("Quizdeltagerne spiste jordbær med fløde, mens cirkusklovnen Wolther spillede på xylofon.\n");
 		$this -> checkOutput();
 	}
 
 	public function testGerman() {
-		$this -> markTestIncomplete("Non-ASCII character sets not yet supported.");
 		$this -> buffer -> writeText("Falsches Üben von Xylophonmusik quält jeden größeren Zwerg.\n");
 		$this -> checkOutput();
 	}
 
 	public function testGreek() {
-		$this -> markTestIncomplete("Non-ASCII character sets not yet supported.");
+		$this -> buffer -> writeText("Ξεσκεπάζω την ψυχοφθόρα βδελυγμία");
+	}
+	
+	public function testGreekWithDiacritics() {
+		// Alto tests substitution '?' for non-printables
 		$this -> buffer -> writeText("Γαζέες καὶ μυρτιὲς δὲν θὰ βρῶ πιὰ στὸ χρυσαφὶ ξέφωτο.\n");
 		$this -> checkOutput();
 	}
@@ -75,31 +64,26 @@ class EscposPrintBufferTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testSpanish() {
-		$this -> markTestIncomplete("Non-ASCII character sets not yet supported.");
 		$this -> buffer -> writeText("El pingüino Wenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro.\n");
 		$this -> checkOutput();
 	}
 
 	public function testFrench() {
-		$this -> markTestIncomplete("Non-ASCII character sets not yet supported.");
 		$this -> buffer -> writeText("Le cœur déçu mais l'âme plutôt naïve, Louÿs rêva de crapaüter en canoë au delà des îles, près du mälström où brûlent les novæ.\n");
 		$this -> checkOutput();
 	}
 
 	public function testIrishGaelic() {
-		$this -> markTestIncomplete("Non-ASCII character sets not yet supported.");
 		$this -> buffer -> writeText("D'fhuascail Íosa, Úrmhac na hÓighe Beannaithe, pór Éava agus Ádhaimh.\n");
 		$this -> checkOutput();
 	}
 
 	public function testHungarian() {
-		$this -> markTestIncomplete("Non-ASCII character sets not yet supported.");
 		$this -> buffer -> writeText("Árvíztűrő tükörfúrógép.\n");
 		$this -> checkOutput();
 	}
 	
 	public function testIcelandic() {
-		$this -> markTestIncomplete("Non-ASCII character sets not yet supported.");
 		$this -> buffer -> writeText("Kæmi ný öxi hér ykist þjófum nú bæði víl og ádrepa.");
 		$this -> checkOutput();
 	}
@@ -112,10 +96,14 @@ class EscposPrintBufferTest extends PHPUnit_Framework_TestCase {
 
 	public function testJapaneseKatakana() {
 		$this -> markTestIncomplete("Non-ASCII character sets not yet supported.");
-		$this -> buffer -> writeText(implode("\n", "イロハニホヘト チリヌルヲ ワカヨタレソ ツネナラム", "ウヰノオクヤマ ケフコエテ アサキユメミシ ヱヒモセスン") . "\n");
+		$this -> buffer -> writeText(implode("\n", array("イロハニホヘト チリヌルヲ ワカヨタレソ ツネナラム", "ウヰノオクヤマ ケフコエテ アサキユメミシ ヱヒモセスン")) . "\n");
 		$this -> checkOutput();
 	}
 
+	public function testJapaneseKataKanaHalfWidth() {
+		$this -> buffer -> writeText(implode("\n", array("ｲﾛﾊﾆﾎﾍﾄ ﾁﾘﾇﾙｦ ﾜｶﾖﾀﾚｿ ﾂﾈﾅﾗﾑ", "ｳｲﾉｵｸﾔﾏ ｹﾌｺｴﾃ ｱｻｷﾕﾒﾐｼ ｴﾋﾓｾｽﾝ")) . "\n");
+	}
+	
 	public function testLatvian() {
 		$this -> buffer -> writeText(implode("\n", array("A Ā B C Č D E Ē F G Ģ H I Ī J K Ķ L Ļ M N Ņ O P R S Š T U Ū V Z Ž",
 			"a ā b c č d e ē f g ģ h i ī j k ķ l ļ m n ņ o p r s š t u ū v z ž")) . "\n");
@@ -123,13 +111,11 @@ class EscposPrintBufferTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testPolish() {
-		$this -> markTestIncomplete("Non-ASCII character sets not yet supported.");
 		$this -> buffer -> writeText("Pchnąć w tę łódź jeża lub ośm skrzyń fig.\n");
 		$this -> checkOutput();
 	}
 
 	public function testRussian() {
-		$this -> markTestIncomplete("Non-ASCII character sets not yet supported.");
 		$this -> buffer -> writeText("В чащах юга жил бы цитрус? Да, но фальшивый экземпляр!\n");
 		$this -> checkOutput();
 	}
@@ -141,7 +127,6 @@ class EscposPrintBufferTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testTurkish() {
-		$this -> markTestIncomplete("Non-ASCII character sets not yet supported.");
 		$this -> buffer -> writeText("Pijamalı hasta, yağız şoföre çabucak güvendi.\n");
 		$this -> checkOutput();
 	}
