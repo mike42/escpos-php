@@ -17,19 +17,20 @@ $inputsOk = array(
 		"Irish Gaelic" => "D'fhuascail Íosa, Úrmhac na hÓighe Beannaithe, pór Éava agus Ádhaimh.\n",
 		"Hungarian" => "Árvíztűrő tükörfúrógép.\n",
 		"Icelandic" => "Kæmi ný öxi hér ykist þjófum nú bæði víl og ádrepa.\n",
-		"Latvian" => implode("\n", array("A Ā B C Č D E Ē F G Ģ H I Ī J K Ķ L Ļ M N Ņ O P R S Š T U Ū V Z Ž",
-			"a ā b c č d e ē f g ģ h i ī j k ķ l ļ m n ņ o p r s š t u ū v z ž")) . "\n",
+		"Latvian" => "Glāžšķūņa rūķīši dzērumā čiepj Baha koncertflīģeļu vākus.\n",
 		"Polish" => "Pchnąć w tę łódź jeża lub ośm skrzyń fig.\n",
 		"Russian" => "В чащах юга жил бы цитрус? Да, но фальшивый экземпляр!\n",
 		"Turkish" => "Pijamalı hasta, yağız şoföre çabucak güvendi.\n",
+		"Japanese (Katakana half-width)" => implode("\n", array("ｲﾛﾊﾆﾎﾍﾄ ﾁﾘﾇﾙｦ ﾜｶﾖﾀﾚｿ ﾂﾈﾅﾗﾑ",  "ｳｲﾉｵｸﾔﾏ ｹﾌｺｴﾃ ｱｻｷﾕﾒﾐｼ ｴﾋﾓｾｽﾝ")) . "\n"
 		);
+
 $inputsNotOk = array(
 		"Thai (No character encoder available)" => "นายสังฆภัณฑ์ เฮงพิทักษ์ฝั่ง ผู้เฒ่าซึ่งมีอาชีพเป็นฅนขายฃวด ถูกตำรวจปฏิบัติการจับฟ้องศาล ฐานลักนาฬิกาคุณหญิงฉัตรชฎา ฌานสมาธิ\n",
 		"Japanese (Hiragana)" => implode("\n", array("いろはにほへとちりぬるを",  " わかよたれそつねならむ", "うゐのおくやまけふこえて",  "あさきゆめみしゑひもせす")) . "\n",
 		"Japanese (Katakana full-width)" => implode("\n", array("イロハニホヘト チリヌルヲ ワカヨタレソ ツネナラム",  "ウヰノオクヤマ ケフコエテ アサキユメミシ ヱヒモセスン")) . "\n",
-		"Japanese (Katakana half-width)" => implode("\n", array("ｲﾛﾊﾆﾎﾍﾄ ﾁﾘﾇﾙｦ ﾜｶﾖﾀﾚｿ ﾂﾈﾅﾗﾑ",  "ｳｲﾉｵｸﾔﾏ ｹﾌｺｴﾃ ｱｻｷﾕﾒﾐｼ ｴﾋﾓｾｽﾝ")) . "\n",
 		"Arabic (RTL not supported, encoding issues)" => "صِف خَلقَ خَودِ كَمِثلِ الشَمسِ إِذ بَزَغَت — يَحظى الضَجيعُ بِها نَجلاءَ مِعطارِ" . "\n",
-		"Hebrew (RTL not supported, line break issues)" => "דג סקרן שט בים מאוכזב ולפתע מצא לו חברה איך הקליטה" . "\n");
+		"Hebrew (RTL not supported, line break issues)" => "דג סקרן שט בים מאוכזב ולפתע מצא לו חברה איך הקליטה" . "\n"
+		);
 
 try {
 	// Enter connector and capability profile

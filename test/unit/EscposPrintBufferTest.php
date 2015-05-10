@@ -105,8 +105,7 @@ class EscposPrintBufferTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function testLatvian() {
-		$this -> buffer -> writeText(implode("\n", array("A Ā B C Č D E Ē F G Ģ H I Ī J K Ķ L Ļ M N Ņ O P R S Š T U Ū V Z Ž",
-			"a ā b c č d e ē f g ģ h i ī j k ķ l ļ m n ņ o p r s š t u ū v z ž")) . "\n");
+		$this -> buffer -> writeText("Glāžšķūņa rūķīši dzērumā čiepj Baha koncertflīģeļu vākus.\n");
 		$this -> checkOutput();
 	}
 
