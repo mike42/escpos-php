@@ -228,11 +228,12 @@ class EscposPrintBuffer {
 	private function identify($text) {
 		// TODO instead, count points for each encoding, choose the one which encodes the farthest into the string.
 		$char = mb_substr($text, 0, 1, self::INPUT_ENCODING);
-		//echo $text . $char . "#\n";
 		if(!isset($this -> available[$char])) {
+			// Character not available anywhere
 			return false;
 		}
 		foreach($this -> available[$char] as $encodingNo => $true) {
+			// Return first code-page where it is available
 			return $encodingNo;
 		}
 		return false;

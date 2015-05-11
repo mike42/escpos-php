@@ -322,7 +322,7 @@ class Escpos {
 		if($content == "") {
 			return;
 		}
-		if($this -> profile -> getSupportsQrCode()) {
+		if(!$this -> profile -> getSupportsQrCode()) {
 			// TODO use software rendering via phpqrcode instead
 			throw new Exception("QR codes are not supported on your printer.");
 		}
