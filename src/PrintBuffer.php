@@ -54,16 +54,16 @@ interface PrintBuffer {
 	/**
 	 * Used by Escpos to hook up one-to-one link between buffers and printers.
 	 */
-	function setPrinter();
+	function setPrinter(Escpos $printer = null);
 	
 	/**
 	 * Accept UTF-8 text for printing.
 	 */
-	function writeText();
+	function writeText($text);
 	
 	/**
 	 * Accept 8-bit text in the current encoding and add it to the buffer.
 	 */
-	function writeTextRaw();
+	function writeTextRaw($text);
 }
 ?>

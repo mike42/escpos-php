@@ -32,5 +32,17 @@
  * which your system can handle. This class currently requires Imagick.
  */
 class ImagePrintBuffer implements PrintBuffer {
+	function __construct() {
+		throw new Exception("ImagePrintBuffer not implemented");
+	}
 	
+	function flush() {}
+
+	function getPrinter() {}
+
+	function setPrinter(Escpos $printer = null) {}
+
+	function writeText($text) {}
+
+	function writeTextRaw($text) {}
 }
