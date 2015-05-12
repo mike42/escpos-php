@@ -3,29 +3,20 @@
 require_once(dirname(__FILE__) . "/../Escpos.php");
 
 /**
- * This demonstrates available character encodings. Escpos-php accepts UTF-8,
- * and converts this to lower-level data to the printer. This is a complex area, so be
- * prepared to code a model-specific hack ('CapabilityProfile') for your printer.
- * 
- * If you run into trouble, please file an issue on GitHub, including at a minimum:
- * - A UTF-8 test string in the language you're working in, and
- * - A test print or link to a technical document which lists the available
- *      code pages ('character code tables') for your printer.
- * 
- * The DefaultCapabilityProfile works for Espson-branded printers. For other models, you
- * must use/create a PrinterCapabilityProfile for your printer containing a list of code
- * page numbers for your printer- otherwise you will get mojibake.
- * 
- * If you do not intend to use non-English characters, then use SimpleCapabilityProfile,
- * which has only the default encoding, effectively disabling code page changes.
+ * This example builds on character-encodings.php, also providing an image-based rendering.
+ * This is quite slow, since a) the buffers are changed dozens of
+ * times in the example, and b) It involves sending very wide images, which printers don't like!
+ *
+ * It does, however, illustrate the way that more encodings are available when image output is used.
  */
-
 include('character-encoding-test-strings.inc');
+
 try {
 	// Enter connector and capability profile
 	$connector = new FilePrintConnector("php://stdout");
 	$profile = DefaultCapabilityProfile::getInstance();
-	
+	$buffers = array(new EscposPrintBuffer(), new ImagePrintBuffer());
+
 	/* Print a series of receipts containing i18n example strings */
 	$printer = new Escpos($connector);
 	$printer -> setPrinterCapabilityProfile($profile);
@@ -36,7 +27,11 @@ try {
 		$printer -> setEmphasis(true);
 		$printer -> text($label . ":\n");
 		$printer -> setEmphasis(false);
-		$printer -> text($str);
+		foreach($buffers as $buffer) {
+			$printer -> setPrintBuffer($buffer);
+			$printer -> text($str);
+		}
+		$printer -> setPrintBuffer($buffers[0]);
 	}
 	$printer -> feed();
 	
@@ -47,7 +42,11 @@ try {
 		$printer -> setEmphasis(true);
 		$printer -> text($label . ":\n");
 		$printer -> setEmphasis(false);
-		$printer -> text($str);
+		foreach($buffers as $buffer) {
+			$printer -> setPrintBuffer($buffer);
+			$printer -> text($str);
+		}
+		$printer -> setPrintBuffer($buffers[0]);
 	}
 	$printer -> cut();
 

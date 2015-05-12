@@ -119,7 +119,7 @@ class Escpos {
 	const UNDERLINE_DOUBLE = 2;
 	
 	/**
-	 * @var EscposPrintBuffer The printer's output buffer.
+	 * @var PrintBuffer The printer's output buffer.
 	 */
 	private $buffer;
 	
@@ -237,7 +237,7 @@ class Escpos {
 	}
 	
 	/**
-	 * @return EscposPrintBuffer
+	 * @return PrintBuffer
 	 */
 	function getPrintBuffer() {
 		return $this -> buffer;
@@ -436,10 +436,13 @@ class Escpos {
 	/**
 	 * Attach a different print buffer to the printer. Buffers are responsible for handling text output to the printer.
 	 * 
-	 * @param EscposPrintBuffer $buffer The buffer to use.
+	 * @param PrintBuffer $buffer The buffer to use.
 	 * @throws InvalidArgumentException Where the buffer is already attached to a different printer.
 	 */
-	function setPrintBuffer(EscposPrintBuffer $buffer) {
+	function setPrintBuffer(PrintBuffer $buffer) {
+		if($buffer === $this -> buffer) {
+			return;
+		}
 		if($buffer -> getPrinter() != null) {
 			throw new InvalidArgumentException("This buffer is already attached to a printer.");
 		}

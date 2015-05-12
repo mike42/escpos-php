@@ -67,7 +67,6 @@ class EscposPrintBuffer implements PrintBuffer {
 	 */
 	function __construct() {
 		$this -> printer = null;
- 		$this -> auto = true;
 	}
 
 	public function flush() {
@@ -83,7 +82,9 @@ class EscposPrintBuffer implements PrintBuffer {
 
 	public function setPrinter(Escpos $printer = null) {
 		$this -> printer = $printer;
-		$this -> loadAvailableCharacters();
+		if($printer != null) {
+			$this -> loadAvailableCharacters();
+		}
 	}
 
 	public function writeText($text) {	
@@ -96,11 +97,6 @@ class EscposPrintBuffer implements PrintBuffer {
 		if(!mb_detect_encoding($text, self::INPUT_ENCODING, true)) {
 			// Assume that the user has already put non-UTF8 into the target encoding.
 			return $this -> writeTextRaw($text);
-		}
-		if(!$this -> auto) {
-			// If we are not auto-switching characters, then pass it on directly
-			$encoding = $this -> characterTable;
-			return $this -> writeTextUsingEncoding($text, $encoding);
 		}
 		$i = 0;
 		$j = 0;
