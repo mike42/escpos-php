@@ -13,9 +13,14 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 		$this -> outpTest($outp, "bit-image.bin");
 	}
 	
-	public function testCharacterSet() {
-		// TODO example not yet ready due to character encoding development work
-		$this -> markTestIncomplete("Character set example not yet ready.");
+	public function testCharacterEncodings() {
+		$outp = $this -> runExample("character-encodings.php");
+		$this -> outpTest($outp, "character-encodings.bin");
+	}
+	
+	public function testCharacterTables() {
+		$outp = $this -> runExample("character-tables.php");
+		$this -> outpTest($outp, "character-tables.bin");
 	}
 	
 	private function outpTest($outp, $fn) {
