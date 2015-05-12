@@ -27,11 +27,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  * 
- * This class wraps the print connector and manages newlines and character encoding.
- * 
- * It is clearly a work in progress, details at https://github.com/mike42/escpos-php/issues/6
+ * This class manages newlines and character encoding for the target printer, and
+ * can be interchanged for an image-bassed buffer (ImagePrintBuffer) if you can't
+ * get it operating properly on your machine.
  */
-class EscposPrintBuffer {
+class EscposPrintBuffer implements PrintBuffer {
 	const INPUT_ENCODING = "UTF-8";
 	
 	const COMPRESS_CACHE = true;

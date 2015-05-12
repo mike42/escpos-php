@@ -55,6 +55,8 @@ require_once(dirname(__FILE__) . "/src/SimpleCapabilityProfile.php");
 require_once(dirname(__FILE__) . "/src/EposTepCapabilityProfile.php");
 require_once(dirname(__FILE__) . "/src/StarCapabilityProfile.php");
 require_once(dirname(__FILE__) . "/src/CodePage.php");
+require_once(dirname(__FILE__) . "/src/ImagePrintBuffer.php");
+require_once(dirname(__FILE__) . "/src/PrintBuffer.php");
 
 class Escpos {
 	/* ASCII codes */
