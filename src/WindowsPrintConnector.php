@@ -311,7 +311,7 @@ class WindowsPrintConnector implements PrintConnector {
 			$retval = proc_close($process);
 			return $retval;
 		} else {
-			$errorStr = "Failed to start process '$cmd'.";
+			/* Method calling this should notice a non-zero exit and print an error */
 			return -1;
 		}
 	}
