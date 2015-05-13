@@ -4,7 +4,7 @@ require_once(dirname(__FILE__) . "/../Escpos.php");
 $printer = new Escpos();
 
 try {
-	$tux = new EscposImage("images/tux.png");
+	$tux = new EscposImage("resources/tux.png");
 
 	$printer -> text("These example images are printed with the older\nbit image print command. You should only use\n\$p -> bitImage() if \$p -> graphics() does not\nwork on your printer.\n\n");
 	

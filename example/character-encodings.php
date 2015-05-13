@@ -20,7 +20,7 @@ require_once(dirname(__FILE__) . "/../Escpos.php");
  * which has only the default encoding, effectively disabling code page changes.
  */
 
-include('character-encoding-test-strings.inc');
+include(dirname(__FILE__) . '/resources/character-encoding-test-strings.inc');
 try {
 	// Enter connector and capability profile
 	$connector = new FilePrintConnector("php://stdout");

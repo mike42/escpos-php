@@ -8,7 +8,7 @@ require_once(dirname(__FILE__) . '/../Escpos.php');
  */
 
 /* 1: Print an entire PDF, start-to-finish (shorter form of the example) */
-$pdf = 'images/document.pdf';
+$pdf = 'resources/document.pdf';
 try {
 	$pages = EscposImage::loadPdf($pdf);
 	$printer = new Escpos();
@@ -34,7 +34,7 @@ try {
  * Reduce the page width further if necessary: if it extends past the printing area, your prints will be very slow.
  */
 $printer = new Escpos();
-$pdf = 'images/document.pdf';
+$pdf = 'resources/document.pdf';
 $pages = EscposImage::loadPdf($pdf, 260);
 foreach($pages as $page) {
 	$printer -> graphics($page, Escpos::IMG_DOUBLE_HEIGHT | Escpos::IMG_DOUBLE_WIDTH);
@@ -52,8 +52,8 @@ $printer -> close();
  * [1]After printing, the pixels are loaded and formatted for the print command you used, so even a raspberry pi can print complex PDF's quickly.
  */
 $printer = new Escpos();
-$pdf = 'images/document.pdf';
-$ser = 'images/document.z';
+$pdf = 'resources/document.pdf';
+$ser = 'resources/document.z';
 if(!file_exists($ser)) {
 	$pages = EscposImage::loadPdf($pdf);
 } else {

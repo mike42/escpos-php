@@ -121,7 +121,7 @@ $printer -> cut();
 
 /* Graphics - this demo will not work on some non-Epson printers */
 try {
-	$logo = new EscposImage("images/escpos-php.png");
+	$logo = new EscposImage("resources/escpos-php.png");
 	$imgModes = array(
 		Escpos::IMG_DEFAULT,
 		Escpos::IMG_DOUBLE_WIDTH,
@@ -139,7 +139,7 @@ $printer -> cut();
 
 /* Bit image */
 try {
-	$logo = new EscposImage("images/escpos-php.png");
+	$logo = new EscposImage("resources/escpos-php.png");
 	$imgModes = array(
 		Escpos::IMG_DEFAULT,
 		Escpos::IMG_DOUBLE_WIDTH,

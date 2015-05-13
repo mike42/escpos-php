@@ -6,10 +6,12 @@ require_once(dirname(__FILE__) . "/../Escpos.php");
  * This example builds on character-encodings.php, also providing an image-based rendering.
  * This is quite slow, since a) the buffers are changed dozens of
  * times in the example, and b) It involves sending very wide images, which printers don't like!
+ * 
+ * There are currently no test cases around the image printing, since it is an experimental feature.
  *
  * It does, however, illustrate the way that more encodings are available when image output is used.
  */
-include('character-encoding-test-strings.inc');
+include(dirname(__FILE__) . '/resources/character-encoding-test-strings.inc');
 
 try {
 	// Enter connector and capability profile

@@ -5,7 +5,7 @@ require_once(dirname(__FILE__) . "/../Escpos.php");
 $printer = new Escpos();
 
 try {
-	$tux = new EscposImage("images/tux.png");
+	$tux = new EscposImage("resources/tux.png");
 	
 	$printer -> graphics($tux);
 	$printer -> text("Regular Tux.\n");
