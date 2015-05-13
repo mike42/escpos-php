@@ -258,7 +258,11 @@ class WindowsPrintConnector implements PrintConnector {
 			/* Final print-out */
 			$filename = tempnam(sys_get_temp_dir(), "escpos");
 			file_put_contents($filename, $data);
-			$this -> runCopy($filename, $device);
+			
+			if(!$this -> runCopy($filename, $device)){
+				throw new Exception('Failed to copy file to printer');
+			}
+			
 			unlink($filename);
 		} else {
 			/* Drop data straight on the printer */
@@ -321,9 +325,10 @@ class WindowsPrintConnector implements PrintConnector {
 	 * 
 	 * @param string $from Source file
 	 * @param string $to Destination file
+	 * @return boolean True if copy was successful, false otherwise
 	 */
 	protected function runCopy($from, $to) {
-		copy($from, $to);
+		return copy($from, $to);
 	}
 	
 	/**
