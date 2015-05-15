@@ -127,6 +127,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Epson TM-T70II
 - EPOS TEP 220M
 - Okipos 80 Plus III
+- SEYPOS PRP-300
 - Xprinter XP-Q800
 - Zijang NT-58H
 - Zijang ZJ-5870
