@@ -22,13 +22,12 @@ require_once(dirname(__FILE__) . "/../Escpos.php");
 
 include(dirname(__FILE__) . '/resources/character-encoding-test-strings.inc');
 try {
-	// Enter connector and capability profile
+	// Enter connector and capability profile (to match your printer)
 	$connector = new FilePrintConnector("php://stdout");
 	$profile = DefaultCapabilityProfile::getInstance();
 	
 	/* Print a series of receipts containing i18n example strings */
-	$printer = new Escpos($connector);
-	$printer -> setPrinterCapabilityProfile($profile);
+	$printer = new Escpos($connector, $profile);
 	$printer -> selectPrintMode(Escpos::MODE_DOUBLE_HEIGHT | Escpos::MODE_EMPHASIZED | Escpos::MODE_DOUBLE_WIDTH);
 	$printer -> text("Implemented languages\n");
 	$printer -> selectPrintMode();

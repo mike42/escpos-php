@@ -20,8 +20,7 @@ try {
 	$buffers = array(new EscposPrintBuffer(), new ImagePrintBuffer());
 
 	/* Print a series of receipts containing i18n example strings */
-	$printer = new Escpos($connector);
-	$printer -> setPrinterCapabilityProfile($profile);
+	$printer = new Escpos($connector, $profile);
 	$printer -> selectPrintMode(Escpos::MODE_DOUBLE_HEIGHT | Escpos::MODE_EMPHASIZED | Escpos::MODE_DOUBLE_WIDTH);
 	$printer -> text("Implemented languages\n");
 	$printer -> selectPrintMode();

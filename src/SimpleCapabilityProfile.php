@@ -5,5 +5,13 @@
  * be disabled, as it usually prints junk on these models.
  */
 class SimpleCapabilityProfile extends DefaultCapabilityProfile {
-	// TODO override graphics support, list of code pages
+	function getSupportedCodePages() {
+		/* Use only CP437 output */
+		return array(0 => CodePage::CP437);
+	}
+	
+	public function getSupportsGraphics() {
+		/* Ask the driver to use bitImage wherever possible instead of graphics */
+		return false;
+	}
 }
