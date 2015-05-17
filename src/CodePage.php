@@ -163,4 +163,11 @@ abstract class CodePage {
 	const CP3846 = false;
 	const CP3848 = false;
 	const CP1001 = false;
+	const CP2001 = false;	
+	const CP3001 = false;
+	const CP3002 = false;
+	const CP3011 = false;
+	const CP3012 = false;
+	const CP3021 = false;
+	const CP3041 = false;
 }
