@@ -23,7 +23,8 @@ php hello-world.php | nc 10.x.x.x. 9100
 php hello-world.php > /dev/...
 # Windows local printer
 php hello-world.php > foo.txt
-print /D:... foo.txt
+net use LPT1 \\server\printer
+copy foo.txt LPT1
 del foo.txt
 ```
 
@@ -42,7 +43,7 @@ Or to a local printer:
 ```php
 <?php
 require_once(dirname(__FILE__) . "/Escpos.php");
-$connector = new FilePrintConnector("/dev/ttyS0", 9100);
+$connector = new FilePrintConnector("/dev/ttyS0");
 $printer = new Escpos($connector);
 $printer -> text("Hello World!\n");
 $printer -> cut();
@@ -127,6 +128,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Epson TM-T70II
 - EPOS TEP 220M
 - Okipos 80 Plus III
+- SEYPOS PRP-300
 - Xprinter XP-Q800
 - Zijang NT-58H
 - Zijang ZJ-5870
@@ -137,11 +139,12 @@ If you use any other printer with this code, please let me know so I can add it 
 Available methods
 -----------------
 
-### __construct(PrintConnector $connector)
+### __construct(PrintConnector $connector, AbstractCapabilityProfile $profile)
 Construct new print object.
 
 Parameters:
 - `PrintConnector $connector`: The PrintConnector to send data to. If not set, output is sent to standard output.
+- `AbstractCapabilityProfile $profile` Supported features of this printer. If not set, the DefaultCapabilityProfile will be used, which is suitable for Epson printers.
 
 See [example/interface/]("https://github.com/mike42/escpos-php/tree/master/example/interface/) for ways to open connections for different platforms and interfaces.
 

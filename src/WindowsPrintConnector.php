@@ -251,6 +251,8 @@ class WindowsPrintConnector implements PrintConnector {
 							escapeshellarg("*****"));
 				}
 				$retval = $this -> runCommand($command, $outputStr, $errorStr);
+
+
 				if($retval != 0) {
 					throw new Exception("Failed to print. Command \"$redactedCommand\" failed with exit code $retval: " . trim($errorStr));
 				}
@@ -258,15 +260,16 @@ class WindowsPrintConnector implements PrintConnector {
 			/* Final print-out */
 			$filename = tempnam(sys_get_temp_dir(), "escpos");
 			file_put_contents($filename, $data);
-			
+
 			if(!$this -> runCopy($filename, $device)){
 				throw new Exception('Failed to copy file to printer');
 			}
-			
+
 			unlink($filename);
 		} else {
 			/* Drop data straight on the printer */
 			$this -> runWrite($data,  $this -> printerName);
+
 		}
 	}
 	
@@ -315,7 +318,7 @@ class WindowsPrintConnector implements PrintConnector {
 			$retval = proc_close($process);
 			return $retval;
 		} else {
-			$errorStr = "Failed to start process '$command'.";
+			/* Method calling this should notice a non-zero exit and print an error */
 			return -1;
 		}
 	}

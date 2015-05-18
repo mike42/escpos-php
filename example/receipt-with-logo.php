@@ -16,7 +16,7 @@ $total = new item('Total', '14.25', true);
 $date = "Monday 6th of April 2015 02:56:25 PM";
 
 /* Start the printer */
-$logo = new EscposImage("images/escpos-php.png");
+$logo = new EscposImage("resources/escpos-php.png");
 $printer = new Escpos();
 
 /* Print top logo */

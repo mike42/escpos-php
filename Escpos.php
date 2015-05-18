@@ -119,7 +119,7 @@ class Escpos {
 	const UNDERLINE_DOUBLE = 2;
 	
 	/**
-	 * @var EscposPrintBuffer The printer's output buffer.
+	 * @var PrintBuffer The printer's output buffer.
 	 */
 	private $buffer;
 	
@@ -137,13 +137,15 @@ class Escpos {
 	 * @var int Current character code table
 	 */
 	private $characterTable;
-	
+
 	/**
 	 * Construct a new print object
-	 * 
+	 *
 	 * @param PrintConnector $connector The PrintConnector to send data to. If not set, output is sent to standard output.
+	 * @param AbstractCapabilityProfile $profile Supported features of this printer. If not set, the DefaultCapabilityProfile will be used, which is suitable for Epson printers.
+	 * @throws InvalidArgumentException
 	 */
-	function __construct(PrintConnector $connector = null) {
+	function __construct(PrintConnector $connector = null, AbstractCapabilityProfile $profile = null) {
 		if(is_null($connector)) {
 			if(php_sapi_name() == 'cli') {
 				$connector = new FilePrintConnector("php://stdout");
@@ -151,8 +153,15 @@ class Escpos {
 				throw new InvalidArgumentException("Argument passed to Escpos::__construct() must implement interface PrintConnector, null given.");
 			}
 		}
+		/* Set connector */
 		$this -> connector = $connector;
-		$this -> profile = DefaultCapabilityProfile::getInstance();
+		
+		/* Set capability profile */
+		if($profile === null) {
+			$profile = DefaultCapabilityProfile::getInstance();
+		}
+		$this -> profile = $profile;
+		/* Set buffer */
 		$buffer = new EscposPrintBuffer();
 		$this -> buffer = null;
 		$this -> setPrintBuffer($buffer);
@@ -237,7 +246,7 @@ class Escpos {
 	}
 	
 	/**
-	 * @return EscposPrintBuffer
+	 * @return PrintBuffer
 	 */
 	function getPrintBuffer() {
 		return $this -> buffer;
@@ -436,10 +445,13 @@ class Escpos {
 	/**
 	 * Attach a different print buffer to the printer. Buffers are responsible for handling text output to the printer.
 	 * 
-	 * @param EscposPrintBuffer $buffer The buffer to use.
+	 * @param PrintBuffer $buffer The buffer to use.
 	 * @throws InvalidArgumentException Where the buffer is already attached to a different printer.
 	 */
-	function setPrintBuffer(EscposPrintBuffer $buffer) {
+	function setPrintBuffer(PrintBuffer $buffer) {
+		if($buffer === $this -> buffer) {
+			return;
+		}
 		if($buffer -> getPrinter() != null) {
 			throw new InvalidArgumentException("This buffer is already attached to a printer.");
 		}
@@ -448,15 +460,6 @@ class Escpos {
 		}
 		$this -> buffer = $buffer;
 		$this -> buffer -> setPrinter($this);
-	}
-	
-	/**
-	 * Use an alternative capability profile for this printer.
-	 * 
-	 * @param AbstractCapabilityProfile $profile Profile to use
-	 */
-	function setPrinterCapabilityProfile(AbstractCapabilityProfile $profile) {
-		$this -> profile = $profile;
 	}
 	
 	/**

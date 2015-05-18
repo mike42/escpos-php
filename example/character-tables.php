@@ -16,15 +16,13 @@
  */
 require_once(dirname(__FILE__) . "/../Escpos.php");
 
-/*
- * Configure your printer's capability profile & verbosity below
- */
-$printer = new Escpos();
+// Enter connector and capability profile (to match your printer)
+$connector = new FilePrintConnector("php://stdout");
+$profile = DefaultCapabilityProfile::getInstance();
 $verbose = false; // Skip tables which iconv wont convert to (ie, only print characters available with UTF-8 input)
-$printer -> setPrinterCapabilityProfile(DefaultCapabilityProfile::getInstance());
-$profile = $printer -> getPrinterCapabilityProfile();
 
-/* Code below shouldn't need changing */
+/* Print a series of receipts containing i18n example strings - Code below shouldn't need changing */
+$printer = new Escpos($connector, $profile);
 $codePages = $profile -> getSupportedCodePages();
 $first = true; // Print larger table for first code-page.
 foreach($codePages as $table => $name) {

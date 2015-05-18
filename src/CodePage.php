@@ -152,5 +152,22 @@ abstract class CodePage {
 	const CP720 = false;
 	const CP853 = false;
 	const CP858 = false;
+	const CP928 = false;
 	const CP1098 = false;
+	const CP3840 = false;
+	const CP3841 = false;
+	const CP3843 = false;
+	const CP3844 = false;
+	const CP3845 = false;
+	const CP3847 = false;
+	const CP3846 = false;
+	const CP3848 = false;
+	const CP1001 = false;
+	const CP2001 = false;	
+	const CP3001 = false;
+	const CP3002 = false;
+	const CP3011 = false;
+	const CP3012 = 77;
+	const CP3021 = false;
+	const CP3041 = false;
 }
