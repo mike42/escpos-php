@@ -66,6 +66,16 @@ class Escpos {
 	const FS = "\x1c";
 	const GS = "\x1d";
 
+	/* Star specific ascii codes */
+	const SUB = "\x1A";
+	const DC1 = "\x11";
+
+	/* Star snout operation modes */
+	const LED_OFF = 0;
+	const LED_ON_PRINT_PRESENT = 1;
+	const LED_ON_ERROR = 2;
+	const LED_ON_ALL = 3;
+
 	/* Barcode types */
 	const BARCODE_UPCA = 0;
 	const BARCODE_UPCE = 1;
@@ -623,6 +633,18 @@ class Escpos {
 	protected static function validateString($test, $source) {
 		if (is_object($test) && !method_exists($test, '__toString')) {
 			throw new InvalidArgumentException("Argument to $source must be a string");
+		}
+	}
+
+	/**
+	* @param int $mode
+	* @throws Exception
+	*/
+	public function setSnoutOperationMode($mode = 0) {
+		if($this -> profile -> getSupportsStarCommands()) {
+			$this -> connector -> write(self::ESC . self::GS . self::SUB . self::DC1 . chr($mode) . chr(0) . chr(0));
+		} else {
+			throw new Exception('This printer does not support snout led control');
 		}
 	}
 }
