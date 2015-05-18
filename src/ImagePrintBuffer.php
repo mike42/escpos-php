@@ -69,7 +69,7 @@ class ImagePrintBuffer implements PrintBuffer {
 		$background = new ImagickPixel('white');
 
 		/* Create annotation */
-		$draw -> setFont('Arial');// (not necessary?)
+		//$draw -> setFont('Arial');// (not necessary?)
 		$draw -> setFontSize(24); // Size 21 looks good for FONT B
 		$draw -> setFillColor($color);
 		$draw -> setStrokeAntialias(true);
