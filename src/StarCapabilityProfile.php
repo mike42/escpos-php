@@ -1,5 +1,27 @@
 <?php
 class StarCapabilityProfile extends DefaultCapabilityProfile {
+	function getCustomCodePages() {
+		// Code table reference: http://www.starmicronics.com/support/mannualfolder/sp2000pm.pdf
+		return array(
+			'CP3011' => "ÇüéâäàåçêëèïîìÄÅ" . 
+						"ÉæÆôöòûùÿÖÜ¢£¥₧ƒ" . 
+						"áíóúñÑªº¿⌐¬½¼¡«»" . 
+						"░▒▓│┤Ā╢ņ╕╣║╗╝╜╛┐" . 
+						"└┴┬├─┼ā╟╚╔╩╦╠═╬╧" . 
+						"Š╤čČ╘╒ģĪī┘┌█▄ūŪ▀" . 
+						"αßΓπΣσµτΦΘΩδ∞φε∩" . 
+						"ĒēĢķĶļĻžŽ∙·√Ņš■ ",
+			'CP3012' => "АБВГДЕЖЗИЙКЛМНОП" . 
+						"РСТУФХЦЧШЩЪЫЬЭЮЯ" . 
+						"абвгдежзийклмноп" . 
+						"░▒▓│┤Ā╢ņ╕╣║╗╝Ō╛┐" . 
+						"└┴┬├─┼ā╟╚╔╩╦╠═╬╧" . 
+						"Š╤čČ╘╒ģĪī┘┌█▄ūŪ▀" . 
+						"рстуфхцчшщъыьэюя" . 
+						"ĒēĢķĶļĻžŽ∙·√Ņš■ "
+		);
+	}
+
 	function getSupportedCodePages() {
 		return array(
 				0 => CodePage::CP437, // "Normal"
@@ -39,8 +61,8 @@ class StarCapabilityProfile extends DefaultCapabilityProfile {
 				73 => CodePage::CP2001,
 				74 => CodePage::CP3001,
 				75 => CodePage::CP3002,
-				76 => CodePage::CP3011,
-				77 => CodePage::CP3012,
+				76 => false, //'custom:CP3011',
+				77 => false, //'custom:CP3012',
 				78 => CodePage::CP3021,
 				79 => CodePage::CP3041,
 				96 => false, // Thai Character Code 42

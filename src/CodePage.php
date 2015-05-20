@@ -154,6 +154,11 @@ abstract class CodePage {
 	const CP858 = false;
 	const CP928 = false;
 	const CP1098 = false;
+	
+	/*
+	 * Below code pages appear to be vendor-specific (Star), so iconv wont use them
+	 * They are being merged gradually into the StarCapabilityProfile.
+	 */
 	const CP3840 = false;
 	const CP3841 = false;
 	const CP3843 = false;

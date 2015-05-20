@@ -5,6 +5,10 @@
  * For non-Epson printers, try the SimpleCapabilityProfile.
  */
 class DefaultCapabilityProfile extends AbstractCapabilityProfile {
+	function getCustomCodePages() {
+		return array();
+	}
+
 	function getSupportedCodePages() {
 		/* Character code tables which the printer understands, mapping to known encoding standards we may be able to encode to.
 		 * 
@@ -49,7 +53,7 @@ class DefaultCapabilityProfile extends AbstractCapabilityProfile {
 			38 => CodePage::CP869,
 			39 => CodePage::ISO8859_2,
 			40 => CodePage::ISO8859_15,
-			41 => CodePage::CP1098, // PC1098: Farsi]",
+			41 => CodePage::CP1098, // PC1098: Farsi
 			42 => CodePage::CP774,
 			43 => CodePage::CP772,
 			44 => CodePage::CP1125,
