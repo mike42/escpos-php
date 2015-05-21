@@ -33,9 +33,8 @@ class EscposPrintBufferTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testRawTextNonprintable() {
-		$this -> markTestIncomplete("Filtering out non-printable characters not yet implemented.");
 		$this -> buffer -> writeTextRaw("Test" . Escpos::ESC . "v1\n");
-		$this -> checkOutput();
+		$this -> checkOutput("\x1b@Test?v1\x0a"); // ASCII ESC character is substituted for '?'
 	}
 
 	public function testDanish() {

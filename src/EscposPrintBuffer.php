@@ -184,25 +184,52 @@ class EscposPrintBuffer implements PrintBuffer {
 		/* Generate conversion tables */
 		$encode = array();
 		$available = array();
+		$custom = $this -> printer -> getPrinterCapabilityProfile() -> getCustomCodePages();
+		
 		foreach($supportedCodePages as $num => $characterMap) {
 			$encode[$num] = array();
 			if($characterMap === false) {
 				continue;
-			}
-			for($char = 128; $char <= 255; $char++) {
-				$utf8 = @iconv($characterMap, self::INPUT_ENCODING, chr($char));
-				if($utf8 == '') {
+			} else if(strpos($characterMap, ":") !== false) {
+				/* Load a pre-defined custom map (vendor-specific code pages) */
+				$i = strpos($characterMap, ":");
+				if(substr($characterMap, 0, $i) !== "custom") {
 					continue;
 				}
-				if(iconv(self::INPUT_ENCODING, $characterMap, $utf8) != chr($char)) {
-					// Avoid non-canonical conversions
-					continue;
+				$i++;
+				$mapName = substr($characterMap, $i, strlen($characterMap) - $i);
+				if(!isset($custom[$mapName]) || mb_strlen($custom[$mapName], self::INPUT_ENCODING) != 128) {
+					throw new Exception("Capability profile referenced invalid custom map '$mapName'.");
 				}
-				if(!isset($available[$utf8])) {
-					$available[$utf8] = array();
+				$map = $custom[$mapName];
+				for($char = 128; $char <= 255; $char++) {
+					$utf8 = mb_substr($map, $char - 128, 1, self::INPUT_ENCODING);
+					if($utf8 == " ") { // Skip placeholders
+						continue;
+					}
+					if(!isset($available[$utf8])) {
+						$available[$utf8] = array();
+					}
+					$available[$utf8][$num] = true;
+					$encode[$num][$utf8] = chr($char);
 				}
-				$available[$utf8][$num] = true;
-				$encode[$num][$utf8] = chr($char);
+			} else {
+				/* Generate map using iconv */
+				for($char = 128; $char <= 255; $char++) {
+					$utf8 = @iconv($characterMap, self::INPUT_ENCODING, chr($char));
+					if($utf8 == '') {
+						continue;
+					}
+					if(iconv(self::INPUT_ENCODING, $characterMap, $utf8) != chr($char)) {
+						// Avoid non-canonical conversions
+						continue;
+					}
+					if(!isset($available[$utf8])) {
+						$available[$utf8] = array();
+					}
+					$available[$utf8][$num] = true;
+					$encode[$num][$utf8] = chr($char);
+				}
 			}
 		}
 		/* Use generated data */

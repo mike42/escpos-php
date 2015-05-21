@@ -13,6 +13,11 @@ abstract class AbstractCapabilityProfile {
 	}
 
 	/**
+	 * If getSupportedCodePages contains custom code pages, their character maps must be provided here.
+	 */
+	abstract function getCustomCodePages();
+
+	/**
 	 * Return a map of code page numbers to names for this printer. Names
 	 * should match iconv code page names where possible (non-matching names will not be used).
 	 */
