@@ -61,8 +61,8 @@ class StarCapabilityProfile extends DefaultCapabilityProfile {
 				73 => CodePage::CP2001,
 				74 => CodePage::CP3001,
 				75 => CodePage::CP3002,
-				76 => false, //'custom:CP3011',
-				77 => false, //'custom:CP3012',
+				76 => 'custom:CP3011',
+				77 => 'custom:CP3012',
 				78 => CodePage::CP3021,
 				79 => CodePage::CP3041,
 				96 => false, // Thai Character Code 42
