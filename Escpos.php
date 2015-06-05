@@ -37,7 +37,6 @@
  * Note that some functions have not been implemented:
  * 		- Set paper sensors
  * 		- Select print colour
- * 		- Code93 and code128 barcodes
  * 
  * Please direct feature requests, bug reports and contributions to escpos-php
  * on Github:
@@ -67,13 +66,15 @@ class Escpos {
 	const GS = "\x1d";
 
 	/* Barcode types */
-	const BARCODE_UPCA = 0;
-	const BARCODE_UPCE = 1;
-	const BARCODE_JAN13 = 2;
-	const BARCODE_JAN8 = 3;
-	const BARCODE_CODE39 = 4;
-	const BARCODE_ITF = 5;
-	const BARCODE_CODABAR = 6;
+	const BARCODE_UPCA = 65;
+	const BARCODE_UPCE = 66;
+	const BARCODE_JAN13 = 67;
+	const BARCODE_JAN8 = 68;
+	const BARCODE_CODE39 = 69;
+	const BARCODE_ITF = 70;
+	const BARCODE_CODABAR = 71;
+	const BARCODE_CODE93 = 72;
+	const BARCODE_CODE128 = 73;
 		
 	/* Cut types */
 	const CUT_FULL = 65;
@@ -175,8 +176,52 @@ class Escpos {
 	 * @param int $type The barcode standard to output. If not specified, `Escpos::BARCODE_CODE39` will be used.
 	 */
 	function barcode($content, $type = self::BARCODE_CODE39) {
-		// TODO validation on barcode() inputs
-		$this -> connector -> write(self::GS . "k" . chr($type) . $content . self::NUL);
+		/* Validate input */
+		self::validateInteger($type, 65, 73, __FUNCTION__);
+		switch($type) {
+			case BARCODE_UPCA:
+				
+				break;
+			case BARCODE_UPCE:
+				
+				break;
+			case BARCODE_JAN13:
+				
+				break;
+			case BARCODE_JAN8:
+				
+				break;
+			case BARCODE_CODE39:
+				
+				break;
+			case BARCODE_ITF:
+				
+				break;
+			case BARCODE_CODABAR:
+				
+				break;
+			case BARCODE_CODE93:
+				
+				break;
+			case BARCODE_CODE128:
+				break;
+		}
+ 		if(!$this -> profile -> getSupportsBarcodeB()) {
+			// A simpler barcode command which supports fewer codes
+			self::validateInteger($type, 65, 71, __FUNCTION__);
+			$this -> connector -> write(self::GS . "k" . chr($type - 65) . $content . self::NUL);
+			return;
+ 		}
+ 		// More advanced function B, used in preference
+ 		$this -> connector -> write(self::GS . "k" . chr($type) . chr(strlen($content)) . $content);
+ 		
+// 		self::validateInteger($type, 0, 73, __FUNCTION__);
+// 		self::validateInteger(strlen($content), 0, 255, __FUNCTION__);
+// 		if($type >= 0 && $type <= 6 ){
+			
+// 		} else if($type >= 65 && $type <= 73){
+// 			
+// 		}
 	}
 	
 	/**
@@ -609,8 +654,23 @@ class Escpos {
 	 * @param string $source the name of the function calling this
 	 */
 	protected static function validateInteger($test, $min, $max, $source) {
-		if(!is_integer($test) || $test < $min || $test > $max) {
-			throw new InvalidArgumentException("Argument to $source must be a number between $min and $max, but $test was given.");
+		self::validateIntegerMulti($test, array(array($min, $max)), $source, "Argument");
+	}
+	
+	/**
+	 * Throw an exception if the argument given is not an integer within one of the specified ranges
+	 *
+	 * @param int $test the input to test
+	 * @param arrray $ranges array of two-item min/max ranges.
+	 * @param string $source the name of the function calling this
+	 */
+	protected static function validateIntegerMulti($test, array $ranges, $source, $argument) {
+		$match = false;
+		foreach($ranges as $range) {
+			$match |= $test >= $range[0] && $test <= $range[1];
+		}
+		if(!$match) {
+			throw new InvalidArgumentException("$argument given to $source must be a number between $min and $max, but $test was given.");
 		}
 	}
 	

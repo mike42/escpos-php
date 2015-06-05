@@ -81,6 +81,10 @@ class DefaultCapabilityProfile extends AbstractCapabilityProfile {
 			255 => false);
 	}
 
+	function getSupportsBarcodeB() {
+		return true;
+	}
+	
 	function getSupportsBitImage() {
 		return true;
 	}

@@ -24,6 +24,11 @@ abstract class AbstractCapabilityProfile {
 	abstract function getSupportedCodePages();
 
 	/**
+	 * True to support barcode "function b", false to use only function A.
+	 */
+	abstract function getSupportsBarcodeB();
+
+	/**
 	 * True for bitImage support, false for no bitImage support.
 	 */
 	abstract function getSupportsBitImage();
