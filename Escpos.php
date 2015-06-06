@@ -75,7 +75,12 @@ class Escpos {
 	const BARCODE_CODABAR = 71;
 	const BARCODE_CODE93 = 72;
 	const BARCODE_CODE128 = 73;
-		
+	
+	/* Barcode HRI (human-readable interpretation) text position */
+	const BARCODE_TEXT_NONE = 0;
+	const BARCODE_TEXT_ABOVE = 1;
+	const BARCODE_TEXT_BELOW = 2;
+	
 	/* Cut types */
 	const CUT_FULL = 65;
 	const CUT_PARTIAL = 66;
@@ -173,37 +178,42 @@ class Escpos {
 	 * Print a barcode.
 	 *
 	 * @param string $content The information to encode.
-	 * @param int $type The barcode standard to output. If not specified, `Escpos::BARCODE_CODE39` will be used.
+	 * @param int $type The barcode standard to output. If not specified, `Escpos::BARCODE_CODE39` will be used. Note that some barcode formats only support specific lengths or sets of characters.
+	 * @throws InvalidArgumentException Where the length or characters used in $content is invalid for the requested barcode format.
 	 */
 	function barcode($content, $type = self::BARCODE_CODE39) {
 		/* Validate input */
-		self::validateInteger($type, 65, 73, __FUNCTION__);
+		self::validateInteger($type, 65, 73, __FUNCTION__, "Barcode type");
+		$len = strlen($content);
+		
 		switch($type) {
-			case BARCODE_UPCA:
+			case self::BARCODE_UPCA:
+				self::validateInteger($len, 11, 12, __FUNCTION__, "UPCA barcode content length");
 				
 				break;
-			case BARCODE_UPCE:
+			case self::BARCODE_UPCE:
 				
 				break;
-			case BARCODE_JAN13:
+			case self::BARCODE_JAN13:
 				
 				break;
-			case BARCODE_JAN8:
+			case self::BARCODE_JAN8:
 				
 				break;
-			case BARCODE_CODE39:
+			case self::BARCODE_CODE39:
 				
 				break;
-			case BARCODE_ITF:
+			case self::BARCODE_ITF:
 				
 				break;
-			case BARCODE_CODABAR:
+			case self::BARCODE_CODABAR:
 				
 				break;
-			case BARCODE_CODE93:
+			case self::BARCODE_CODE93:
 				
 				break;
-			case BARCODE_CODE128:
+			case self::BARCODE_CODE128:
+				
 				break;
 		}
  		if(!$this -> profile -> getSupportsBarcodeB()) {
@@ -214,14 +224,6 @@ class Escpos {
  		}
  		// More advanced function B, used in preference
  		$this -> connector -> write(self::GS . "k" . chr($type) . chr(strlen($content)) . $content);
- 		
-// 		self::validateInteger($type, 0, 73, __FUNCTION__);
-// 		self::validateInteger(strlen($content), 0, 255, __FUNCTION__);
-// 		if($type >= 0 && $type <= 6 ){
-			
-// 		} else if($type >= 65 && $type <= 73){
-// 			
-// 		}
 	}
 	
 	/**
@@ -431,7 +433,7 @@ class Escpos {
 	function selectPrintMode($mode = self::MODE_FONT_A) {
 		$allModes = self::MODE_FONT_B | self::MODE_EMPHASIZED | self::MODE_DOUBLE_HEIGHT | self::MODE_DOUBLE_WIDTH | self::MODE_UNDERLINE;
 		if(!is_integer($mode) || $mode < 0 || ($mode & $allModes) != $mode) {
-			throw new InvalidArgumentException("Test");
+			throw new InvalidArgumentException("Invalid mode");
 		}
 
 		$this -> connector -> write(self::ESC . "!" . chr($mode));
@@ -445,6 +447,17 @@ class Escpos {
 	function setBarcodeHeight($height = 8) {
 		self::validateInteger($height, 1, 255, __FUNCTION__);
 		$this -> connector -> write(self::GS . "h" . chr($height));
+	}
+	
+	
+	/**
+	 * Set the position for the Human Readable Interpretation (HRI) of barcode characters.
+	 * 
+	 * @param position $position. Use Escpos::BARCODE_TEXT_NONE to hide the text (default), or any combination of Escpos::BARCODE_TEXT_TOP and Escpos::BARCODE_TEXT_BOTTOM flags to display the text.
+	 */
+	function setBarcodeTextPosition($position = self::BARCODE_TEXT_NONE) {
+		self::validateInteger($position, 0, 3, __FUNCTION__, "Barcode text position");
+		$this -> connector -> write(self::GS . "H" . chr($position));
 	}
 	
 	/**
@@ -652,9 +665,10 @@ class Escpos {
 	 * @param int $min the minimum allowable value (inclusive)
 	 * @param int $max the maximum allowable value (inclusive)
 	 * @param string $source the name of the function calling this
+	 * @param string $argument the name of the invalid parameter
 	 */
-	protected static function validateInteger($test, $min, $max, $source) {
-		self::validateIntegerMulti($test, array(array($min, $max)), $source, "Argument");
+	protected static function validateInteger($test, $min, $max, $source, $argument = "Argument") {
+		self::validateIntegerMulti($test, array(array($min, $max)), $source, $argument);
 	}
 	
 	/**
@@ -663,14 +677,31 @@ class Escpos {
 	 * @param int $test the input to test
 	 * @param arrray $ranges array of two-item min/max ranges.
 	 * @param string $source the name of the function calling this
+	 * @param string $source the name of the function calling this
+	 * @param string $argument the name of the invalid parameter
 	 */
-	protected static function validateIntegerMulti($test, array $ranges, $source, $argument) {
+	protected static function validateIntegerMulti($test, array $ranges, $source, $argument = "Argument") {
+		if(!is_integer($test)) {
+			throw new InvalidArgumentException("$argument given to $source must be a number, but '$test' was given.");
+		}
 		$match = false;
 		foreach($ranges as $range) {
 			$match |= $test >= $range[0] && $test <= $range[1];
 		}
 		if(!$match) {
-			throw new InvalidArgumentException("$argument given to $source must be a number between $min and $max, but $test was given.");
+			// Put together a good error "range 1-2 or 4-6"
+			$rangeStr = "range ";
+			for($i = 0; $i < count($ranges); $i++) {
+				$rangeStr .= $ranges[$i][0] . "-" . $ranges[$i][1];
+				if($i == count($ranges) - 1) {
+					continue;
+				} else if($i == count($ranges) - 2) {
+					$rangeStr .= " or ";
+				} else {
+					$rangeStr .= ", ";
+				}
+			}
+			throw new InvalidArgumentException("$argument given to $source must be in $rangeStr, but $test was given.");
 		}
 	}
 	
@@ -679,10 +710,17 @@ class Escpos {
 	 *
 	 * @param string $test the input to test
 	 * @param string $source the name of the function calling this
+	 * @param string $argument the name of the invalid parameter
 	 */
-	protected static function validateString($test, $source) {
+	protected static function validateString($test, $source, $argument = "Argument") {
 		if (is_object($test) && !method_exists($test, '__toString')) {
-			throw new InvalidArgumentException("Argument to $source must be a string");
+			throw new InvalidArgumentException("$argument to $source must be a string");
+		}
+	}
+	
+	protected static function validateStringRegex($test, $source, $regex, $argument = "Argument") {
+		if(preg_match($regex, $test) === false) {
+			
 		}
 	}
 }

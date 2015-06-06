@@ -54,6 +54,11 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 		$this -> outpTest($outp, "qr-code.bin");
 	}
 
+	public function testBarcode() {
+		$outp = $this -> runExample("barcode.php");
+		$this -> outpTest($outp, "barcode.bin");
+	}
+
 	/**
 	 * @large
 	 */

@@ -326,7 +326,7 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		// TODO construct more detailed tests for each barcode type
 		// barcode($content, $type = self::BARCODE_CODE39)
 		$this -> printer -> barcode("1234");
-		$this -> checkOutput("\x1b@\x1dk\x041234\x00");		
+		$this -> checkOutput("\x1b@\x1dkE\x041234");		
 	}
 
 	/* Pulse */

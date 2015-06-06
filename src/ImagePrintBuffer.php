@@ -82,7 +82,7 @@ class ImagePrintBuffer implements PrintBuffer {
 		$image -> newImage($metrics['textWidth'], $metrics['textHeight'], $background);
 		$image -> setImageFormat('png');
 		$image -> drawImage($draw);
-$image -> writeImage("test.png");
+		//$image -> writeImage("test.png");
 		
 		/* Save image */
 		$escposImage = new EscposImage();
