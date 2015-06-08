@@ -11,9 +11,12 @@ $items = array(
 $subtotal = new item('Subtotal', '12.95');
 $tax = new item('A local tax', '1.30');
 $total = new item('Total', '14.25', true);
+/* Date is kept the same for testing */
+// $date = date('l jS \of F Y h:i:s A');
+$date = "Monday 6th of April 2015 02:56:25 PM";
 
 /* Start the printer */
-$logo = new EscposImage("images/escpos-php.png");
+$logo = new EscposImage("resources/escpos-php.png");
 $printer = new Escpos();
 
 /* Print top logo */
@@ -57,11 +60,13 @@ $printer -> setJustification(Escpos::JUSTIFY_CENTER);
 $printer -> text("Thank you for shopping at ExampleMart\n");
 $printer -> text("For trading hours, please visit example.com\n");
 $printer -> feed(2);
-$printer -> text(date('l jS \of F Y h:i:s A') . "\n");
+$printer -> text($date . "\n");
 
 /* Cut the receipt and open the cash drawer */
 $printer -> cut();
 $printer -> pulse();
+
+$printer -> close();
 
 /* A wrapper to do organise item names & prices into columns */
 class item {
