@@ -4,17 +4,23 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 	private $exampleDir;
 	
 	public function setup() {
-		$this -> exampleDir = dirname(__FILE__) . "/../example/";
+		$this -> exampleDir = dirname(__FILE__) . "/../../example/";
 	}
 	
 	public function testBitImage() {
+		$this -> requireGraphicsLibrary();
 		$outp = $this -> runExample("bit-image.php");
 		$this -> outpTest($outp, "bit-image.bin");
 	}
 	
-	public function testCharacterSet() {
-		// TODO example not yet ready due to character encoding development work
-		$this -> markTestSkipped();
+	public function testCharacterEncodings() {
+		$outp = $this -> runExample("character-encodings.php");
+		$this -> outpTest($outp, "character-encodings.bin");
+	}
+	
+	public function testCharacterTables() {
+		$outp = $this -> runExample("character-tables.php");
+		$this -> outpTest($outp, "character-tables.bin");
 	}
 	
 	private function outpTest($outp, $fn) {
@@ -26,11 +32,13 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function testDemo() {
+		$this -> requireGraphicsLibrary();
 		$outp = $this -> runExample("demo.php");
 		$this -> outpTest($outp, "demo.bin");
 	}
 	
 	public function testGraphics() {
+		$this -> requireGraphicsLibrary();
 		$outp = $this -> runExample("graphics.php");
 		$this -> outpTest($outp, "graphics.bin");
 	}
@@ -41,6 +49,7 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function testReceiptWithLogo() {
+		$this -> requireGraphicsLibrary();
 		$outp = $this -> runExample("receipt-with-logo.php");
 		$this -> outpTest($outp, "receipt-with-logo.bin");
 	}
@@ -49,30 +58,50 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 		$outp = $this -> runExample("rtl-example.php");
 		$this -> outpTest($outp, "rtl-example.bin");
 	}
-	
+
+	public function testBarcode() {
+		$outp = $this -> runExample("barcode.php");
+		$this -> outpTest($outp, "barcode.bin");
+	}
+
+	/**
+	 * @large
+	 */
+	public function testPrintFromPdf() {
+		if(!EscposImage::isImagickLoaded()) {
+			$this -> markTestSkipped("imagick plugin required for this test");
+		}
+		$outp = $this -> runExample("print-from-pdf.php");
+		$this -> outpTest(gzcompress($outp, 9), "print-from-pdf.bin.z"); // Compressing output because it's ~1MB
+	}
+
 	public function testInterfaceEthernet() {
+		// Test attempts DNS lookup on some machine
 		$outp = $this -> runExample("interface/ethernet.php");
-		$this -> outpTest($outp, "interface-ethernet.bin");
+		$this -> outpTest($outp, "interface.bin");
 	}
 	
 	public function testInterfaceLinuxUSB() {
 		$outp = $this -> runExample("interface/linux-usb.php");
-		$this -> outpTest($outp, "interface-linux-usb.bin");
+		$this -> outpTest($outp, "interface.bin");
 	}
 	
 	public function testInterfaceWindowsUSB() {
 		// Output varies between platforms, not checking.
 		$outp = $this -> runExample("interface/windows-usb.php");
+		$this -> outpTest($outp, "interface.bin");
 	}
 	
 	public function testInterfaceSMB() {
 		// Output varies between platforms, not checking.
 		$outp = $this -> runExample("interface/smb.php");
+		$this -> outpTest($outp, "interface.bin");
 	}
 	
 	public function testInterfaceWindowsLPT() {
 		// Output varies between platforms, not checking.
 		$outp = $this -> runExample("interface/windows-lpt.php");
+		$this -> outpTest($outp, "interface.bin");
 	}
 	
 	private function runExample($fn) {
@@ -87,5 +116,11 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 		// Check return value
 		$this -> assertEquals(0, $retval, "Example $fn exited with status $retval");
 		return $outp;
+	}
+	
+	protected function requireGraphicsLibrary() {
+		if(!EscposImage::isGdLoaded() && !EscposImage::isImagickLoaded()) {
+			$this -> markTestSkipped("This test requires a graphics library.");
+		}
 	}
 }

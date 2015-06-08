@@ -34,7 +34,7 @@ $modes = array(
 	Escpos::MODE_DOUBLE_HEIGHT,
 	Escpos::MODE_DOUBLE_WIDTH,
 	Escpos::MODE_UNDERLINE);
-for($i = 0; $i < 2 ** count($modes); $i++) {
+for($i = 0; $i < pow(2, count($modes)); $i++) {
 	$bits = str_pad(decbin($i), count($modes), "0", STR_PAD_LEFT);
 	$mode = 0;
 	for($j = 0; $j < strlen($bits); $j++) {
@@ -102,26 +102,16 @@ for($i = 0; $i < count($justification); $i++) {
 $printer -> setJustification(); // Reset
 $printer -> cut();
 
-/* Barcodes */
-$barcodes = array(
-	Escpos::BARCODE_UPCA,
-	Escpos::BARCODE_UPCE,
-	Escpos::BARCODE_JAN13,
-	Escpos::BARCODE_JAN8,
-	Escpos::BARCODE_CODE39,
-	Escpos::BARCODE_ITF,
-	Escpos::BARCODE_CODABAR);
+/* Barcodes - see barcode.php for more detail */
 $printer -> setBarcodeHeight(80);
-for($i = 0; $i < count($barcodes); $i++) {
-	$printer -> text("Barcode $i " . "\n");
-	$printer -> barcode("9876", $barcodes[$i]);
-	$printer -> feed();
-}
+$printer->setBarcodeTextPosition ( Escpos::BARCODE_TEXT_BELOW );
+$printer -> barcode("9876");
+$printer -> feed();
 $printer -> cut();
 
 /* Graphics - this demo will not work on some non-Epson printers */
 try {
-	$logo = new EscposImage("images/escpos-php.png");
+	$logo = new EscposImage("resources/escpos-php.png");
 	$imgModes = array(
 		Escpos::IMG_DEFAULT,
 		Escpos::IMG_DOUBLE_WIDTH,
@@ -139,7 +129,7 @@ $printer -> cut();
 
 /* Bit image */
 try {
-	$logo = new EscposImage("images/escpos-php.png");
+	$logo = new EscposImage("resources/escpos-php.png");
 	$imgModes = array(
 		Escpos::IMG_DEFAULT,
 		Escpos::IMG_DOUBLE_WIDTH,

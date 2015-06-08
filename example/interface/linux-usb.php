@@ -15,7 +15,7 @@ require_once(dirname(__FILE__) . "/../../Escpos.php");
  */
 try {
 	// Enter the device file for your USB printer here
-	$connector = new FilePrintConnector("/dev/null");
+	$connector = null;
 	//$connector = new FilePrintConnector("/dev/usb/lp0");
 	//$connector = new FilePrintConnector("/dev/usb/lp1");
 	//$connector = new FilePrintConnector("/dev/usb/lp2");

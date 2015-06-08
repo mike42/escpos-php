@@ -23,7 +23,8 @@ php hello-world.php | nc 10.x.x.x. 9100
 php hello-world.php > /dev/...
 # Windows local printer
 php hello-world.php > foo.txt
-print /D:... foo.txt
+net use LPT1 \\server\printer
+copy foo.txt LPT1
 del foo.txt
 ```
 
@@ -42,7 +43,7 @@ Or to a local printer:
 ```php
 <?php
 require_once(dirname(__FILE__) . "/Escpos.php");
-$connector = new FilePrintConnector("/dev/ttyS0", 9100);
+$connector = new FilePrintConnector("/dev/ttyS0");
 $printer = new Escpos($connector);
 $printer -> text("Hello World!\n");
 $printer -> cut();
@@ -59,7 +60,7 @@ When you have finished using the print object, call `close()` to finalize any da
 ### Tips & examples
 On Linux, your printer device file will be somewhere like `/dev/lp0` (parallel), `/dev/usb/lp1` (USB), `/dev/ttyUSB0` (USB-Serial), `/dev/ttyS0` (serial).
 
-On Windows, the device files will be along the lines of `LPT1` (parallel) or `COM1` (serial). Use the `WindowsPrintConnector` to tap into system printing on Windows (eg. [Windows USB](https://github.com/mike42/escpos-php/tree/master/example/interface/windows-usb.php), [SMB](https://github.com/mike42/escpos-php/tree/master/example/interface/smb.php)) or [Windows LPT](https://github.com/mike42/escpos-php/tree/master/example/interface/windows-lpt.php))) - this submits print jobs via a queue rather than communicating directly with the printer.
+On Windows, the device files will be along the lines of `LPT1` (parallel) or `COM1` (serial). Use the `WindowsPrintConnector` to tap into system printing on Windows (eg. [Windows USB](https://github.com/mike42/escpos-php/tree/master/example/interface/windows-usb.php), [SMB](https://github.com/mike42/escpos-php/tree/master/example/interface/smb.php) or [Windows LPT](https://github.com/mike42/escpos-php/tree/master/example/interface/windows-lpt.php)) - this submits print jobs via a queue rather than communicating directly with the printer.
 
 A complete real-world receipt can be found in the code of [Auth](https://github.com/mike42/Auth) in [ReceiptPrinter.php](https://github.com/mike42/Auth/blob/master/lib/misc/ReceiptPrinter.php). It includes justification, boldness, and a barcode.
 
@@ -127,21 +128,23 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Epson TM-T70II
 - EPOS TEP 220M
 - Okipos 80 Plus III
+- SEYPOS PRP-300
 - Xprinter XP-Q800
 - Zijang NT-58H
 - Zijang ZJ-5870
-- Zijang ZJ-5890T
+- Zijang ZJ-5890T (Marketed as POS 5890T)
 
 If you use any other printer with this code, please let me know so I can add it to the list.
 
 Available methods
 -----------------
 
-### __construct(PrintConnector $connector)
+### __construct(PrintConnector $connector, AbstractCapabilityProfile $profile)
 Construct new print object.
 
 Parameters:
 - `PrintConnector $connector`: The PrintConnector to send data to. If not set, output is sent to standard output.
+- `AbstractCapabilityProfile $profile` Supported features of this printer. If not set, the DefaultCapabilityProfile will be used, which is suitable for Epson printers.
 
 See [example/interface/]("https://github.com/mike42/escpos-php/tree/master/example/interface/) for ways to open connections for different platforms and interfaces.
 

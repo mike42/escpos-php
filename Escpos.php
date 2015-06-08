@@ -37,18 +37,25 @@
  * Note that some functions have not been implemented:
  * 		- Set paper sensors
  * 		- Select print colour
- * 		- Code93 and code128 barcodes
  * 
  * Please direct feature requests, bug reports and contributions to escpos-php
  * on Github:
  * 		- https://github.com/mike42/escpos-php
  */
 require_once(dirname(__FILE__) . "/src/EscposImage.php");
+require_once(dirname(__FILE__) . "/src/PrintBuffer.php");
 require_once(dirname(__FILE__) . "/src/EscposPrintBuffer.php");
 require_once(dirname(__FILE__) . "/src/PrintConnector.php");
 require_once(dirname(__FILE__) . "/src/WindowsPrintConnector.php");
 require_once(dirname(__FILE__) . "/src/FilePrintConnector.php");
 require_once(dirname(__FILE__) . "/src/NetworkPrintConnector.php");
+require_once(dirname(__FILE__) . "/src/AbstractCapabilityProfile.php");
+require_once(dirname(__FILE__) . "/src/DefaultCapabilityProfile.php");
+require_once(dirname(__FILE__) . "/src/SimpleCapabilityProfile.php");
+require_once(dirname(__FILE__) . "/src/EposTepCapabilityProfile.php");
+require_once(dirname(__FILE__) . "/src/StarCapabilityProfile.php");
+require_once(dirname(__FILE__) . "/src/CodePage.php");
+require_once(dirname(__FILE__) . "/src/ImagePrintBuffer.php");
 
 class Escpos {
 	/* ASCII codes */
@@ -59,83 +66,20 @@ class Escpos {
 	const GS = "\x1d";
 
 	/* Barcode types */
-	const BARCODE_UPCA = 0;
-	const BARCODE_UPCE = 1;
-	const BARCODE_JAN13 = 2;
-	const BARCODE_JAN8 = 3;
-	const BARCODE_CODE39 = 4;
-	const BARCODE_ITF = 5;
-	const BARCODE_CODABAR = 6;
+	const BARCODE_UPCA = 65;
+	const BARCODE_UPCE = 66;
+	const BARCODE_JAN13 = 67;
+	const BARCODE_JAN8 = 68;
+	const BARCODE_CODE39 = 69;
+	const BARCODE_ITF = 70;
+	const BARCODE_CODABAR = 71;
+	const BARCODE_CODE93 = 72;
+	const BARCODE_CODE128 = 73;
 	
-	/*
-	 * All character tables. Only a subset of these are automatically
-	 * switched to (see EscposPrintBuffer), but all can be manually applied
-	 * and accessed via textRaw();
-	 */
-// TODO not yet used, see issue #9
-// 	const CHARSET_AUTO = -1;
- 	const CHARSET_CP437 = 0;
-// 	const CHARSET_KATAKANA = 1;
-// 	const CHARSET_CP850 = 2;
-// 	const CHARSET_CP860 = 3;
-// 	const CHARSET_CP863 = 4;
-// 	const CHARSET_CP865 = 5;
-// 	const CHARSET_HIRAGANA = 6;
-// 	const CHARSET_KANJI_1 = 7;
-// 	const CHARSET_KANJI_2 = 8;
-// 	const CHARSET_CP851 = 11;
-// 	const CHARSET_CP853 = 12;
-// 	const CHARSET_CP857 = 13;
-// 	const CHARSET_CP737 = 14;
-// 	const CHARSET_ISO8859_7 = 15;
-// 	const CHARSET_CP1252 = 16;
-// 	const CHARSET_CP866 = 17;
-// 	const CHARSET_CP852 = 18;
-// 	const CHARSET_CP858 = 19;
-// 	const CHARSET_THAI_42 = 20;
-// 	const CHARSET_THAI_11 = 21;
-// 	const CHARSET_THAI_13 = 22;
-// 	const CHARSET_THAI_14 = 23;
-// 	const CHARSET_THAI_16 = 24;
-// 	const CHARSET_THAI_17 = 25;
-// 	const CHARSET_THAI_18 = 26;
-// 	const CHARSET_TCVN3_1 = 30;
-// 	const CHARSET_TCVN3_2 = 31;
-// 	const CHARSET_CP720 = 32;
-// 	const CHARSET_CP775 = 33;
-// 	const CHARSET_CP855 = 34;
-// 	const CHARSET_CP861 = 35;
-// 	const CHARSET_CP862 = 36;
-// 	const CHARSET_CP864 = 37;
-// 	const CHARSET_CP869 = 38;
-// 	const CHARSET_ISO8859_2 = 39;
-// 	const CHARSET_ISO8859_15 = 40;
-// 	const CHARSET_CP1098 = 41;
-// 	const CHARSET_CP1118 = 42;
-// 	const CHARSET_CP1119 = 43;
-// 	const CHARSET_CP1125 = 44;
-// 	const CHARSET_CP1250 = 45;
-// 	const CHARSET_CP1251 = 46;
-// 	const CHARSET_CP1253 = 47;
-// 	const CHARSET_CP1254 = 48;
-// 	const CHARSET_CP1255 = 49;
-// 	const CHARSET_CP1256 = 50;
-// 	const CHARSET_CP1257 = 51;
-// 	const CHARSET_CP1258 = 52;
-// 	const CHARSET_RK1048 = 53;
-// 	const CHARSET_ISCII_DEVANAGARI = 66;
-// 	const CHARSET_ISCII_BENGALI = 67;
-// 	const CHARSET_ISCII_TAMIL = 68;
-// 	const CHARSET_ISCII_TELUGU = 69;
-// 	const CHARSET_ISCII_ASSAMESE = 70;
-// 	const CHARSET_ISCII_ORIYA = 71;
-// 	const CHARSET_ISCII_KANNADA = 72;
-// 	const CHARSET_ISCII_MALAYALAM = 73;
-// 	const CHARSET_ISCII_GUJARATI = 74;
-// 	const CHARSET_ISCII_PUNJABI = 75;
-// 	const CHARSET_ISCII_MARATHI = 82;
-// 	const CHARSET_254 = 254;
-// 	const CHARSET_255 = 255;
+	/* Barcode HRI (human-readable interpretation) text position */
+	const BARCODE_TEXT_NONE = 0;
+	const BARCODE_TEXT_ABOVE = 1;
+	const BARCODE_TEXT_BELOW = 2;
 	
 	/* Cut types */
 	const CUT_FULL = 65;
@@ -181,21 +125,33 @@ class Escpos {
 	const UNDERLINE_DOUBLE = 2;
 	
 	/**
-	 * @var EscposPrintBuffer The printer's output buffer.
+	 * @var PrintBuffer The printer's output buffer.
 	 */
 	private $buffer;
 	
-// 	/**
-// 	 * @var array The list of accepted character sets. This is used only for validation.
-// 	 */
-// 	private static $charsets = array();
+	/**
+	 * @var PrintConnector
+	 */
+	private $connector;
+
+	/**
+	 * @var AbstractCapabilityProfile
+	 */
+	private $profile;
 	
 	/**
-	 * Construct a new print object
-	 * 
-	 * @param PrintConnector $connector The PrintConnector to send data to. If not set, output is sent to standard output.
+	 * @var int Current character code table
 	 */
-	function __construct(PrintConnector $connector = null) {
+	private $characterTable;
+
+	/**
+	 * Construct a new print object
+	 *
+	 * @param PrintConnector $connector The PrintConnector to send data to. If not set, output is sent to standard output.
+	 * @param AbstractCapabilityProfile $profile Supported features of this printer. If not set, the DefaultCapabilityProfile will be used, which is suitable for Epson printers.
+	 * @throws InvalidArgumentException
+	 */
+	function __construct(PrintConnector $connector = null, AbstractCapabilityProfile $profile = null) {
 		if(is_null($connector)) {
 			if(php_sapi_name() == 'cli') {
 				$connector = new FilePrintConnector("php://stdout");
@@ -203,7 +159,18 @@ class Escpos {
 				throw new InvalidArgumentException("Argument passed to Escpos::__construct() must implement interface PrintConnector, null given.");
 			}
 		}
-		$this -> buffer = new EscposPrintBuffer($this, $connector);
+		/* Set connector */
+		$this -> connector = $connector;
+		
+		/* Set capability profile */
+		if($profile === null) {
+			$profile = DefaultCapabilityProfile::getInstance();
+		}
+		$this -> profile = $profile;
+		/* Set buffer */
+		$buffer = new EscposPrintBuffer();
+		$this -> buffer = null;
+		$this -> setPrintBuffer($buffer);
 		$this -> initialize();
 	}
 	
@@ -211,11 +178,60 @@ class Escpos {
 	 * Print a barcode.
 	 *
 	 * @param string $content The information to encode.
-	 * @param int $type The barcode standard to output. If not specified, `Escpos::BARCODE_CODE39` will be used.
+	 * @param int $type The barcode standard to output. If not specified, `Escpos::BARCODE_CODE39` will be used. Note that some barcode formats only support specific lengths or sets of characters.
+	 * @throws InvalidArgumentException Where the length or characters used in $content is invalid for the requested barcode format.
 	 */
 	function barcode($content, $type = self::BARCODE_CODE39) {
-		// TODO validation on barcode() inputs
-		$this -> buffer -> write(self::GS . "k" . chr($type) . $content . self::NUL);
+		/* Validate input */
+		self::validateInteger($type, 65, 73, __FUNCTION__, "Barcode type");
+		$len = strlen($content);
+		switch($type) {
+			case self::BARCODE_UPCA:
+				self::validateInteger($len, 11, 12, __FUNCTION__, "UPCA barcode content length");
+				self::validateStringRegex($content, __FUNCTION__, "/^[0-9]{11,12}$/", "UPCA barcode content");
+				break;
+			case self::BARCODE_UPCE:
+				self::validateIntegerMulti($len, array(array(6, 8), array(11, 12)), __FUNCTION__, "UPCE barcode content length");
+				self::validateStringRegex($content, __FUNCTION__, "/^([0-9]{6,8}|[0-9]{11,12})$/",  "UPCE barcode content");
+				break;
+			case self::BARCODE_JAN13:
+				self::validateInteger($len, 12, 13, __FUNCTION__, "JAN13 barcode content length");
+				self::validateStringRegex($content, __FUNCTION__, "/^[0-9]{12,13}$/", "JAN13 barcode content");
+				break;
+			case self::BARCODE_JAN8:
+				self::validateInteger($len, 7, 8, __FUNCTION__, "JAN8 barcode content length");
+				self::validateStringRegex($content, __FUNCTION__, "/^[0-9]{7,8}$/", "JAN8 barcode content");
+				break;
+			case self::BARCODE_CODE39:
+				self::validateInteger($len, 1, 255, __FUNCTION__, "CODE39 barcode content length"); // 255 is a limitation of the "function b" command, not the barcode format.
+				self::validateStringRegex($content, __FUNCTION__, "/^([0-9A-Z \$\%\+\-\.\/]+|\*[0-9A-Z \$\%\+\-\.\/]+\*)$/", "CODE39 barcode content");
+				break;
+			case self::BARCODE_ITF:
+				self::validateInteger($len, 2, 255, __FUNCTION__, "ITF barcode content length"); // 255 is a limitation of the "function b" command, not the barcode format.
+				self::validateStringRegex($content, __FUNCTION__, "/^([0-9]{2})+$/", "ITF barcode content");
+				break;
+			case self::BARCODE_CODABAR:
+				self::validateInteger($len, 1, 255, __FUNCTION__, "Codabar barcode content length"); // 255 is a limitation of the "function b" command, not the barcode format.
+				self::validateStringRegex($content, __FUNCTION__, "/^[A-Da-d][0-9\$\+\-\.\/\:]+[A-Da-d]$/", "Codabar barcode content");
+				break;
+			case self::BARCODE_CODE93:
+				self::validateInteger($len, 1, 255, __FUNCTION__, "Code93 barcode content length"); // 255 is a limitation of the "function b" command, not the barcode format.
+				self::validateStringRegex($content, __FUNCTION__, "/^[\\x00-\\x7F]+$/", "Code93 barcode content");
+				break;
+			case self::BARCODE_CODE128:
+				self::validateInteger($len, 1, 255, __FUNCTION__, "Code128 barcode content length"); // 255 is a limitation of the "function b" command, not the barcode format.
+				// The CODE128 encoder is quite complex, so only a very basic header-check is applied here.
+				self::validateStringRegex($content, __FUNCTION__, "/^\{[A-C][\\x00-\\x7F]+$/", "Code128 barcode content");
+				break;
+		}
+ 		if(!$this -> profile -> getSupportsBarcodeB()) {
+			// A simpler barcode command which supports fewer codes
+			self::validateInteger($type, 65, 71, __FUNCTION__);
+			$this -> connector -> write(self::GS . "k" . chr($type - 65) . $content . self::NUL);
+			return;
+ 		}
+ 		// More advanced function B, used in preference
+ 		$this -> connector -> write(self::GS . "k" . chr($type) . chr(strlen($content)) . $content);
 	}
 	
 	/**
@@ -230,8 +246,8 @@ class Escpos {
 	function bitImage(EscposImage $img, $size = self::IMG_DEFAULT) {
 		self::validateInteger($size, 0, 3, __FUNCTION__);
 		$header = self::dataHeader(array($img -> getWidthBytes(), $img -> getHeight()), true);
-		$this -> buffer -> write(self::GS . "v0" . chr($size) . $header);
-		$this -> buffer -> write($img -> toRasterFormat());
+		$this -> connector -> write(self::GS . "v0" . chr($size) . $header);
+		$this -> connector -> write($img -> toRasterFormat());
 	}
 	
 	/**
@@ -239,7 +255,7 @@ class Escpos {
 	 * job will not actually be sent to the printer until this is called.
 	 */
 	function close() {
-		$this -> buffer -> finalize();
+		$this -> connector -> finalize();
 	}
 	
 	/**
@@ -250,7 +266,7 @@ class Escpos {
 	 */
 	function cut($mode = self::CUT_FULL, $lines = 3) {
 		// TODO validation on cut() inputs
-		$this -> buffer -> write(self::GS . "V" . chr($mode) . chr($lines));
+		$this -> connector -> write(self::GS . "V" . chr($mode) . chr($lines));
 	}
 	
 	/**
@@ -261,9 +277,9 @@ class Escpos {
 	function feed($lines = 1) {
 		self::validateInteger($lines, 1, 255, __FUNCTION__);
 		if($lines <= 1) {
-			$this -> buffer -> write(self::LF);
+			$this -> connector -> write(self::LF);
 		} else {
-			$this -> buffer -> write(self::ESC . "d" . chr($lines));
+			$this -> connector -> write(self::ESC . "d" . chr($lines));
 		}
 	}
 	
@@ -274,7 +290,35 @@ class Escpos {
 	 */
 	function feedReverse($lines = 1) {
 		self::validateInteger($lines, 1, 255, __FUNCTION__);
-		$this -> buffer -> write(self::ESC . "e" . chr($lines));
+		$this -> connector -> write(self::ESC . "e" . chr($lines));
+	}
+
+	/**
+	 * @return number
+	 */
+	function getCharacterTable() {
+		return $this -> characterTable;
+	}
+	
+	/**
+	 * @return PrintBuffer
+	 */
+	function getPrintBuffer() {
+		return $this -> buffer;
+	}
+
+	/**
+	 * @return PrintConnector
+	 */
+	function getPrintConnector() {
+		return $this -> connector;
+	}
+
+	/**
+	 * @return AbstractCapabilityProfile
+	 */
+	function getPrinterCapabilityProfile() {
+		return $this -> profile;
 	}
 	
 	/**
@@ -309,7 +353,8 @@ class Escpos {
 	 * Initialize printer. This resets formatting back to the defaults.
 	 */
 	function initialize() {
-		$this -> buffer -> write(self::ESC . "@");
+		$this -> connector -> write(self::ESC . "@");
+		$this -> characterTable = 0;
 	}
 	
 	/**
@@ -321,10 +366,11 @@ class Escpos {
 	 * @param int $off_ms pulse OFF time, in milliseconds.
 	 */
 	function pulse($pin = 0, $on_ms = 120, $off_ms = 240) {
-		// TODO validation on pulse() inputs
-		$this -> buffer -> write(self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
+		self::validateInteger($pin, 0, 1, __FUNCTION__);
+		self::validateInteger($on_ms, 1, 511, __FUNCTION__);
+		self::validateInteger($off_ms, 1, 511, __FUNCTION__);
+		$this -> connector -> write(self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
 	}
-	
 	
 	/**
 	 * Print the given data as a QR code on the printer.
@@ -342,6 +388,10 @@ class Escpos {
 		if($content == "") {
 			return;
 		}
+		if(!$this -> profile -> getSupportsQrCode()) {
+			// TODO use software rendering via phpqrcode instead
+			throw new Exception("QR codes are not supported on your printer.");
+		}
 		$cn = '1'; // Code type for QR code
 		// Select model: 1, 2 or micro.
 		$this -> wrapperSend2dCodeData(chr(65), $cn, chr(48 + $model) . chr(0));
@@ -353,18 +403,28 @@ class Escpos {
 		$this -> wrapperSend2dCodeData(chr(80), $cn, $content, '0');
 		$this -> wrapperSend2dCodeData(chr(81), $cn, '', '0');
 	}
-	
+
 	/**
 	 * Switch character table (code page) manually. Used in conjunction with textRaw() to
 	 * print special characters which can't be encoded automatically.
 	 * 
 	 * @param int $table The table to select. Available code tables are model-specific.
 	 */
-	function selectCharacterTable($table = self::CHARSET_CP437) {
+	function selectCharacterTable($table = 0) {
 		self::validateInteger($table, 0, 255, __FUNCTION__);
-		$this -> buffer -> write(self::ESC . "t" . chr($table));
+		$supported = $this -> profile -> getSupportedCodePages();
+		if(!isset($supported[$table])) {
+			throw new InvalidArgumentException("There is no code table $table allowed by this printer's capability profile.");
+		}
+		$this -> characterTable = $table;
+		if($this -> profile -> getSupportsStarCommands()) {
+			/* Not an ESC/POS command: STAR printers stash all the extra code pages under a different command. */
+			$this -> connector -> write(self::ESC . self::GS . "t" . chr($table));
+			return;
+		}
+		$this -> connector -> write(self::ESC . "t" . chr($table));
 	}
-	
+
 	/**
 	 * Select print mode(s).
 	 * 
@@ -381,10 +441,10 @@ class Escpos {
 	function selectPrintMode($mode = self::MODE_FONT_A) {
 		$allModes = self::MODE_FONT_B | self::MODE_EMPHASIZED | self::MODE_DOUBLE_HEIGHT | self::MODE_DOUBLE_WIDTH | self::MODE_UNDERLINE;
 		if(!is_integer($mode) || $mode < 0 || ($mode & $allModes) != $mode) {
-			throw new InvalidArgumentException("Test");
+			throw new InvalidArgumentException("Invalid mode");
 		}
 
-		$this -> buffer -> write(self::ESC . "!" . chr($mode));
+		$this -> connector -> write(self::ESC . "!" . chr($mode));
 	}
 	
 	/**
@@ -394,7 +454,18 @@ class Escpos {
 	 */
 	function setBarcodeHeight($height = 8) {
 		self::validateInteger($height, 1, 255, __FUNCTION__);
-		$this -> buffer -> write(self::GS . "h" . chr($height));
+		$this -> connector -> write(self::GS . "h" . chr($height));
+	}
+	
+	
+	/**
+	 * Set the position for the Human Readable Interpretation (HRI) of barcode characters.
+	 * 
+	 * @param position $position. Use Escpos::BARCODE_TEXT_NONE to hide the text (default), or any combination of Escpos::BARCODE_TEXT_TOP and Escpos::BARCODE_TEXT_BOTTOM flags to display the text.
+	 */
+	function setBarcodeTextPosition($position = self::BARCODE_TEXT_NONE) {
+		self::validateInteger($position, 0, 3, __FUNCTION__, "Barcode text position");
+		$this -> connector -> write(self::GS . "H" . chr($position));
 	}
 	
 	/**
@@ -404,7 +475,7 @@ class Escpos {
 	 */
 	function setDoubleStrike($on = true) {
 		self::validateBoolean($on, __FUNCTION__);
-		$this -> buffer -> write(self::ESC . "G". ($on ? chr(1) : chr(0)));
+		$this -> connector -> write(self::ESC . "G". ($on ? chr(1) : chr(0)));
 	}
 	
 	/**
@@ -414,7 +485,7 @@ class Escpos {
 	 */
 	function setEmphasis($on = true) {
 		self::validateBoolean($on, __FUNCTION__);
-		$this -> buffer -> write(self::ESC . "E". ($on ? chr(1) : chr(0)));
+		$this -> connector -> write(self::ESC . "E". ($on ? chr(1) : chr(0)));
 	}
 	
 	/**
@@ -424,7 +495,7 @@ class Escpos {
 	 */
 	function setFont($font = self::FONT_A) {
 		self::validateInteger($font, 0, 2, __FUNCTION__);
-		$this -> buffer -> write(self::ESC . "M" . chr($font));
+		$this -> connector -> write(self::ESC . "M" . chr($font));
 	}
 	
 	/**
@@ -434,7 +505,27 @@ class Escpos {
 	 */
 	function setJustification($justification = self::JUSTIFY_LEFT) {
 		self::validateInteger($justification, 0, 2, __FUNCTION__);
-		$this -> buffer -> write(self::ESC . "a" . chr($justification));
+		$this -> connector -> write(self::ESC . "a" . chr($justification));
+	}
+	
+	/**
+	 * Attach a different print buffer to the printer. Buffers are responsible for handling text output to the printer.
+	 * 
+	 * @param PrintBuffer $buffer The buffer to use.
+	 * @throws InvalidArgumentException Where the buffer is already attached to a different printer.
+	 */
+	function setPrintBuffer(PrintBuffer $buffer) {
+		if($buffer === $this -> buffer) {
+			return;
+		}
+		if($buffer -> getPrinter() != null) {
+			throw new InvalidArgumentException("This buffer is already attached to a printer.");
+		}
+		if($this -> buffer !== null) {
+			$this -> buffer -> setPrinter(null);
+		}
+		$this -> buffer = $buffer;
+		$this -> buffer -> setPrinter($this);
 	}
 	
 	/**
@@ -444,7 +535,7 @@ class Escpos {
 	 */
 	function setReverseColors($on = true) {
 		self::validateBoolean($on, __FUNCTION__);
-		$this -> buffer -> write(self::GS . "B" . ($on ? chr(1) : chr(0)));
+		$this -> connector -> write(self::GS . "B" . ($on ? chr(1) : chr(0)));
 	}
 	
 	/**
@@ -464,7 +555,7 @@ class Escpos {
 		}
 		/* Set the underline */
 		self::validateInteger($underline, 0, 2, __FUNCTION__);
-		$this -> buffer -> write(self::ESC . "-". chr($underline));
+		$this -> connector -> write(self::ESC . "-". chr($underline));
 	}
 	
 	/**
@@ -507,7 +598,7 @@ class Escpos {
 			throw new InvalidArgumentException("wrapperSend2dCodeData: cn and fn must be one character each.");
 		}
 		$header = $this -> intLowHigh(strlen($data) + strlen($m) + 2, 2);
-		$this -> buffer -> write(self::GS . "(k" . $header . $cn . $fn . $m . $data);
+		$this -> connector -> write(self::GS . "(k" . $header . $cn . $fn . $m . $data);
 	}
 	
 	/**
@@ -523,7 +614,7 @@ class Escpos {
 			throw new InvalidArgumentException("wrapperSendGraphicsData: m and fn must be one character each.");
 		}
 		$header = $this -> intLowHigh(strlen($data) + 2, 2);
-		$this -> buffer -> write(self::GS . "(L" . $header . $m . $fn . $data);
+		$this -> connector -> write(self::GS . "(L" . $header . $m . $fn . $data);
 	}
 	
 	/**
@@ -582,10 +673,43 @@ class Escpos {
 	 * @param int $min the minimum allowable value (inclusive)
 	 * @param int $max the maximum allowable value (inclusive)
 	 * @param string $source the name of the function calling this
+	 * @param string $argument the name of the invalid parameter
 	 */
-	protected static function validateInteger($test, $min, $max, $source) {
-		if(!is_integer($test) || $test < $min || $test > $max) {
-			throw new InvalidArgumentException("Argument to $source must be a number between $min and $max, but $test was given.");
+	protected static function validateInteger($test, $min, $max, $source, $argument = "Argument") {
+		self::validateIntegerMulti($test, array(array($min, $max)), $source, $argument);
+	}
+	
+	/**
+	 * Throw an exception if the argument given is not an integer within one of the specified ranges
+	 *
+	 * @param int $test the input to test
+	 * @param arrray $ranges array of two-item min/max ranges.
+	 * @param string $source the name of the function calling this
+	 * @param string $source the name of the function calling this
+	 * @param string $argument the name of the invalid parameter
+	 */
+	protected static function validateIntegerMulti($test, array $ranges, $source, $argument = "Argument") {
+		if(!is_integer($test)) {
+			throw new InvalidArgumentException("$argument given to $source must be a number, but '$test' was given.");
+		}
+		$match = false;
+		foreach($ranges as $range) {
+			$match |= $test >= $range[0] && $test <= $range[1];
+		}
+		if(!$match) {
+			// Put together a good error "range 1-2 or 4-6"
+			$rangeStr = "range ";
+			for($i = 0; $i < count($ranges); $i++) {
+				$rangeStr .= $ranges[$i][0] . "-" . $ranges[$i][1];
+				if($i == count($ranges) - 1) {
+					continue;
+				} else if($i == count($ranges) - 2) {
+					$rangeStr .= " or ";
+				} else {
+					$rangeStr .= ", ";
+				}
+			}
+			throw new InvalidArgumentException("$argument given to $source must be in $rangeStr, but $test was given.");
 		}
 	}
 	
@@ -594,10 +718,17 @@ class Escpos {
 	 *
 	 * @param string $test the input to test
 	 * @param string $source the name of the function calling this
+	 * @param string $argument the name of the invalid parameter
 	 */
-	protected static function validateString($test, $source) {
+	protected static function validateString($test, $source, $argument = "Argument") {
 		if (is_object($test) && !method_exists($test, '__toString')) {
-			throw new InvalidArgumentException("Argument to $source must be a string");
+			throw new InvalidArgumentException("$argument to $source must be a string");
+		}
+	}
+	
+	protected static function validateStringRegex($test, $source, $regex, $argument = "Argument") {
+		if(preg_match($regex, $test) === 0) {
+			throw new InvalidArgumentException("$argument given to $source is invalid. It should match regex '$regex', but '$test' was given.");
 		}
 	}
 }

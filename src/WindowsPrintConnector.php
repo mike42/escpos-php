@@ -258,11 +258,15 @@ class WindowsPrintConnector implements PrintConnector {
 			/* Final print-out */
 			$filename = tempnam(sys_get_temp_dir(), "escpos");
 			file_put_contents($filename, $data);
-			$this -> runCopy($filename, $device);
+			if(!$this -> runCopy($filename, $device)){
+				throw new Exception("Failed to copy file to printer");
+			}
 			unlink($filename);
 		} else {
 			/* Drop data straight on the printer */
-			$this -> runWrite($data,  $this -> printerName);
+			if(!$this -> runWrite($data,  $this -> printerName)) {
+				throw new Exception("Failed to write file to printer at " . $this -> printerName);
+			}
 		}
 	}
 	
@@ -311,7 +315,7 @@ class WindowsPrintConnector implements PrintConnector {
 			$retval = proc_close($process);
 			return $retval;
 		} else {
-			$errorStr = "Failed to start process '$cmd'.";
+			/* Method calling this should notice a non-zero exit and print an error */
 			return -1;
 		}
 	}
@@ -321,9 +325,10 @@ class WindowsPrintConnector implements PrintConnector {
 	 * 
 	 * @param string $from Source file
 	 * @param string $to Destination file
+	 * @return boolean True if copy was successful, false otherwise
 	 */
 	protected function runCopy($from, $to) {
-		copy($from, $to);
+		return copy($from, $to);
 	}
 	
 	/**
@@ -331,9 +336,10 @@ class WindowsPrintConnector implements PrintConnector {
 	 * 
 	 * @param string $data Data to print
 	 * @param string $to Destination file
+         * @return boolean True if write was successful, false otherwise
 	 */
 	protected function runWrite($data, $to) {
-		file_put_contents($data, $to);
+		return file_put_contents($data, $to) !== false;
 	}
 
 	public function write($data) {
