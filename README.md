@@ -6,49 +6,61 @@ The library was developed to add drop-in support for receipt printing to any PHP
 
 Basic usage
 -----------
-The library should be initialised with a file pointer to the printer. For a networked printer, this can be opened via [fsockopen()](http://www.php.net/manual/en/function.fsockopen.php). For a local printer, use [fopen()](http://www.php.net/manual/en/function.fopen.php) to open the printer's device file. If no file pointer is specified, then standard output is used.
-
-A "hello world" receipt can be printed easily (Call this `hello-world.php`):
+A "hello world" receipt can be generated easily (Call this `hello-world.php`):
 ```php
 <?php
 require_once(dirname(__FILE__) . "/Escpos.php");
 $printer = new Escpos();
 $printer -> text("Hello World!\n");
 $printer -> cut();
+$printer -> close();
 ```
-This would be executed as:
+This would be printed as:
 ```
 # Networked printer
 php hello-world.php | nc 10.x.x.x. 9100
 # Local printer
 php hello-world.php > /dev/...
+# Windows local printer
+php hello-world.php > foo.txt
+net use LPT1 \\server\printer
+copy foo.txt LPT1
+del foo.txt
 ```
 
-From your web app, you would pass the output directly to a socket:
+From your web app, you could pass the output directly to a socket if your printer is networked:
 ```php
 <?php
 require_once(dirname(__FILE__) . "/Escpos.php");
-$fp = fsockopen("10.x.x.x", 9100);
-$printer = new Escpos($fp);
+$connector = new NetworkPrintConnector("10.x.x.x", 9100);
+$printer = new Escpos($connector);
 $printer -> text("Hello World!\n");
 $printer -> cut();
-fclose($fp);
+$printer -> close();
 ```
 
 Or to a local printer:
 ```php
 <?php
 require_once(dirname(__FILE__) . "/Escpos.php");
-$fp = fopen("/dev/ttyS0", "w+");
-$printer = new Escpos($fp);
+$connector = new FilePrintConnector("/dev/ttyS0");
+$printer = new Escpos($connector);
 $printer -> text("Hello World!\n");
 $printer -> cut();
-fclose($fp);
+$printer -> close();
 ```
 
+### Basic workflow
+The library should be initialised with a PrintConnector, which will pass on the data to your printer.
+Use the table under "Compatibility", or the examples below to choose the appropriate connector for your
+platform & interface. If no connector is specified, then standard output is used.
+
+When you have finished using the print object, call `close()` to finalize any data transfers.
+
+### Tips & examples
 On Linux, your printer device file will be somewhere like `/dev/lp0` (parallel), `/dev/usb/lp1` (USB), `/dev/ttyUSB0` (USB-Serial), `/dev/ttyS0` (serial).
 
-On Windows, the device files will be along the lines of `LPT1` (parallel), `COM1` (serial).
+On Windows, the device files will be along the lines of `LPT1` (parallel) or `COM1` (serial). Use the `WindowsPrintConnector` to tap into system printing on Windows (eg. [Windows USB](https://github.com/mike42/escpos-php/tree/master/example/interface/windows-usb.php), [SMB](https://github.com/mike42/escpos-php/tree/master/example/interface/smb.php) or [Windows LPT](https://github.com/mike42/escpos-php/tree/master/example/interface/windows-lpt.php)) - this submits print jobs via a queue rather than communicating directly with the printer.
 
 A complete real-world receipt can be found in the code of [Auth](https://github.com/mike42/Auth) in [ReceiptPrinter.php](https://github.com/mike42/Auth/blob/master/lib/misc/ReceiptPrinter.php). It includes justification, boldness, and a barcode.
 
@@ -77,7 +89,7 @@ This driver is known to work with the following OS/interface combinations:
 <th>USB</th>
 <td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/linux-usb.php">Yes</a></td>
 <td>Not tested</td>
-<td>Not tested</td>
+<td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/windows-usb.php">Yes</a></td>
 </tr>
 <tr>
 <th>USB-serial</th>
@@ -93,9 +105,15 @@ This driver is known to work with the following OS/interface combinations:
 </tr>
 <tr>
 <th>Parallel</th>
+<td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/windows-lpt.php">Yes</a></td>
+<td>Not tested</td>
 <td>Yes</td>
-<td>Not tested</td>
-<td>Not tested</td>
+</tr>
+<tr>
+<th>SMB shared</th>
+<td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/smb.php">Yes</a></td>
+<td>No</td>
+<td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/smb.php">Yes</a></td>
 </tr>
 </table>
 
@@ -109,17 +127,26 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Epson TM-T20
 - Epson TM-T70II
 - EPOS TEP 220M
+- Okipos 80 Plus III
+- SEYPOS PRP-300
+- Xprinter XP-Q800
+- Zijang NT-58H
+- Zijang ZJ-5870
+- Zijang ZJ-5890T (Marketed as POS 5890T)
 
 If you use any other printer with this code, please let me know so I can add it to the list.
 
 Available methods
 -----------------
 
-### __construct($fp)
+### __construct(PrintConnector $connector, AbstractCapabilityProfile $profile)
 Construct new print object.
 
 Parameters:
-- `resource $fp`: File pointer to print to. Will open `php://stdout` if none is specified.
+- `PrintConnector $connector`: The PrintConnector to send data to. If not set, output is sent to standard output.
+- `AbstractCapabilityProfile $profile` Supported features of this printer. If not set, the DefaultCapabilityProfile will be used, which is suitable for Epson printers.
+
+See [example/interface/]("https://github.com/mike42/escpos-php/tree/master/example/interface/) for ways to open connections for different platforms and interfaces.
 
 ### barcode($content, $type)
 Print a barcode.
@@ -204,6 +231,13 @@ Parameters:
 - `int $on_ms`: pulse ON time, in milliseconds.
 - `int $off_ms`: pulse OFF time, in milliseconds.
 
+### qrCode($content, $ec, $size, $model)
+Print the given data as a QR code on the printer.
+
+- `string $content`: The content of the code. Numeric data will be more efficiently compacted.
+- `int $ec` Error-correction level to use. One of `Escpos::QR_ECLEVEL_L` (default), `Escpos::QR_ECLEVEL_M`, `Escpos::QR_ECLEVEL_Q` or `Escpos::QR_ECLEVEL_H`. Higher error correction results in a less compact code.
+- `int $size`: Pixel size to use. Must be 1-16 (default 3)
+- `int $model`: QR code model to use. Must be one of `Escpos::QR_MODEL_1`, `Escpos::QR_MODEL_2` (default) or `Escpos::QR_MICRO` (not supported by all printers).
 
 ### selectPrintMode($mode)
 Select print mode(s).
