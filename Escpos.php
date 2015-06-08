@@ -185,35 +185,43 @@ class Escpos {
 		/* Validate input */
 		self::validateInteger($type, 65, 73, __FUNCTION__, "Barcode type");
 		$len = strlen($content);
-		
 		switch($type) {
 			case self::BARCODE_UPCA:
 				self::validateInteger($len, 11, 12, __FUNCTION__, "UPCA barcode content length");
-				
+				self::validateStringRegex($content, __FUNCTION__, "/^[0-9]{11,12}$/", "UPCA barcode content");
 				break;
 			case self::BARCODE_UPCE:
-				
+				self::validateIntegerMulti($len, array(array(6, 8), array(11, 12)), __FUNCTION__, "UPCE barcode content length");
+				self::validateStringRegex($content, __FUNCTION__, "/^([0-9]{6,8}|[0-9]{11,12})$/",  "UPCE barcode content");
 				break;
 			case self::BARCODE_JAN13:
-				
+				self::validateInteger($len, 12, 13, __FUNCTION__, "JAN13 barcode content length");
+				self::validateStringRegex($content, __FUNCTION__, "/^[0-9]{12,13}$/", "JAN13 barcode content");
 				break;
 			case self::BARCODE_JAN8:
-				
+				self::validateInteger($len, 7, 8, __FUNCTION__, "JAN8 barcode content length");
+				self::validateStringRegex($content, __FUNCTION__, "/^[0-9]{7,8}$/", "JAN8 barcode content");
 				break;
 			case self::BARCODE_CODE39:
-				
+				self::validateInteger($len, 1, 255, __FUNCTION__, "CODE39 barcode content length"); // 255 is a limitation of the "function b" command, not the barcode format.
+				self::validateStringRegex($content, __FUNCTION__, "/^([0-9A-Z \$\%\+\-\.\/]+|\*[0-9A-Z \$\%\+\-\.\/]+\*)$/", "CODE39 barcode content");
 				break;
 			case self::BARCODE_ITF:
-				
+				self::validateInteger($len, 2, 255, __FUNCTION__, "ITF barcode content length"); // 255 is a limitation of the "function b" command, not the barcode format.
+				self::validateStringRegex($content, __FUNCTION__, "/^([0-9]{2})+$/", "ITF barcode content");
 				break;
 			case self::BARCODE_CODABAR:
-				
+				self::validateInteger($len, 1, 255, __FUNCTION__, "Codabar barcode content length"); // 255 is a limitation of the "function b" command, not the barcode format.
+				self::validateStringRegex($content, __FUNCTION__, "/^[A-Da-d][0-9\$\+\-\.\/\:]+[A-Da-d]$/", "Codabar barcode content");
 				break;
 			case self::BARCODE_CODE93:
-				
+				self::validateInteger($len, 1, 255, __FUNCTION__, "Code93 barcode content length"); // 255 is a limitation of the "function b" command, not the barcode format.
+				self::validateStringRegex($content, __FUNCTION__, "/^[\\x00-\\x7F]+$/", "Code93 barcode content");
 				break;
 			case self::BARCODE_CODE128:
-				
+				self::validateInteger($len, 1, 255, __FUNCTION__, "Code128 barcode content length"); // 255 is a limitation of the "function b" command, not the barcode format.
+				// The CODE128 encoder is quite complex, so only a very basic header-check is applied here.
+				self::validateStringRegex($content, __FUNCTION__, "/^\{[A-C][\\x00-\\x7F]+$/", "Code128 barcode content");
 				break;
 		}
  		if(!$this -> profile -> getSupportsBarcodeB()) {
@@ -719,8 +727,8 @@ class Escpos {
 	}
 	
 	protected static function validateStringRegex($test, $source, $regex, $argument = "Argument") {
-		if(preg_match($regex, $test) === false) {
-			
+		if(preg_match($regex, $test) === 0) {
+			throw new InvalidArgumentException("$argument given to $source is invalid. It should match regex '$regex', but '$test' was given.");
 		}
 	}
 }

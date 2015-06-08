@@ -17,7 +17,8 @@ require_once(dirname(__FILE__) . "/../../Escpos.php");
  */
 try {
 	// Enter the share name for your USB printer here
-	$connector = new WindowsPrintConnector("Receipt Printer");
+	$connector = null;
+	//$connector = new WindowsPrintConnector("Receipt Printer");
 
 	/* Print a "Hello world" receipt" */
 	$printer = new Escpos($connector);

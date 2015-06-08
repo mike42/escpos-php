@@ -69,30 +69,34 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 		$outp = $this -> runExample("print-from-pdf.php");
 		$this -> outpTest(gzcompress($outp, 9), "print-from-pdf.bin.z"); // Compressing output because it's ~1MB
 	}
-	
+
 	public function testInterfaceEthernet() {
+		// Test attempts DNS lookup on some machine
 		$outp = $this -> runExample("interface/ethernet.php");
-		$this -> outpTest($outp, "interface-ethernet.bin");
+		$this -> outpTest($outp, "interface.bin");
 	}
 	
 	public function testInterfaceLinuxUSB() {
 		$outp = $this -> runExample("interface/linux-usb.php");
-		$this -> outpTest($outp, "interface-linux-usb.bin");
+		$this -> outpTest($outp, "interface.bin");
 	}
 	
 	public function testInterfaceWindowsUSB() {
 		// Output varies between platforms, not checking.
 		$outp = $this -> runExample("interface/windows-usb.php");
+		$this -> outpTest($outp, "interface.bin");
 	}
 	
 	public function testInterfaceSMB() {
 		// Output varies between platforms, not checking.
 		$outp = $this -> runExample("interface/smb.php");
+		$this -> outpTest($outp, "interface.bin");
 	}
 	
 	public function testInterfaceWindowsLPT() {
 		// Output varies between platforms, not checking.
 		$outp = $this -> runExample("interface/windows-lpt.php");
+		$this -> outpTest($outp, "interface.bin");
 	}
 	
 	private function runExample($fn) {

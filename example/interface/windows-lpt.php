@@ -11,7 +11,9 @@ require_once(dirname(__FILE__) . "/../../Escpos.php");
  * 	echo "Hello World" > LPT1
  */
 try {
-	$connector = new WindowsPrintConnector("LPT1");
+	$connector = null;
+	//$connector = new WindowsPrintConnector("LPT1");
+	
 	// A FilePrintConnector will also work, but on non-Windows systems, writes
 	// to an actual file called 'LPT1' rather than giving a useful error.
 	// $connector = new FilePrintConnector("LPT1");

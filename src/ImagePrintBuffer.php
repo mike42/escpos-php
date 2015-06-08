@@ -72,7 +72,6 @@ class ImagePrintBuffer implements PrintBuffer {
 		//$draw -> setFont('Arial');// (not necessary?)
 		$draw -> setFontSize(24); // Size 21 looks good for FONT B
 		$draw -> setFillColor($color);
-//$draw -> 
 		$draw -> setStrokeAntialias(true);
 		$draw -> setTextAntialias(true);
 		$metrics = $image -> queryFontMetrics($draw, $text);

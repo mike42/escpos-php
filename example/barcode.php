@@ -28,7 +28,7 @@ $standards = array (
 				"example" => array (
 						array (
 								"caption" => "12 char numeric including (wrong) check digit.",
-								"content" => "012345678901" 
+								"content" => "012345678901"
 						),
 						array (
 								"caption" => "Send 11 chars to add check digit automatically.",
@@ -46,19 +46,19 @@ $standards = array (
 						),
 						array (
 								"caption" => "7 char numeric - auto check digit",
-								"content" => "0123456" 
+								"content" => "0123456"
 						),
 						array (
 								"caption" => "8 char numeric",
-								"content" => "01234567" 
+								"content" => "01234567"
 						),
 						array (
 								"caption" => "11 char numeric - auto check digit",
-								"content" => "01234567890" 
+								"content" => "01234567890"
 						),
 						array (
 								"caption" => "12 char numeric including (wrong) check digit",
-								"content" => "012345678901" 
+								"content" => "012345678901"
 						) 
 				) 
 		),
@@ -68,11 +68,11 @@ $standards = array (
 				"example" => array (
 						array (
 								"caption" => "12 char numeric - auto check digit",
-								"content" => "0123456789012" 
+								"content" => "012345678901" 
 						),
 						array (
 								"caption" => "13 char numeric including (wrong) check digit",
-								"content" => "01234567890123" 
+								"content" => "0123456789012" 
 						) 
 				) 
 		),
@@ -85,8 +85,8 @@ $standards = array (
 								"content" => "0123456" 
 						),
 						array (
-								"caption" => "7 char numeric including (wrong) check digit",
-								"content" => "0123456" 
+								"caption" => "8 char numeric including (wrong) check digit",
+								"content" => "01234567"
 						) 
 				) 
 		),
@@ -155,7 +155,7 @@ $standards = array (
 								"content" => "{B" . "012ABCDabcd" 
 						),
 						array (
-								"caption" => "Code set C compact numbers",
+								"caption" => "Code set C compact numbers\n Sending chr(21) chr(32) chr(43)",
 								"content" => "{C" . chr ( 21 ) . chr ( 32 ) . chr ( 43 ) 
 						) 
 				) 
