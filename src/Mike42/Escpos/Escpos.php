@@ -1,6 +1,8 @@
 <?php
 namespace Mike42\Escpos;
 
+use Exception;
+use InvalidArgumentException;
 use Mike42\Escpos\PrintBuffers\PrintBuffer;
 use Mike42\Escpos\PrintBuffers\EscposPrintBuffer;
 use Mike42\Escpos\PrintBuffers\ImagePrintBuffer;
