@@ -1,6 +1,8 @@
 <?php
 namespace Mike42\Escpos\PrintBuffers;
 
+use Mike42\Escpos\Escpos;
+
 /**
  * escpos-php, a Thermal receipt printer library, for use with
  * ESC/POS compatible printers.

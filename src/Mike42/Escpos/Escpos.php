@@ -1,6 +1,19 @@
 <?php
 namespace Mike42\Escpos;
 
+use Mike42\Escpos\PrintBuffers\PrintBuffer;
+use Mike42\Escpos\PrintBuffers\EscposPrintBuffer;
+use Mike42\Escpos\PrintBuffers\ImagePrintBuffer;
+use Mike42\Escpos\PrintConnectors\PrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\CapabilityProfiles\AbstractCapabilityProfile;
+use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
+use Mike42\Escpos\CapabilityProfiles\SimpleCapabilityProfile;
+use Mike42\Escpos\CapabilityProfiles\EposTepCapabilityProfile;
+use Mike42\Escpos\CapabilityProfiles\StarCapabilityProfile;
+
 /**
  * escpos-php, a Thermal receipt printer library, for use with
  * ESC/POS compatible printers.
@@ -44,20 +57,7 @@ namespace Mike42\Escpos;
  * on Github:
  * 		- https://github.com/mike42/escpos-php
  */
-require_once(dirname(__FILE__) . "/src/EscposImage.php");
-require_once(dirname(__FILE__) . "/src/PrintBuffer.php");
-require_once(dirname(__FILE__) . "/src/EscposPrintBuffer.php");
-require_once(dirname(__FILE__) . "/src/PrintConnector.php");
-require_once(dirname(__FILE__) . "/src/WindowsPrintConnector.php");
-require_once(dirname(__FILE__) . "/src/FilePrintConnector.php");
-require_once(dirname(__FILE__) . "/src/NetworkPrintConnector.php");
-require_once(dirname(__FILE__) . "/src/AbstractCapabilityProfile.php");
-require_once(dirname(__FILE__) . "/src/DefaultCapabilityProfile.php");
-require_once(dirname(__FILE__) . "/src/SimpleCapabilityProfile.php");
-require_once(dirname(__FILE__) . "/src/EposTepCapabilityProfile.php");
-require_once(dirname(__FILE__) . "/src/StarCapabilityProfile.php");
-require_once(dirname(__FILE__) . "/src/CodePage.php");
-require_once(dirname(__FILE__) . "/src/ImagePrintBuffer.php");
+
 
 class Escpos {
 	/* ASCII codes */
