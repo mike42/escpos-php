@@ -1,4 +1,6 @@
 <?php
+namespace Mike42\Escpos\CapabilityProfiles;
+
 class StarCapabilityProfile extends DefaultCapabilityProfile {
 	
 	

@@ -1,4 +1,5 @@
 <?php
+namespace Mike42\Escpos\PrintConnectors;
 /**
  * escpos-php, a Thermal receipt printer library, for use with
  * ESC/POS compatible printers.
@@ -27,24 +28,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  * 
- * Interface passed to Escpos class for receiving print data. Print connectors
- * are responsible for transporting this to the actual printer.
+ * PrintConnector for directly opening a network socket to a printer to send it commands.
  */
-interface PrintConnector {
-	/**
-	 * Print connectors should cause a NOTICE if they are deconstructed
-	 * when they have not been finalized.
-	 */
-	public function __destruct();
-
-	/**
-	 * Finish using this print connector (close file, socket, send
-	 * accumulated output, etc).
-	 */
-	public function finalize();
-
-	/**
-	 * @param string $data
-	 */
-	public function write($data);
+class NetworkPrintConnector extends FilePrintConnector {
+	public function __construct($ip, $port = "9100") {
+		$this -> fp = @fsockopen($ip, $port, $errno, $errstr);
+		if($this -> fp === false) {
+			throw new Exception("Cannot initialise NetworkPrintConnector: " . $errstr);
+		}
+	}
 }

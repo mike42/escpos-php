@@ -1,4 +1,6 @@
 <?php
+namespace Mike42\Escpos\CapabilityProfiles;
+
 /**
  * This capability profile matches many recent Epson-branded thermal receipt printers.
  * 

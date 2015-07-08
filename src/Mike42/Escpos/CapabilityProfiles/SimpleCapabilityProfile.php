@@ -1,4 +1,6 @@
 <?php
+namespace Mike42\Escpos\CapabilityProfiles;
+
 /**
  * This capability profile is designed for non-Epson printers sold online. Without knowing
  * their character encoding table, only CP437 output is assumed, and graphics() calls will

@@ -1,4 +1,6 @@
 <?php
+namespace Mike42\Escpos\CapabilityProfiles;
+
 /**
  * Not all printers support the same subset of available Esc/POS commands. Profiles allow you to specify
  * which features are available on your printer, so that Escpos is less likely to send unsupported commands.

@@ -1,4 +1,6 @@
 <?php
+namespace Mike42\Escpos\CapabilityProfiles;
+
 class StarCapabilityProfile extends DefaultCapabilityProfile {
 	function getCustomCodePages() {
 		// Code table reference: http://www.starmicronics.com/support/mannualfolder/sp2000pm.pdf

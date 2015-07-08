@@ -1,4 +1,6 @@
 <?php
+namespace Mike42\Escpos;
+
 abstract class CodePage {
 	/** Code page constants, exported from iconv -l. Can be cut down*/
 	const CP037 = "CP037";
