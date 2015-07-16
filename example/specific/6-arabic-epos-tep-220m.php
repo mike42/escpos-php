@@ -23,6 +23,9 @@ require_once(dirname(__FILE__) . "/../../vendor/I18N/Arabic.php");
  * The Ar-PHP library uses the default internal encoding, and can print
  * a lot of errors depending on the input, so be prepared to debug
  * the next four lines.
+ * 
+ * Note that this output shows that numerals are converted to placeholder
+ * characters, indicating that western numerals (123) have to be used instead.
  */
 mb_internal_encoding("UTF-8");
 $Arabic = new I18N_Arabic('Glyphs');
