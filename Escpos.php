@@ -63,6 +63,7 @@ class Escpos {
 	const LF = "\x0a";
 	const ESC = "\x1b";
 	const FS = "\x1c";
+	const FF = "\x0c";
 	const GS = "\x1d";
 
 	/* Barcode types */
@@ -282,7 +283,15 @@ class Escpos {
 			$this -> connector -> write(self::ESC . "d" . chr($lines));
 		}
 	}
-	
+
+	/**
+	 * Some printers require a form feed to release the paper. On most printers, this 
+	 * command is only useful in page mode, which is not implemented in this driver.
+	 */
+	function feedForm() {
+		$this -> connector -> write(self::FF);	
+	}
+
 	/**
 	 * Print and reverse feed n lines.
 	 *

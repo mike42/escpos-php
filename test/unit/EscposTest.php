@@ -708,6 +708,11 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> printer -> qrCode("1234", Escpos::QR_ECLEVEL_L, 3, Escpos::QR_MODEL_1);
 		$this -> checkOutput("\x1b@\x1d(k\x04\x001A1\x00\x1d(k\x03\x001C\x03\x1d(k\x03\x001E0\x1d(k\x07\x001P01234\x1d(k\x03\x001Q0");
 	}
+
+	public function testFeedForm() {
+		$this -> printer -> feedForm();
+		$this -> checkOutput("\x1b@\x0c");
+	}
 }
 
 /*

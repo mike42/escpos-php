@@ -128,6 +128,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Epson TM-T70II
 - Epson TM-U220
 - EPOS TEP 220M
+- Epson FX-890 (requires `feedForm()` to release paper).
 - Okipos 80 Plus III
 - SEYPOS PRP-300
 - Xprinter XP-Q800
@@ -186,6 +187,9 @@ Print and feed line / Print and feed n lines.
 Parameters:
 
 - `int $lines`: Number of lines to feed
+
+### feedForm()
+Some printers require a form feed to release the paper. On most printers, this command is only useful in page mode, which is not implemented in this driver.
 
 ### feedReverse($lines)
 Print and reverse feed n lines.
