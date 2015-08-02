@@ -640,7 +640,20 @@ class Escpos {
 		self::validateBoolean($on, __FUNCTION__);
 		$this -> connector -> write(self::GS . "B" . ($on ? chr(1) : chr(0)));
 	}
-	
+
+	/**
+	 * Set the size of text, as a multiple of the normal size.
+	 * 
+	 * @param int $widthMultiplier Multiple of the regular height to use (range 1 - 8)
+	 * @param int $heightMultiplier Multiple of the regular height to use (range 1 - 8)
+	 */
+	function setTextSize($widthMultiplier, $heightMultiplier) {
+		self::validateInteger($widthMultiplier, 1, 8, __FUNCTION__);
+		self::validateInteger($heightMultiplier, 1, 8, __FUNCTION__);
+		$c = pow(2,4) * ($widthMultiplier - 1) + ($heightMultiplier - 1);		
+		$this -> connector -> write(self::GS . "!" . chr($c));
+	}
+
 	/**
 	 * Set underline for printed text.
 	 * 

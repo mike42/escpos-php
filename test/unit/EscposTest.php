@@ -717,8 +717,35 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 	
 	/* Get status  */
 	public function testGetStatus() {
+		$this -> markTestIncomplete("Status check test code not implemented.");
 		// TODO some unit testing here on statuses
-// 		$a = $this -> printer -> getPrinterStatus(Escpos::STATUS_PRINTER);
+		// $a = $this -> printer -> getPrinterStatus(Escpos::STATUS_PRINTER);
+	}
+
+	/* Set text size  */
+	public function testSetTextSizeNormal() {
+		$this -> printer -> setTextSize(1, 1);
+		$this -> checkOutput("\x1b@\x1d!\x00");
+	}
+
+	public function testSetTextSizeWide() {
+		$this -> printer -> setTextSize(4, 1);
+		$this -> checkOutput("\x1b@\x1d!0");
+	}
+
+	public function testSetTextSizeNarrow() {
+		$this -> printer -> setTextSize(1, 4);
+		$this -> checkOutput("\x1b@\x1d!\x03");
+	}
+
+	public function testSetTextSizeLarge() {
+		$this -> printer -> setTextSize(4, 4);
+		$this -> checkOutput("\x1b@\x1d!3");
+	}
+
+	public function testSetTextSizeInvalid() {
+		$this -> setExpectedException('InvalidArgumentException');
+		$this -> printer -> setTextSize(0, 9);
 	}
 }
 

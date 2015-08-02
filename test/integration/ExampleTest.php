@@ -58,6 +58,11 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 		$outp = $this -> runExample("barcode.php");
 		$this -> outpTest($outp, "barcode.bin");
 	}
+	
+	public function testTextSize() {
+		$outp = $this -> runExample("text-size.php");
+		$this -> outpTest($outp, "text-size.bin");
+	}
 
 	/**
 	 * @large

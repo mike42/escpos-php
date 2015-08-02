@@ -120,6 +120,7 @@ This driver is known to work with the following OS/interface combinations:
 ### Printers
 Many thermal receipt printers support ESC/POS to some degree. This driver has been known to work with:
 
+- EPOS TEP 220M
 - Epson TM-T88III
 - Epson TM-T88IV
 - Epson TM-T70
@@ -127,10 +128,11 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Epson TM-T20
 - Epson TM-T70II
 - Epson TM-U220
-- EPOS TEP 220M
 - Epson FX-890 (requires `feedForm()` to release paper).
 - Okipos 80 Plus III
 - SEYPOS PRP-300
+- Star TSP-650
+- Star TUP-592
 - Xprinter XP-Q800
 - Zijang NT-58H
 - Zijang ZJ-5870
@@ -301,6 +303,14 @@ Set black/white reverse mode on or off. In this mode, text is printed white on a
 Parameters:
 
 - `boolean $on`: True to enable, false to disable.
+
+### setTeztSize($widthMultiplier, $heightMultiplier)
+Set the size of text, as a multiple of the normal size.
+
+Parameters:
+
+- `int $widthMultiplier`: Multiple of the regular height to use (range 1 - 8).
+- `int $heightMultiplier`: Multiple of the regular height to use (range 1 - 8).
 
 ### setUnderline($underline)
 Set underline for printed text.
