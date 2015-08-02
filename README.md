@@ -304,7 +304,7 @@ Parameters:
 
 - `boolean $on`: True to enable, false to disable.
 
-### setTeztSize($widthMultiplier, $heightMultiplier)
+### setTextSize($widthMultiplier, $heightMultiplier)
 Set the size of text, as a multiple of the normal size.
 
 Parameters:
