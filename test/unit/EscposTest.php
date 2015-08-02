@@ -709,9 +709,16 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> checkOutput("\x1b@\x1d(k\x04\x001A1\x00\x1d(k\x03\x001C\x03\x1d(k\x03\x001E0\x1d(k\x07\x001P01234\x1d(k\x03\x001Q0");
 	}
 
+	/* Feed form - Required on page-mode only printers */
 	public function testFeedForm() {
 		$this -> printer -> feedForm();
 		$this -> checkOutput("\x1b@\x0c");
+	}
+	
+	/* Get status  */
+	public function testGetStatus() {
+		// TODO some unit testing here on statuses
+// 		$a = $this -> printer -> getPrinterStatus(Escpos::STATUS_PRINTER);
 	}
 }
 

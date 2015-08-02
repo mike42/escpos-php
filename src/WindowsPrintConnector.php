@@ -283,6 +283,14 @@ class WindowsPrintConnector implements PrintConnector {
 		return self::PLATFORM_LINUX;
 	}
 	
+	/* (non-PHPdoc)
+	 * @see PrintConnector::read()
+	 */
+	public function read($len) {
+		/* Two-way communication is not supported */
+		return false;
+	}
+	
 	/**
 	 * Run a command, pass it data, and retrieve its return value, standard output, and standard error.
 	 * 

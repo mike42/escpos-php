@@ -37,6 +37,11 @@ final class DummyPrintConnector implements PrintConnector {
 	private $buffer;
 
 	/**
+	 * @var string data which the printer will provide on next read
+	 */
+	private $readData;
+
+	/**
 	 * Create new print connector
 	 */
 	public function __construct() {
@@ -58,6 +63,13 @@ final class DummyPrintConnector implements PrintConnector {
 	 */
 	public function getData() {
 		return implode($this -> buffer);
+	}
+
+	/* (non-PHPdoc)
+	 * @see PrintConnector::read()
+	 */
+	public function read($len) {
+		return $len >= strlen($this -> readData) ? $this -> readData : substr($this -> readData, 0, $len);
 	}
 
 	public function write($data) {
