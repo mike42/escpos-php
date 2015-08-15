@@ -130,7 +130,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Epson TM-U220
 - Epson FX-890 (requires `feedForm()` to release paper).
 - Okipos 80 Plus III
-- SEYPOS PRP-300
+- SEYPOS PRP-300 (Also marketed as TYSSO PRP-300)
 - Star TSP-650
 - Star TUP-592
 - Xprinter XP-Q800
