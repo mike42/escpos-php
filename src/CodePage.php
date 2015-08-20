@@ -149,11 +149,14 @@ abstract class CodePage {
 	const ISO8859_2 = "ISO_8859-2";
 	const ISO8859_15 = "ISO_8859-15";
 	const RK1048 = "RK1048";
+	// Code pages which are not built in
+	// to default iconv on Debian.
 	const CP720 = false;
 	const CP853 = false;
 	const CP858 = false;
 	const CP928 = false;
 	const CP1098 = false;
+	const CP747 = false;
 	
 	/*
 	 * Below code pages appear to be vendor-specific (Star), so iconv wont use them
