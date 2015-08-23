@@ -36,7 +36,7 @@ class DefaultCapabilityProfile extends AbstractCapabilityProfile {
 			18 => CodePage::CP852,
 			19 => CodePage::CP858,
 			20 => false, // Thai Character Code 42
-			21 => false, // Thai Character Code 11
+			21 => CodePage::CP874, // Thai Character Code 11
 			22 => false, // Thai Character Code 13
 			23 => false, // Thai Character Code 14
 			24 => false, // Thai Character Code 16
