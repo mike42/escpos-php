@@ -230,7 +230,7 @@ The function [bitImage()](#bitimageescposimage-image-size) takes the same parame
 ### initialize()
 Initialize printer. This resets formatting back to the defaults.
 
-### pulse($pin, $on_mm, $off_ms)
+### pulse($pin, $on_ms, $off_ms)
 Generate a pulse, for opening a cash drawer if one is connected. The default settings (0, 120, 240) should open an Epson drawer.
 
 Parameters:
