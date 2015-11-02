@@ -231,6 +231,8 @@ class WindowsPrintConnectorTest extends PHPUnit_Framework_TestCase {
 				"smb://bob:secret@foo/bar",
 				"smb://foo-computer/FooPrinter",
 				"smb://foo-computer/workgroup/FooPrinter",
+				"smb://foo-computer/Foo-Printer",
+				"smb://foo-computer/workgroup/Foo-Printer",
 				"smb://foo-computer/Foo Printer");
 		$bad = array("",
 				"http://google.com",
@@ -247,6 +249,30 @@ class WindowsPrintConnectorTest extends PHPUnit_Framework_TestCase {
 		}
 		foreach($bad as $item) {
 			$this -> assertTrue(preg_match(WindowsPrintConnector::REGEX_SMB, $item) != 1, "Windows samba regex should fail '$item'.");
+		}
+	}
+	
+	public function testPrinterNameRegex() {
+		$good = array("a",
+				"ab",
+				"a b",
+				"a-b",
+				"Abcd Efg-",
+				"-a"
+		);
+		$bad = array("",
+				" ",
+				"a ",
+				" a",
+				" a ",
+				"a/B",
+				"A:b"
+		);
+		foreach($good as $item) {
+			$this -> assertTrue(preg_match(WindowsPrintConnector::REGEX_PRINTERNAME, $item) == 1, "Windows printer name regex should pass '$item'.");
+		}
+		foreach($bad as $item) {
+			$this -> assertTrue(preg_match(WindowsPrintConnector::REGEX_PRINTERNAME, $item) != 1, "Windows printer name regex should fail '$item'.");
 		}
 	}
 }
