@@ -1,4 +1,6 @@
 <?php
+namespace Mike42\Escpos\PrintConnectors;
+
 /**
  * escpos-php, a Thermal receipt printer library, for use with
  * ESC/POS compatible printers.
@@ -27,54 +29,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  * 
- * PrintConnector for passing print data to a file.
+ * Print connector that writes to nowhere, but allows the user to retrieve the
+ * buffered data. Used for testing.
  */
-class FilePrintConnector implements PrintConnector {
+final class DummyPrintConnector implements PrintConnector {
 	/**
-	 * @var resource The file pointer to send data to.
+	 * @var array Buffer of accumilated data.
 	 */
-	protected $fp;
+	private $buffer;
 
 	/**
-	 * Construct new connector, given a filename
-	 * 
-	 * @param string $filename
+	 * @var string data which the printer will provide on next read
 	 */
-	public function __construct($filename) {
-		$this -> fp = fopen($filename, "wb+");
-		if($this -> fp === false) {
-			throw new Exception("Cannot initialise FilePrintConnector.");
-		}
+	private $readData;
+
+	/**
+	 * Create new print connector
+	 */
+	public function __construct() {
+		$this -> buffer = array();
 	}
 
 	public function __destruct() {
-		if($this -> fp !== false) {
+		if($this -> buffer !== null) {
 			trigger_error("Print connector was not finalized. Did you forget to close the printer?", E_USER_NOTICE);
 		}
 	}
 
-	/**
-	 * Close file pointer
-	 */
 	public function finalize() {
-		fclose($this -> fp);
-		$this -> fp = false;
+		$this -> buffer = null;
 	}
-	
+
+	/**
+	 * @return string Get the accumulated data that has been sent to this buffer.
+	 */
+	public function getData() {
+		return implode($this -> buffer);
+	}
+
 	/* (non-PHPdoc)
 	 * @see PrintConnector::read()
 	 */
 	public function read($len) {
-		rewind($this -> fp);
-		return fgets($this -> fp, $len + 1);
+		return $len >= strlen($this -> readData) ? $this -> readData : substr($this -> readData, 0, $len);
 	}
-	
-	/**
-	 * Write data to the file
-	 * 
-	 * @param string $data
-	 */
+
 	public function write($data) {
-		fwrite($this -> fp, $data);
+		$this -> buffer[] = $data;
 	}
 }
