@@ -591,9 +591,9 @@ class Escpos {
 	}
 
 	/**
-	 * Select print color on printers that suppoer multiple colors.
+	 * Select print color on printers that support multiple colors.
 	 * 
-	 * @param int $color Color to use. Should be one of Escpos::COLOR_1 (default), or Escpos::COLOR_2.
+	 * @param int $color Color to use. Must be either Escpos::COLOR_1 (default), or Escpos::COLOR_2.
 	 */
 	function setColor($color = self::COLOR_1) {
 		self::validateInteger($color, 0, 1, __FUNCTION__, "Color");

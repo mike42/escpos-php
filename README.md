@@ -129,6 +129,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Epson TM-T70II
 - Epson TM-U220
 - Epson FX-890 (requires `feedForm()` to release paper).
+- Excelvan HOP-E58 (connect through powered hub)
 - Okipos 80 Plus III
 - P-822D
 - SEYPOS PRP-300 (Also marketed as TYSSO PRP-300)
@@ -138,6 +139,8 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Zijang NT-58H
 - Zijang ZJ-5870
 - Zijang ZJ-5890T (Marketed as POS 5890T)
+- Silicon SP-201 / RP80USE
+- P85A-401 (make unknown)
 
 If you use any other printer with this code, please let me know so I can add it to the list.
 
@@ -269,6 +272,13 @@ Set barcode height.
 Parameters:
 
 - `int $height`: Height in dots. If not specified, 8 will be used.
+
+### setColor($color)
+Select print color - on printers that support multiple colors.
+
+Parameters:
+
+- `int $color`: Color to use. Must be either `Escpos::COLOR_1` (default), or `Escpos::COLOR_2`
 
 ### setDoubleStrike($on)
 Turn double-strike mode on/off.
