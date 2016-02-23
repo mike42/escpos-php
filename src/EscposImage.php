@@ -286,39 +286,51 @@ class EscposImage {
 	}
 	
 	/**
-	 * Output image in column format. This format results in padding at the base and right of the image, if its height and width are not divisible by 8.
+	 * Output image in column format. Must be called once for each line of output.
 	 */
-	private function toColumnFormat() {
-		/* Note: This function is marked private, as it is not yet used/tested and may be buggy. */
+	public function toColumnFormat($lineNo = 0, $doubleDensity = false) {
+		// Currently double density in both directions, very experimental
 		$widthPixels = $this -> getWidth();
 		$heightPixels = $this -> getHeight();
 		$widthBytes = $this -> getWidthBytes();
 		$heightBytes = $this -> getHeightBytes();
+		$lineHeight = $doubleDensity ? 3 : 1; // Vertical density. 1 or 3 (for 8 and 24 pixel lines)
+		// Initialise to zero
 		$x = $y = $bit = $byte = $byteVal = 0;
-		$data = str_repeat("\0", $widthBytes * $heightBytes * 8);
- 		do {
- 			$byteVal |= (int)$this -> imgData[$y * $widthPixels + $x] << (8 - $bit);
- 			$y++;
- 			$bit++;
- 			if($y >= $heightPixels) {
- 				$y = 0;
- 				$x++;
- 				$bit = 8;
- 				if($x >= $widthPixels) {
- 					$data[$byte] = chr($byteVal);
- 					break;
- 				}
- 			}
- 			if($bit >= 8) {
- 				$data[$byte] = chr($byteVal);
- 				$byteVal = 0;
- 				$bit = 0;
- 				$byte++;
- 			}
- 		} while(true);
-  		if(strlen($data) != ($widthBytes * $heightBytes * 8)) {
-  			throw new Exception("Bug in " . __FUNCTION__ . ", wrong number of bytes. Should be " . ($widthBytes * $heightBytes * 8) . " but was " . strlen($data));
-  		}
+		$data = str_repeat("\x00", $widthPixels * $lineHeight);
+		if(strlen($data) == 0) {
+			return $data;
+		}
+		$yStart = $lineHeight * 8 * $lineNo;
+		if($yStart >= $heightPixels) {
+			return null;
+		}
+		do {
+			$yReal = $y + $yStart;
+			if($yReal < $heightPixels) {
+				$byteVal |= (int)$this -> imgData[$yReal * $widthPixels + $x] << (7 - $bit);
+			}
+			$y++;
+			$bit++;
+			if($y >= $lineHeight * 8) {
+				$y = 0;
+				$x++;
+				$bit = 8;
+				if($x >= $widthPixels) {
+					$data[$byte] = chr($byteVal);
+					break;
+				}
+			}
+			if($bit >= 8) {
+				$data[$byte] = chr($byteVal);
+				$byteVal = 0;
+				$bit = 0;
+				$byte++;
+			}
+		} while(true);
+		if(strlen($data) != $widthPixels * $lineHeight) {
+			throw new Exception("Bug in " . __FUNCTION__ . ", wrong number of bytes.");
+		}
 		return $data;
 	}
 	
