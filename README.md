@@ -140,6 +140,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Zijang ZJ-5870
 - Zijang ZJ-5890T (Marketed as POS 5890T)
 - Silicon SP-201 / RP80USE
+- P85A-401 (make unknown)
 
 If you use any other printer with this code, please let me know so I can add it to the list.
 
