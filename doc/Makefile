@@ -1,4 +1,4 @@
-html: ../Escpos.php escpos.conf
+html: escpos.conf
 	doxygen escpos.conf
 
 latex: html

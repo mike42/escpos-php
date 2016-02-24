@@ -9,8 +9,9 @@ Basic usage
 A "hello world" receipt can be generated easily (Call this `hello-world.php`):
 ```php
 <?php
-require_once(dirname(__FILE__) . "/Escpos.php");
-$printer = new Escpos();
+require __DIR__ . '/../vendor/autoload.php';
+use Mike42\Escpos\Printer;
+$printer = new Printer();
 $printer -> text("Hello World!\n");
 $printer -> cut();
 $printer -> close();
@@ -31,9 +32,12 @@ del foo.txt
 From your web app, you could pass the output directly to a socket if your printer is networked:
 ```php
 <?php
-require_once(dirname(__FILE__) . "/Escpos.php");
+require __DIR__ . '/../vendor/autoload.php';
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+$printer = new Printer();
 $connector = new NetworkPrintConnector("10.x.x.x", 9100);
-$printer = new Escpos($connector);
+$printer = new Printer($connector);
 $printer -> text("Hello World!\n");
 $printer -> cut();
 $printer -> close();
@@ -42,9 +46,12 @@ $printer -> close();
 Or to a local printer:
 ```php
 <?php
-require_once(dirname(__FILE__) . "/Escpos.php");
+require __DIR__ . '/../vendor/autoload.php';
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+$printer = new Printer();
 $connector = new FilePrintConnector("/dev/ttyS0");
-$printer = new Escpos($connector);
+$printer = new Printer($connector);
 $printer -> text("Hello World!\n");
 $printer -> cut();
 $printer -> close();
@@ -162,7 +169,7 @@ Print a barcode.
 Parameters:
 
 - `string $content`: The information to encode.
-- `int $type`: The barcode standard to output. If not specified, `Escpos::BARCODE_CODE39` will be used.
+- `int $type`: The barcode standard to output. If not specified, `Printer::BARCODE_CODE39` will be used.
 
 Currently supported barcode standards are (depending on your printer):
 
@@ -184,7 +191,7 @@ Cut the paper.
 
 Parameters:
 
-- `int $mode`: Cut mode, either `Escpos::CUT_FULL` or `Escpos::CUT_PARTIAL`. If not specified, `Escpos::CUT_FULL` will be used.
+- `int $mode`: Cut mode, either `Printer::CUT_FULL` or `Printer::CUT_PARTIAL`. If not specified, `Printer::CUT_FULL` will be used.
 - `int $lines`: Number of lines to feed before cutting. If not specified, 3 will be used.
 
 ### feed($lines)
@@ -246,16 +253,16 @@ Parameters:
 Print the given data as a QR code on the printer.
 
 - `string $content`: The content of the code. Numeric data will be more efficiently compacted.
-- `int $ec` Error-correction level to use. One of `Escpos::QR_ECLEVEL_L` (default), `Escpos::QR_ECLEVEL_M`, `Escpos::QR_ECLEVEL_Q` or `Escpos::QR_ECLEVEL_H`. Higher error correction results in a less compact code.
+- `int $ec` Error-correction level to use. One of `Printer::QR_ECLEVEL_L` (default), `Printer::QR_ECLEVEL_M`, `Printer::QR_ECLEVEL_Q` or `Printer::QR_ECLEVEL_H`. Higher error correction results in a less compact code.
 - `int $size`: Pixel size to use. Must be 1-16 (default 3)
-- `int $model`: QR code model to use. Must be one of `Escpos::QR_MODEL_1`, `Escpos::QR_MODEL_2` (default) or `Escpos::QR_MICRO` (not supported by all printers).
+- `int $model`: QR code model to use. Must be one of `Printer::QR_MODEL_1`, `Printer::QR_MODEL_2` (default) or `Printer::QR_MICRO` (not supported by all printers).
 
 ### selectPrintMode($mode)
 Select print mode(s).
 
 Parameters:
 
-- `int $mode`: The mode to use. Default is `Escpos::MODE_FONT_A`, with no special formatting. This has a similar effect to running `initialize()`.
+- `int $mode`: The mode to use. Default is `Printer::MODE_FONT_A`, with no special formatting. This has a similar effect to running `initialize()`.
 
 Several MODE_* constants can be OR'd together passed to this function's `$mode` argument. The valid modes are:
 
@@ -278,7 +285,7 @@ Select print color - on printers that support multiple colors.
 
 Parameters:
 
-- `int $color`: Color to use. Must be either `Escpos::COLOR_1` (default), or `Escpos::COLOR_2`
+- `int $color`: Color to use. Must be either `Printer::COLOR_1` (default), or `Printer::COLOR_2`
 
 ### setDoubleStrike($on)
 Turn double-strike mode on/off.
@@ -299,14 +306,14 @@ Select font. Most printers have two fonts (Fonts A and B), and some have a third
 
 Parameters:
 
-- `int $font`: The font to use. Must be either `Escpos::FONT_A`, `Escpos::FONT_B`, or `Escpos::FONT_C`.
+- `int $font`: The font to use. Must be either `Printer::FONT_A`, `Printer::FONT_B`, or `Printer::FONT_C`.
 
 ### setJustification($justification)
 Select justification.
 
 Parameters:
 
-- `int $justification`: One of `Escpos::JUSTIFY_LEFT`, `Escpos::JUSTIFY_CENTER`, or `Escpos::JUSTIFY_RIGHT`.
+- `int $justification`: One of `Printer::JUSTIFY_LEFT`, `Printer::JUSTIFY_CENTER`, or `Printer::JUSTIFY_RIGHT`.
 
 ### setReverseColors($on)
 Set black/white reverse mode on or off. In this mode, text is printed white on a black background.
@@ -328,7 +335,7 @@ Set underline for printed text.
 
 Parameters:
 
-- `int $underline`: Either `true`/`false`, or one of `Escpos::UNDERLINE_NONE`, `Escpos::UNDERLINE_SINGLE` or `Escpos::UNDERLINE_DOUBLE`. Defaults to `Escpos::UNDERLINE_SINGLE`.
+- `int $underline`: Either `true`/`false`, or one of `Printer::UNDERLINE_NONE`, `Printer::UNDERLINE_SINGLE` or `Printer::UNDERLINE_DOUBLE`. Defaults to `Printer::UNDERLINE_SINGLE`.
 
 ### text($str)
 Add text to the buffer. Text should either be followed by a line-break, or `feed()` should be called after this.
