@@ -1,5 +1,7 @@
 <?php
-require_once(dirname(__FILE__) . "/../Escpos.php");
+require __DIR__ . '/../vendor/autoload.php';
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\EscposImage;
 
 /* Information for the receipt */
 $items = array(
@@ -17,14 +19,14 @@ $date = "Monday 6th of April 2015 02:56:25 PM";
 
 /* Start the printer */
 $logo = new EscposImage("resources/escpos-php.png");
-$printer = new Escpos();
+$printer = new Printer();
 
 /* Print top logo */
-$printer -> setJustification(Escpos::JUSTIFY_CENTER);
+$printer -> setJustification(Printer::JUSTIFY_CENTER);
 $printer -> graphics($logo);
 
 /* Name of shop */
-$printer -> selectPrintMode(Escpos::MODE_DOUBLE_WIDTH);
+$printer -> selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
 $printer -> text("ExampleMart Ltd.\n");
 $printer -> selectPrintMode();
 $printer -> text("Shop No. 42.\n");
@@ -36,7 +38,7 @@ $printer -> text("SALES INVOICE\n");
 $printer -> setEmphasis(false);
 
 /* Items */
-$printer -> setJustification(Escpos::JUSTIFY_LEFT);
+$printer -> setJustification(Printer::JUSTIFY_LEFT);
 $printer -> setEmphasis(true);
 $printer -> text(new item('', '$'));
 $printer -> setEmphasis(false);
@@ -50,13 +52,13 @@ $printer -> feed();
 
 /* Tax and total */
 $printer -> text($tax);
-$printer -> selectPrintMode(Escpos::MODE_DOUBLE_WIDTH);
+$printer -> selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
 $printer -> text($total);
 $printer -> selectPrintMode();
 
 /* Footer */
 $printer -> feed(2);
-$printer -> setJustification(Escpos::JUSTIFY_CENTER);
+$printer -> setJustification(Printer::JUSTIFY_CENTER);
 $printer -> text("Thank you for shopping at ExampleMart\n");
 $printer -> text("For trading hours, please visit example.com\n");
 $printer -> feed(2);

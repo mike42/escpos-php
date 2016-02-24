@@ -1,6 +1,8 @@
 <?php
 /* Change to the correct path if you copy this example! */
-require_once(dirname(__FILE__) . "/../../Escpos.php");
+require __DIR__ . '/../../vendor/autoload.php';
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 /**
  * Install the printer using USB printing support, and the "Generic / Text Only" driver,
@@ -40,7 +42,7 @@ try {
 	//$connector = new WindowsPrintConnector("smb://User:secret@computername/Receipt Printer");
 	
 	/* Print a "Hello world" receipt" */
-	$printer = new Escpos($connector);
+	$printer = new Printer($connector);
 	$printer -> text("Hello World!\n");
 	$printer -> cut();
 	

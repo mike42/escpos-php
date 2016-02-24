@@ -8,8 +8,10 @@
  *
  * @author Michael Billington <michael.billington@gmail.com>
  */
-require_once(dirname(__FILE__) . "/../Escpos.php");
-$printer = new Escpos();
+require __DIR__ . '/../vendor/autoload.php';
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\EscposImage;
+$printer = new Printer();
 
 /* Initialize */
 $printer -> initialize();
@@ -29,11 +31,11 @@ $printer -> cut();
 
 /* Font modes */
 $modes = array(
-	Escpos::MODE_FONT_B,
-	Escpos::MODE_EMPHASIZED,
-	Escpos::MODE_DOUBLE_HEIGHT,
-	Escpos::MODE_DOUBLE_WIDTH,
-	Escpos::MODE_UNDERLINE);
+	Printer::MODE_FONT_B,
+	Printer::MODE_EMPHASIZED,
+	Printer::MODE_DOUBLE_HEIGHT,
+	Printer::MODE_DOUBLE_WIDTH,
+	Printer::MODE_UNDERLINE);
 for($i = 0; $i < pow(2, count($modes)); $i++) {
 	$bits = str_pad(decbin($i), count($modes), "0", STR_PAD_LEFT);
 	$mode = 0;
@@ -58,9 +60,9 @@ $printer -> cut();
 
 /* Cuts */
 $printer -> text("Partial cut\n(not available on all printers)\n");
-$printer -> cut(Escpos::CUT_PARTIAL);
+$printer -> cut(Printer::CUT_PARTIAL);
 $printer -> text("Full cut\n");
-$printer -> cut(Escpos::CUT_FULL);
+$printer -> cut(Printer::CUT_FULL);
 
 /* Emphasis */
 for($i = 0; $i < 2; $i++) {
@@ -80,9 +82,9 @@ $printer -> cut();
 
 /* Fonts (many printers do not have a 'Font C') */
 $fonts = array(
-	Escpos::FONT_A,
-	Escpos::FONT_B,
-	Escpos::FONT_C);
+	Printer::FONT_A,
+	Printer::FONT_B,
+	Printer::FONT_C);
 for($i = 0; $i < count($fonts); $i++) {
 	$printer -> setFont($fonts[$i]);
 	$printer -> text("The quick brown fox jumps over the lazy dog\n");
@@ -92,9 +94,9 @@ $printer -> cut();
 
 /* Justification */
 $justification = array(
-	Escpos::JUSTIFY_LEFT,
-	Escpos::JUSTIFY_CENTER,
-	Escpos::JUSTIFY_RIGHT);
+	Printer::JUSTIFY_LEFT,
+	Printer::JUSTIFY_CENTER,
+	Printer::JUSTIFY_RIGHT);
 for($i = 0; $i < count($justification); $i++) {
 	$printer -> setJustification($justification[$i]);
 	$printer -> text("A man a plan a canal panama\n");
@@ -104,7 +106,7 @@ $printer -> cut();
 
 /* Barcodes - see barcode.php for more detail */
 $printer -> setBarcodeHeight(80);
-$printer->setBarcodeTextPosition ( Escpos::BARCODE_TEXT_BELOW );
+$printer->setBarcodeTextPosition ( Printer::BARCODE_TEXT_BELOW );
 $printer -> barcode("9876");
 $printer -> feed();
 $printer -> cut();
@@ -113,10 +115,10 @@ $printer -> cut();
 try {
 	$logo = new EscposImage("resources/escpos-php.png");
 	$imgModes = array(
-		Escpos::IMG_DEFAULT,
-		Escpos::IMG_DOUBLE_WIDTH,
-		Escpos::IMG_DOUBLE_HEIGHT,
-		Escpos::IMG_DOUBLE_WIDTH | Escpos::IMG_DOUBLE_HEIGHT
+		Printer::IMG_DEFAULT,
+		Printer::IMG_DOUBLE_WIDTH,
+		Printer::IMG_DOUBLE_HEIGHT,
+		Printer::IMG_DOUBLE_WIDTH | Printer::IMG_DOUBLE_HEIGHT
 	);
 	foreach($imgModes as $mode) {
 		$printer -> graphics($logo, $mode);
@@ -131,10 +133,10 @@ $printer -> cut();
 try {
 	$logo = new EscposImage("resources/escpos-php.png");
 	$imgModes = array(
-		Escpos::IMG_DEFAULT,
-		Escpos::IMG_DOUBLE_WIDTH,
-		Escpos::IMG_DOUBLE_HEIGHT,
-		Escpos::IMG_DOUBLE_WIDTH | Escpos::IMG_DOUBLE_HEIGHT
+		Printer::IMG_DEFAULT,
+		Printer::IMG_DOUBLE_WIDTH,
+		Printer::IMG_DOUBLE_HEIGHT,
+		Printer::IMG_DOUBLE_WIDTH | Printer::IMG_DOUBLE_HEIGHT
 	);
 	foreach($imgModes as $mode) {
 		$printer -> bitImage($logo, $mode);
@@ -148,11 +150,11 @@ $printer -> cut();
 /* QR Code - see also the more in-depth demo at qr-code.php */
 $testStr = "Testing 123";
 $models = array(
-	Escpos::QR_MODEL_1 => "QR Model 1",
-	Escpos::QR_MODEL_2 => "QR Model 2 (default)",
-	Escpos::QR_MICRO => "Micro QR code\n(not supported on all printers)");
+	Printer::QR_MODEL_1 => "QR Model 1",
+	Printer::QR_MODEL_2 => "QR Model 2 (default)",
+	Printer::QR_MICRO => "Micro QR code\n(not supported on all printers)");
 foreach($models as $model => $name) {
-	$printer -> qrCode($testStr, Escpos::QR_ECLEVEL_L, 3, $model);
+	$printer -> qrCode($testStr, Printer::QR_ECLEVEL_L, 3, $model);
 	$printer -> text("$name\n");
 	$printer -> feed();
 }

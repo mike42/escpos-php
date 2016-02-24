@@ -3,7 +3,7 @@ namespace Mike42\Escpos\PrintBuffers;
 
 use Exception;
 use LogicException;
-use Mike42\Escpos\Escpos;
+use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;
 
 /**
@@ -57,7 +57,7 @@ class ImagePrintBuffer implements PrintBuffer {
 		return $this -> printer;
 	}
 
-	function setPrinter(Escpos $printer = null) {
+	function setPrinter(Printer $printer = null) {
 		$this -> printer = $printer;
 	}
 
@@ -70,10 +70,10 @@ class ImagePrintBuffer implements PrintBuffer {
 		}
 		$text = trim($text, "\n");
 		/* Create Imagick objects */
-		$image = new Imagick();
-		$draw = new ImagickDraw();
-		$color = new ImagickPixel('#000000');
-		$background = new ImagickPixel('white');
+		$image = new \Imagick();
+		$draw = new \ImagickDraw();
+		$color = new \ImagickPixel('#000000');
+		$background = new \ImagickPixel('white');
 
 		/* Create annotation */
 		//$draw -> setFont('Arial');// (not necessary?)
@@ -93,7 +93,7 @@ class ImagePrintBuffer implements PrintBuffer {
 		/* Save image */
 		$escposImage = new EscposImage();
 		$escposImage -> readImageFromImagick($image);
-		$size = Escpos::IMG_DEFAULT;
+		$size = Printer::IMG_DEFAULT;
 		$this -> printer -> bitImage($escposImage, $size);
 	}
 

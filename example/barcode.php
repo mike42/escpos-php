@@ -1,28 +1,30 @@
 <?php
-require_once (dirname ( __FILE__ ) . "/../Escpos.php");
-$printer = new Escpos ();
+require __DIR__ . '/../vendor/autoload.php';
+use Mike42\Escpos\Printer;
+
+$printer = new Printer();
 $printer->setBarcodeHeight ( 40 );
 
 /* Text position */
-$printer->selectPrintMode ( Escpos::MODE_DOUBLE_HEIGHT | Escpos::MODE_DOUBLE_WIDTH );
+$printer->selectPrintMode ( Printer::MODE_DOUBLE_HEIGHT | Printer::MODE_DOUBLE_WIDTH );
 $printer->text ( "Text position\n" );
 $printer->selectPrintMode ();
 $hri = array (
-		Escpos::BARCODE_TEXT_NONE => "No text",
-		Escpos::BARCODE_TEXT_ABOVE => "Above",
-		Escpos::BARCODE_TEXT_BELOW => "Below",
-		Escpos::BARCODE_TEXT_ABOVE | Escpos::BARCODE_TEXT_BELOW => "Both" 
+		Printer::BARCODE_TEXT_NONE => "No text",
+		Printer::BARCODE_TEXT_ABOVE => "Above",
+		Printer::BARCODE_TEXT_BELOW => "Below",
+		Printer::BARCODE_TEXT_ABOVE | Printer::BARCODE_TEXT_BELOW => "Both" 
 );
 foreach ( $hri as $position => $caption ) {
 	$printer->text ( $caption . "\n" );
 	$printer->setBarcodeTextPosition ( $position );
-	$printer->barcode ( "012345678901", Escpos::BARCODE_JAN13 );
+	$printer->barcode ( "012345678901", Printer::BARCODE_JAN13 );
 	$printer->feed ();
 }
 
 /* Barcode types */
 $standards = array (
-		Escpos::BARCODE_UPCA => array (
+		Printer::BARCODE_UPCA => array (
 				"title" => "UPC-A",
 				"caption" => "Fixed-length numeric product barcodes.",
 				"example" => array (
@@ -36,7 +38,7 @@ $standards = array (
 						) 
 				) 
 		),
-		Escpos::BARCODE_UPCE => array (
+		Printer::BARCODE_UPCE => array (
 				"title" => "UPC-E",
 				"caption" => "Fixed-length numeric compact product barcodes.",
 				"example" => array (
@@ -62,7 +64,7 @@ $standards = array (
 						) 
 				) 
 		),
-		Escpos::BARCODE_JAN13 => array (
+		Printer::BARCODE_JAN13 => array (
 				"title" => "JAN13/EAN13",
 				"caption" => "Fixed-length numeric barcodes.",
 				"example" => array (
@@ -76,7 +78,7 @@ $standards = array (
 						) 
 				) 
 		),
-		Escpos::BARCODE_JAN8 => array (
+		Printer::BARCODE_JAN8 => array (
 				"title" => "JAN8/EAN8",
 				"caption" => "Fixed-length numeric barcodes.",
 				"example" => array (
@@ -90,7 +92,7 @@ $standards = array (
 						) 
 				) 
 		),
-		Escpos::BARCODE_CODE39 => array (
+		Printer::BARCODE_CODE39 => array (
 				"title" => "Code39",
 				"caption" => "Variable length alphanumeric w/ some special chars.",
 				"example" => array (
@@ -108,7 +110,7 @@ $standards = array (
 						) 
 				) 
 		),
-		Escpos::BARCODE_ITF => array (
+		Printer::BARCODE_ITF => array (
 				"title" => "ITF",
 				"caption" => "Variable length numeric w/even number of digits,\nas they are encoded in pairs.",
 				"example" => array (
@@ -118,7 +120,7 @@ $standards = array (
 						) 
 				) 
 		),
-		Escpos::BARCODE_CODABAR => array (
+		Printer::BARCODE_CODABAR => array (
 				"title" => "Codabar",
 				"caption" => "Varaible length numeric with some allowable\nextra characters. ABCD/abcd must be used as\nstart/stop characters (one at the start, one\nat the end) to distinguish between barcode\napplications.",
 				"example" => array (
@@ -132,7 +134,7 @@ $standards = array (
 						) 
 				) 
 		),
-		Escpos::BARCODE_CODE93 => array (
+		Printer::BARCODE_CODE93 => array (
 				"title" => "Code93",
 				"caption" => "Variable length- any ASCII is available",
 				"example" => array (
@@ -142,7 +144,7 @@ $standards = array (
 						) 
 				) 
 		),
-		Escpos::BARCODE_CODE128 => array (
+		Printer::BARCODE_CODE128 => array (
 				"title" => "Code128",
 				"caption" => "Variable length- any ASCII is available",
 				"example" => array (
@@ -161,9 +163,9 @@ $standards = array (
 				) 
 		) 
 );
-$printer->setBarcodeTextPosition ( Escpos::BARCODE_TEXT_BELOW );
+$printer->setBarcodeTextPosition ( Printer::BARCODE_TEXT_BELOW );
 foreach ( $standards as $type => $standard ) {
-	$printer->selectPrintMode ( Escpos::MODE_DOUBLE_HEIGHT | Escpos::MODE_DOUBLE_WIDTH );
+	$printer->selectPrintMode ( Printer::MODE_DOUBLE_HEIGHT | Printer::MODE_DOUBLE_WIDTH );
 	$printer->text ( $standard ["title"] . "\n" );
 	$printer->selectPrintMode ();
 	$printer->text ( $standard ["caption"] . "\n\n" );

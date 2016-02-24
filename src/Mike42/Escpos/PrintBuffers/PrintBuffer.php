@@ -1,7 +1,7 @@
 <?php
 namespace Mike42\Escpos\PrintBuffers;
 
-use Mike42\Escpos\Escpos;
+use Mike42\Escpos\Printer;
 
 /**
  * escpos-php, a Thermal receipt printer library, for use with
@@ -60,7 +60,7 @@ interface PrintBuffer {
 	 * 
 	 * @param Escpos $printer New printer
 	 */
-	function setPrinter(Escpos $printer = null);
+	function setPrinter(Printer $printer = null);
 
 	/**
 	 * Accept UTF-8 text for printing.

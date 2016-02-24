@@ -11,7 +11,12 @@
  * Note that image operations are slow. You can and should serialise an EscposImage
  * object into some sort of cache if you will re-use the output.
  */
-require_once (dirname ( __FILE__ ) . "/../../Escpos.php");
+require __DIR__ . '/../../vendor/autoload.php';
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\EscposImage;
+use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+
 
 // Paths to images to combine
 $img1_path = dirname ( __FILE__ ) . "/../resources/tux.png";
@@ -39,9 +44,9 @@ try {
 	$profile = DefaultCapabilityProfile::getInstance ();
 
 	// Run the actual print
-	$printer = new Escpos ( $connector, $profile );
+	$printer = new Printer ( $connector, $profile );
 	try {
-		$printer -> setJustification(Escpos::JUSTIFY_CENTER);
+		$printer -> setJustification(Printer::JUSTIFY_CENTER);
 		$printer -> graphics($img);
 		$printer -> cut();
 	} finally {

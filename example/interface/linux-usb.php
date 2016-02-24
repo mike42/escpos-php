@@ -1,6 +1,8 @@
 <?php
 /* Change to the correct path if you copy this example! */
-require_once(dirname(__FILE__) . "/../../Escpos.php");
+require __DIR__ . '/../../vendor/autoload.php';
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 
 /**
  * On Linux, use the usblp module to make your printer available as a device
@@ -15,16 +17,16 @@ require_once(dirname(__FILE__) . "/../../Escpos.php");
  */
 try {
 	// Enter the device file for your USB printer here
-	$connector = null;
+	$connector = new FilePrintConnector("/dev/null");
 	//$connector = new FilePrintConnector("/dev/usb/lp0");
 	//$connector = new FilePrintConnector("/dev/usb/lp1");
 	//$connector = new FilePrintConnector("/dev/usb/lp2");
 
 	/* Print a "Hello world" receipt" */
-	$printer = new Escpos($connector);
+	$printer = new Printer($connector);
 	$printer -> text("Hello World!\n");
 	$printer -> cut();
-	
+
 	/* Close printer */
 	$printer -> close();
 } catch(Exception $e) {

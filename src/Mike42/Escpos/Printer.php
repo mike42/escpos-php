@@ -5,17 +5,10 @@ use Exception;
 use InvalidArgumentException;
 use Mike42\Escpos\PrintBuffers\PrintBuffer;
 use Mike42\Escpos\PrintBuffers\EscposPrintBuffer;
-use Mike42\Escpos\PrintBuffers\ImagePrintBuffer;
 use Mike42\Escpos\PrintConnectors\PrintConnector;
-use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
-use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\CapabilityProfiles\AbstractCapabilityProfile;
 use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
-use Mike42\Escpos\CapabilityProfiles\SimpleCapabilityProfile;
-use Mike42\Escpos\CapabilityProfiles\EposTepCapabilityProfile;
-use Mike42\Escpos\CapabilityProfiles\StarCapabilityProfile;
-use Mike42\Escpos\CapabilityProfiles\P822DCapabilityProfile;
 
 /**
  * escpos-php, a Thermal receipt printer library, for use with
@@ -61,8 +54,7 @@ use Mike42\Escpos\CapabilityProfiles\P822DCapabilityProfile;
  * 		- https://github.com/mike42/escpos-php
  */
 
-
-class Escpos {
+class Printer {
 	/* ASCII codes */
 	const NUL = "\x00";
 	const LF = "\x0a";
@@ -177,7 +169,7 @@ class Escpos {
 			if(php_sapi_name() == 'cli') {
 				$connector = new FilePrintConnector("php://stdout");
 			} else {
-				throw new InvalidArgumentException("Argument passed to Escpos::__construct() must implement interface PrintConnector, null given.");
+				throw new InvalidArgumentException("Argument passed to Printer::__construct() must implement interface PrintConnector, null given.");
 			}
 		}
 		/* Set connector */
@@ -199,7 +191,7 @@ class Escpos {
 	 * Print a barcode.
 	 *
 	 * @param string $content The information to encode.
-	 * @param int $type The barcode standard to output. If not specified, `Escpos::BARCODE_CODE39` will be used. Note that some barcode formats only support specific lengths or sets of characters.
+	 * @param int $type The barcode standard to output. If not specified, `Printer::BARCODE_CODE39` will be used. Note that some barcode formats only support specific lengths or sets of characters.
 	 * @throws InvalidArgumentException Where the length or characters used in $content is invalid for the requested barcode format.
 	 */
 	function barcode($content, $type = self::BARCODE_CODE39) {
@@ -282,7 +274,7 @@ class Escpos {
 	/**
 	 * Cut the paper.
 	 *
-	 * @param int $mode Cut mode, either Escpos::CUT_FULL or Escpos::CUT_PARTIAL. If not specified, `Escpos::CUT_FULL` will be used.
+	 * @param int $mode Cut mode, either Printer::CUT_FULL or Printer::CUT_PARTIAL. If not specified, `Printer::CUT_FULL` will be used.
 	 * @param int $lines Number of lines to feed
 	 */
 	function cut($mode = self::CUT_FULL, $lines = 3) {
@@ -488,9 +480,9 @@ class Escpos {
 	 * Print the given data as a QR code on the printer.
 	 * 
 	 * @param string $content The content of the code. Numeric data will be more efficiently compacted.
-	 * @param int $ec Error-correction level to use. One of Escpos::QR_ECLEVEL_L (default), Escpos::QR_ECLEVEL_M, Escpos::QR_ECLEVEL_Q or Escpos::QR_ECLEVEL_H. Higher error correction results in a less compact code.
+	 * @param int $ec Error-correction level to use. One of Printer::QR_ECLEVEL_L (default), Printer::QR_ECLEVEL_M, Printer::QR_ECLEVEL_Q or Printer::QR_ECLEVEL_H. Higher error correction results in a less compact code.
 	 * @param int $size Pixel size to use. Must be 1-16 (default 3)
-	 * @param int $model QR code model to use. Must be one of Escpos::QR_MODEL_1, Escpos::QR_MODEL_2 (default) or Escpos::QR_MICRO (not supported by all printers).
+	 * @param int $model QR code model to use. Must be one of Printer::QR_MODEL_1, Printer::QR_MODEL_2 (default) or Printer::QR_MICRO (not supported by all printers).
 	 */
 	function qrCode($content, $ec = self::QR_ECLEVEL_L, $size = 3, $model = self::QR_MODEL_2) {
 		self::validateString($content, __FUNCTION__);
@@ -548,7 +540,7 @@ class Escpos {
 	 *  - MODE_DOUBLE_WIDTH
 	 *  - MODE_UNDERLINE
 	 * 
-	 * @param int $mode The mode to use. Default is Escpos::MODE_FONT_A, with no special formatting. This has a similar effect to running initialize().
+	 * @param int $mode The mode to use. Default is Printer::MODE_FONT_A, with no special formatting. This has a similar effect to running initialize().
 	 */
 	function selectPrintMode($mode = self::MODE_FONT_A) {
 		$allModes = self::MODE_FONT_B | self::MODE_EMPHASIZED | self::MODE_DOUBLE_HEIGHT | self::MODE_DOUBLE_WIDTH | self::MODE_UNDERLINE;
@@ -573,7 +565,7 @@ class Escpos {
 	/**
 	 * Set the position for the Human Readable Interpretation (HRI) of barcode characters.
 	 * 
-	 * @param position $position. Use Escpos::BARCODE_TEXT_NONE to hide the text (default), or any combination of Escpos::BARCODE_TEXT_TOP and Escpos::BARCODE_TEXT_BOTTOM flags to display the text.
+	 * @param position $position. Use Printer::BARCODE_TEXT_NONE to hide the text (default), or any combination of Printer::BARCODE_TEXT_TOP and Printer::BARCODE_TEXT_BOTTOM flags to display the text.
 	 */
 	function setBarcodeTextPosition($position = self::BARCODE_TEXT_NONE) {
 		self::validateInteger($position, 0, 3, __FUNCTION__, "Barcode text position");
@@ -593,7 +585,7 @@ class Escpos {
 	/**
 	 * Select print color on printers that support multiple colors.
 	 * 
-	 * @param int $color Color to use. Must be either Escpos::COLOR_1 (default), or Escpos::COLOR_2.
+	 * @param int $color Color to use. Must be either Printer::COLOR_1 (default), or Printer::COLOR_2.
 	 */
 	function setColor($color = self::COLOR_1) {
 		self::validateInteger($color, 0, 1, __FUNCTION__, "Color");
@@ -613,7 +605,7 @@ class Escpos {
 	/**
 	 * Select font. Most printers have two fonts (Fonts A and B), and some have a third (Font C).
 	 *
-	 * @param int $font The font to use. Must be either Escpos::FONT_A, Escpos::FONT_B, or Escpos::FONT_C.
+	 * @param int $font The font to use. Must be either Printer::FONT_A, Printer::FONT_B, or Printer::FONT_C.
 	 */
 	function setFont($font = self::FONT_A) {
 		self::validateInteger($font, 0, 2, __FUNCTION__);
@@ -623,7 +615,7 @@ class Escpos {
 	/**
 	 * Select justification.
 	 *
-	 * @param int $justification One of Escpos::JUSTIFY_LEFT, Escpos::JUSTIFY_CENTER, or Escpos::JUSTIFY_RIGHT.
+	 * @param int $justification One of Printer::JUSTIFY_LEFT, Printer::JUSTIFY_CENTER, or Printer::JUSTIFY_RIGHT.
 	 */
 	function setJustification($justification = self::JUSTIFY_LEFT) {
 		self::validateInteger($justification, 0, 2, __FUNCTION__);
@@ -679,7 +671,7 @@ class Escpos {
 	 * Argument can be true/false, or one of UNDERLINE_NONE,
 	 * UNDERLINE_SINGLE or UNDERLINE_DOUBLE.
 	 * 
-	 * @param int $underline Either true/false, or one of Escpos::UNDERLINE_NONE, Escpos::UNDERLINE_SINGLE or Escpos::UNDERLINE_DOUBLE. Defaults to Escpos::UNDERLINE_SINGLE.
+	 * @param int $underline Either true/false, or one of Printer::UNDERLINE_NONE, Printer::UNDERLINE_SINGLE or Printer::UNDERLINE_DOUBLE. Defaults to Printer::UNDERLINE_SINGLE.
 	 */
 	function setUnderline($underline = self::UNDERLINE_SINGLE) {
 		/* Map true/false to underline constants */
@@ -763,7 +755,7 @@ class Escpos {
 		$outp = array();
 		foreach($inputs as $input) {
 			if($long) {
-				$outp[] = Escpos::intLowHigh($input, 2);
+				$outp[] = Printer::intLowHigh($input, 2);
 			} else {
 				self::validateInteger($input, 0 , 255, __FUNCTION__);
 				$outp[] = chr($input);
