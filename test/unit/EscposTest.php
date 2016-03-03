@@ -651,6 +651,35 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x02\x00\xc0\x00");
 	}
 	
+	/* Bit image column format */
+	public function testBitImageColumnFormatBlack() {
+		$this -> requireGraphicsLibrary();
+		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_black.png");
+		$this -> printer -> bitImageColumnFormat($img);
+		$this -> checkOutput("\x1b@\x1b3\x10\x1b*!\x01\x00\x80\x00\x00\x0a\x1b2");
+	}
+
+	public function testBitImageColumnFormatWhite() {
+		$this -> requireGraphicsLibrary();
+		$img = new EscposImage(dirname(__FILE__)."/resources/canvas_white.png");
+		$this -> printer -> bitImageColumnFormat($img);
+		$this -> checkOutput("\x1b@\x1b3\x10\x1b*!\x01\x00\x00\x00\x00\x0a\x1b2");
+	}
+
+	public function testBitImageColumnFormatBoth() {
+		$this -> requireGraphicsLibrary();
+		$img = new EscposImage(dirname(__FILE__)."/resources/black_white.png");
+		$this -> printer -> bitImageColumnFormat($img);
+		$this -> checkOutput("\x1b@\x1b3\x10\x1b*!\x02\x00\x80\x00\x00\x80\x00\x00\x0a\x1b2");
+	}
+
+	public function testBitImageColumnFormatTransparent() {
+		$this -> requireGraphicsLibrary();
+		$img = new EscposImage(dirname(__FILE__)."/resources/black_transparent.png");
+		$this -> printer -> bitImageColumnFormat($img);
+		$this -> checkOutput("\x1b@\x1b3\x10\x1b*!\x02\x00\x80\x00\x00\x80\x00\x00\x0a\x1b2");
+	}
+
 	/* Graphics print */
 	public function testGraphicsWhite() {
 		$this -> requireGraphicsLibrary();
