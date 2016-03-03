@@ -236,7 +236,7 @@ $printer -> graphics($img);
 
 See the [example/](https://github.com/mike42/escpos-php/blob/master/example/) folder for detailed examples.
 
-The function [bitImage()](#bitimageescposimage-image-size) takes the same parameters, and can be used if your printer doesn't support the newer graphics commands.
+The function [bitImage()](#bitimageescposimage-image-size) takes the same parameters, and can be used if your printer doesn't support the newer graphics commands. As an additional fallback, the `bitImageColumnFormat()` function is also provided.
 
 ### initialize()
 Initialize printer. This resets formatting back to the defaults.
