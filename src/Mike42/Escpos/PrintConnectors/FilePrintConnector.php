@@ -1,4 +1,8 @@
 <?php
+namespace Mike42\Escpos\PrintConnectors;
+
+use Exception;
+
 /**
  * escpos-php, a Thermal receipt printer library, for use with
  * ESC/POS compatible printers.
@@ -27,30 +31,54 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  * 
- * Interface passed to Escpos class for receiving print data. Print connectors
- * are responsible for transporting this to the actual printer.
+ * PrintConnector for passing print data to a file.
  */
-interface PrintConnector {
+class FilePrintConnector implements PrintConnector {
 	/**
-	 * Print connectors should cause a NOTICE if they are deconstructed
-	 * when they have not been finalized.
+	 * @var resource The file pointer to send data to.
 	 */
-	public function __destruct();
+	protected $fp;
 
 	/**
-	 * Finish using this print connector (close file, socket, send
-	 * accumulated output, etc).
+	 * Construct new connector, given a filename
+	 * 
+	 * @param string $filename
 	 */
-	public function finalize();
+	public function __construct($filename) {
+		$this -> fp = fopen($filename, "wb+");
+		if($this -> fp === false) {
+			throw new Exception("Cannot initialise FilePrintConnector.");
+		}
+	}
+
+	public function __destruct() {
+		if($this -> fp !== false) {
+			trigger_error("Print connector was not finalized. Did you forget to close the printer?", E_USER_NOTICE);
+		}
+	}
 
 	/**
-	 * @param string $data
-	 * @return Data read from the printer, or false where reading is not possible.
+	 * Close file pointer
 	 */
-	public function read($len);
+	public function finalize() {
+		fclose($this -> fp);
+		$this -> fp = false;
+	}
+	
+	/* (non-PHPdoc)
+	 * @see PrintConnector::read()
+	 */
+	public function read($len) {
+		rewind($this -> fp);
+		return fgets($this -> fp, $len + 1);
+	}
 	
 	/**
+	 * Write data to the file
+	 * 
 	 * @param string $data
 	 */
-	public function write($data);
+	public function write($data) {
+		fwrite($this -> fp, $data);
+	}
 }

@@ -1,4 +1,9 @@
 <?php
+
+namespace Mike42\Escpos\CapabilityProfiles;
+
+use Mike42\Escpos\CodePage;
+
 /**
  * This capability profile is designed for the P-822D.
  * 

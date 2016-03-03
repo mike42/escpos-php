@@ -1,4 +1,9 @@
 <?php
+namespace Mike42\Escpos\PrintBuffers;
+
+use LogicException;
+use Mike42\Escpos\Printer;
+
 /**
  * escpos-php, a Thermal receipt printer library, for use with
  * ESC/POS compatible printers.
@@ -58,7 +63,7 @@ class EscposPrintBuffer implements PrintBuffer {
 	private $encode = null;
 
 	/**
-	 * @var Escpos Printer for output
+	 * @var Printer Printer for output
 	 */
 	private $printer;
 
@@ -80,7 +85,7 @@ class EscposPrintBuffer implements PrintBuffer {
 		return $this -> printer;
 	}
 
-	public function setPrinter(Escpos $printer = null) {
+	public function setPrinter(Printer $printer = null) {
 		$this -> printer = $printer;
 		if($printer != null) {
 			$this -> loadAvailableCharacters();

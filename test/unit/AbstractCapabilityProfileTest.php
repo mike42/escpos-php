@@ -3,12 +3,19 @@
  * Test that all sub-classes of AbstractCapabilityProfile
  * are creating data in the right format.
  */
+use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
+
 class EscposCapabilityProfileTest extends PHPUnit_Framework_TestCase {
 	private $profiles;
 	private $checklist;
 	
 	function setup() {
-		$this -> profiles = array('DefaultCapabilityProfile', 'EposTepCapabilityProfile', 'SimpleCapabilityProfile', 'StarCapabilityProfile', 'P822DCapabilityProfile');
+		$this -> profiles = array(
+				'Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile',
+				'Mike42\Escpos\CapabilityProfiles\EposTepCapabilityProfile',
+				'Mike42\Escpos\CapabilityProfiles\SimpleCapabilityProfile',
+				'Mike42\Escpos\CapabilityProfiles\StarCapabilityProfile',
+				'Mike42\Escpos\CapabilityProfiles\P822DCapabilityProfile');
 		$this -> checklist = array();
 		foreach($this -> profiles as $profile) {
 			$this-> checklist[] = $profile::getInstance();

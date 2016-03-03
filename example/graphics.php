@@ -1,8 +1,10 @@
 <?php
 /* Print-outs using the newer graphics print command */
 
-require_once(dirname(__FILE__) . "/../Escpos.php");
-$printer = new Escpos();
+require __DIR__ . '/../vendor/autoload.php';
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\EscposImage;
+$printer = new Printer();
 
 try {
 	$tux = new EscposImage("resources/tux.png");
@@ -11,15 +13,15 @@ try {
 	$printer -> text("Regular Tux.\n");
 	$printer -> feed();
 	
-	$printer -> graphics($tux, Escpos::IMG_DOUBLE_WIDTH);
+	$printer -> graphics($tux, Printer::IMG_DOUBLE_WIDTH);
 	$printer -> text("Wide Tux.\n");
 	$printer -> feed();
 	
-	$printer -> graphics($tux, Escpos::IMG_DOUBLE_HEIGHT);
+	$printer -> graphics($tux, Printer::IMG_DOUBLE_HEIGHT);
 	$printer -> text("Tall Tux.\n");
 	$printer -> feed();
 	
-	$printer -> graphics($tux, Escpos::IMG_DOUBLE_WIDTH | Escpos::IMG_DOUBLE_HEIGHT);
+	$printer -> graphics($tux, Printer::IMG_DOUBLE_WIDTH | Printer::IMG_DOUBLE_HEIGHT);
 	$printer -> text("Large Tux in correct proportion.\n");
 	
 	$printer -> cut();

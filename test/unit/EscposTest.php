@@ -1,4 +1,8 @@
 <?php
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
+use Mike42\Escpos\EscposImage;
+
 class EscposTest extends PHPUnit_Framework_TestCase {
 	protected $printer;
 	protected $outputConnector;
@@ -6,7 +10,7 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 	protected function setup() {
 		/* Print to nowhere- for testing which inputs are accepted */
 		$this -> outputConnector = new DummyPrintConnector();
-		$this -> printer = new Escpos($this -> outputConnector);
+		$this -> printer = new Printer($this -> outputConnector);
 	}
 
 	protected function checkOutput($expected = null) {
@@ -114,17 +118,17 @@ class EscposTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testSetUnderlineOff() {
-		$this -> printer -> setUnderline(Escpos::UNDERLINE_NONE);
+		$this -> printer -> setUnderline(Printer::UNDERLINE_NONE);
 		$this -> checkOutput("\x1b@\x1b-\x00");
     }
 
     public function testSetUnderlineOn() {
-		$this -> printer -> setUnderline(Escpos::UNDERLINE_SINGLE);
+		$this -> printer -> setUnderline(Printer::UNDERLINE_SINGLE);
 		$this -> checkOutput("\x1b@\x1b-\x01");
     }
 
     public function testSetUnderlineDbl() {
-		$this -> printer -> setUnderline(Escpos::UNDERLINE_DOUBLE);
+		$this -> printer -> setUnderline(Printer::UNDERLINE_DOUBLE);
 		$this -> checkOutput("\x1b@\x1b-\x02");
     }
 
@@ -202,9 +206,9 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testSetFontAcceptedValues() {
-		$this -> printer -> setFont(Escpos::FONT_A);
-		$this -> printer -> setFont(Escpos::FONT_B);
-		$this -> printer -> setFont(Escpos::FONT_C);
+		$this -> printer -> setFont(Printer::FONT_A);
+		$this -> printer -> setFont(Printer::FONT_B);
+		$this -> printer -> setFont(Printer::FONT_C);
 		$this -> checkOutput("\x1b@\x1bM\x00\x1bM\x01\x1bM\x02");
 	}
 
@@ -231,17 +235,17 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testSetJustificationLeft() {
-		$this -> printer -> setJustification(Escpos::JUSTIFY_LEFT);
+		$this -> printer -> setJustification(Printer::JUSTIFY_LEFT);
 		$this -> checkOutput("\x1b@\x1ba\x00");
 	}
 
 	public function testSetJustificationRight() {
-		$this -> printer -> setJustification(Escpos::JUSTIFY_RIGHT);
+		$this -> printer -> setJustification(Printer::JUSTIFY_RIGHT);
 		$this -> checkOutput("\x1b@\x1ba\x02");
 	}
 
 	public function testSetJustificationCenter() {
-		$this -> printer -> setJustification(Escpos::JUSTIFY_CENTER);
+		$this -> printer -> setJustification(Printer::JUSTIFY_CENTER);
 		$this -> checkOutput("\x1b@\x1ba\x01");
 	}
 
@@ -328,12 +332,12 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function testSetBarcodeTextPositionBelow() {
-		$this -> printer -> setBarcodeTextPosition(Escpos::BARCODE_TEXT_BELOW);
+		$this -> printer -> setBarcodeTextPosition(Printer::BARCODE_TEXT_BELOW);
 		$this -> checkOutput("\x1b@\x1dH\x02");
 	}
 
 	public function testSetBarcodeTextPositionBoth() {
-		$this -> printer -> setBarcodeTextPosition(Escpos::BARCODE_TEXT_BELOW | Escpos::BARCODE_TEXT_ABOVE);
+		$this -> printer -> setBarcodeTextPosition(Printer::BARCODE_TEXT_BELOW | Printer::BARCODE_TEXT_ABOVE);
 		$this -> checkOutput("\x1b@\x1dH\x03");
 	}
 	
@@ -354,101 +358,101 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 
 	/* Barcode - UPC-A */
 	public function testBarcodeUpcaNumeric11Char() {
-		$this -> printer -> barcode("01234567890", Escpos::BARCODE_UPCA);
+		$this -> printer -> barcode("01234567890", Printer::BARCODE_UPCA);
 		$this -> checkOutput("\x1b@\x1dkA\x0b01234567890");
 	}
 	
 	public function testBarcodeUpcaNumeric12Char() {
-		$this -> printer -> barcode("012345678901", Escpos::BARCODE_UPCA);
+		$this -> printer -> barcode("012345678901", Printer::BARCODE_UPCA);
 		$this -> checkOutput("\x1b@\x1dkA\x0c012345678901");
 	}
 	
 	public function testBarcodeUpcaNumeric13Char() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("0123456789012", Escpos::BARCODE_UPCA);
+		$this -> printer -> barcode("0123456789012", Printer::BARCODE_UPCA);
 	}
 	
 	public function testBarcodeUpcaNonNumeric12Char() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("A12345678901", Escpos::BARCODE_UPCA);
+		$this -> printer -> barcode("A12345678901", Printer::BARCODE_UPCA);
 	}
 
 	/* Barcode - UPC-E */
 	public function testBarcodeUpceNumeric6Char() {
-		$this -> printer -> barcode("123456", Escpos::BARCODE_UPCE);
+		$this -> printer -> barcode("123456", Printer::BARCODE_UPCE);
 		$this -> checkOutput("\x1b@\x1dkB\x06123456");
 	}
 
 	public function testBarcodeUpceNumeric7Char() {
-		$this -> printer -> barcode("0123456", Escpos::BARCODE_UPCE);
+		$this -> printer -> barcode("0123456", Printer::BARCODE_UPCE);
 		$this -> checkOutput("\x1b@\x1dkB\x070123456");
 	}
 	
 	public function testBarcodeUpceNumeric8Char() {
-		$this -> printer -> barcode("01234567", Escpos::BARCODE_UPCE);
+		$this -> printer -> barcode("01234567", Printer::BARCODE_UPCE);
 		$this -> checkOutput("\x1b@\x1dkB\x0801234567");
 	}
 	
 	public function testBarcodeUpceNumeric11Char() {
-		$this -> printer -> barcode("01234567890", Escpos::BARCODE_UPCE);
+		$this -> printer -> barcode("01234567890", Printer::BARCODE_UPCE);
 		$this -> checkOutput("\x1b@\x1dkB\x0b01234567890");
 	}
 	
 	public function testBarcodeUpceNumeric12Char() {
-		$this -> printer -> barcode("012345678901", Escpos::BARCODE_UPCE);
+		$this -> printer -> barcode("012345678901", Printer::BARCODE_UPCE);
 		$this -> checkOutput("\x1b@\x1dkB\x0c012345678901");
 	}
 	
 	public function testBarcodeUpceNumeric9Char() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("012345678", Escpos::BARCODE_UPCE);
+		$this -> printer -> barcode("012345678", Printer::BARCODE_UPCE);
 	}
 	
 	public function testBarcodeUpceNonNumeric12Char() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("A12345678901", Escpos::BARCODE_UPCE);
+		$this -> printer -> barcode("A12345678901", Printer::BARCODE_UPCE);
 	}
 
 	/* Barcode - JAN13 */
 	public function testBarcodeJan13Numeric12Char() {
-		$this -> printer -> barcode("012345678901", Escpos::BARCODE_JAN13);
+		$this -> printer -> barcode("012345678901", Printer::BARCODE_JAN13);
 		$this -> checkOutput("\x1b@\x1dkC\x0c012345678901");
 	}
 	
 	public function testBarcodeJan13Numeric13Char() {
-		$this -> printer -> barcode("0123456789012", Escpos::BARCODE_JAN13);
+		$this -> printer -> barcode("0123456789012", Printer::BARCODE_JAN13);
 		$this -> checkOutput("\x1b@\x1dkC\x0d0123456789012");
 	}
 	
 	public function testBarcodeJan13Numeric11Char() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("01234567890", Escpos::BARCODE_JAN13);
+		$this -> printer -> barcode("01234567890", Printer::BARCODE_JAN13);
 	}
 	
 	public function testBarcodeJan13NonNumeric13Char() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("A123456789012", Escpos::BARCODE_JAN13);
+		$this -> printer -> barcode("A123456789012", Printer::BARCODE_JAN13);
 	}
 	
 	/* Barcode - JAN8 */
 	public function testBarcodeJan8Numeric7Char() {
-		$this -> printer -> barcode("0123456", Escpos::BARCODE_JAN8);
+		$this -> printer -> barcode("0123456", Printer::BARCODE_JAN8);
 		$this -> checkOutput("\x1b@\x1dkD\x070123456");
 	}
 	
 	public function testBarcodeJan8Numeric8Char() {
-		$this -> printer -> barcode("01234567", Escpos::BARCODE_JAN8);
+		$this -> printer -> barcode("01234567", Printer::BARCODE_JAN8);
 		$this -> checkOutput("\x1b@\x1dkD\x0801234567");
 	}
 	
 	public function testBarcodeJan8Numeric9Char() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("012345678", Escpos::BARCODE_JAN8);
+		$this -> printer -> barcode("012345678", Printer::BARCODE_JAN8);
 	}
 	
 	public function testBarcodeJan8NonNumeric8Char() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("A1234567", Escpos::BARCODE_JAN8);
+		$this -> printer -> barcode("A1234567", Printer::BARCODE_JAN8);
 	}
 	
 	/* Barcode - Code39 */
@@ -458,107 +462,107 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testBarcodeCode39Text() {
-		$this -> printer -> barcode("ABC 012", Escpos::BARCODE_CODE39);
+		$this -> printer -> barcode("ABC 012", Printer::BARCODE_CODE39);
 		$this -> checkOutput("\x1b@\x1dkE\x07ABC 012");
 	}
 	
 	public function testBarcodeCode39SpecialChars() {
-		$this -> printer -> barcode("$%+-./", Escpos::BARCODE_CODE39);
+		$this -> printer -> barcode("$%+-./", Printer::BARCODE_CODE39);
 		$this -> checkOutput("\x1b@\x1dkE\x06$%+-./");
 	}
 	
 	public function testBarcodeCode39Asterisks() {
-		$this -> printer -> barcode("*TEXT*", Escpos::BARCODE_CODE39);
+		$this -> printer -> barcode("*TEXT*", Printer::BARCODE_CODE39);
 		$this -> checkOutput("\x1b@\x1dkE\x06*TEXT*");
 	}
 	
 	public function testBarcodeCode39AsterisksUnmatched() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("*TEXT", Escpos::BARCODE_CODE39);
+		$this -> printer -> barcode("*TEXT", Printer::BARCODE_CODE39);
 	}
 	
 	public function testBarcodeCode39AsteriskInText() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("12*34", Escpos::BARCODE_CODE39);
+		$this -> printer -> barcode("12*34", Printer::BARCODE_CODE39);
 	}
 	
 	public function testBarcodeCode39Lowercase() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("abcd", Escpos::BARCODE_CODE39);
+		$this -> printer -> barcode("abcd", Printer::BARCODE_CODE39);
 	}
 	
 	public function testBarcodeCode39Empty() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("**", Escpos::BARCODE_CODE39);
+		$this -> printer -> barcode("**", Printer::BARCODE_CODE39);
 	}
 
 	/* Barcode - ITF */
 	public function testBarcodeItfNumericEven() {
-		$this -> printer -> barcode("1234", Escpos::BARCODE_ITF);
+		$this -> printer -> barcode("1234", Printer::BARCODE_ITF);
 		$this -> checkOutput("\x1b@\x1dkF\x041234");		
 	}
 	
 	public function testBarcodeItfNumericOdd() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("123", Escpos::BARCODE_ITF);
+		$this -> printer -> barcode("123", Printer::BARCODE_ITF);
 	}
 	
 	public function testBarcodeItfNonNumericEven() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("A234", Escpos::BARCODE_ITF);
+		$this -> printer -> barcode("A234", Printer::BARCODE_ITF);
 	}
 
 	/* Barcode - Codabar */
 	public function testBarcodeCodabarNumeric() {
-		$this -> printer -> barcode("A012345A", Escpos::BARCODE_CODABAR);
+		$this -> printer -> barcode("A012345A", Printer::BARCODE_CODABAR);
 		$this -> checkOutput("\x1b@\x1dkG\x08A012345A");
 	}
 	
 	public function testBarcodeCodabarSpecialChars() {
-		$this -> printer -> barcode("A012$+-./:A", Escpos::BARCODE_CODABAR);
+		$this -> printer -> barcode("A012$+-./:A", Printer::BARCODE_CODABAR);
 		$this -> checkOutput("\x1b@\x1dkG\x0bA012$+-./:A");
 	}
 	
 	public function testBarcodeCodabarNotWrapped() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("012345", Escpos::BARCODE_CODABAR);
+		$this -> printer -> barcode("012345", Printer::BARCODE_CODABAR);
 	}
 	
 	public function testBarcodeCodabarStartStopWrongPlace() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("012A45", Escpos::BARCODE_CODABAR);
+		$this -> printer -> barcode("012A45", Printer::BARCODE_CODABAR);
 	}
 
 	/* Barcode - Code93 */
 	public function testBarcodeCode93Valid() {
-		$this -> printer -> barcode("012abcd", Escpos::BARCODE_CODE93);
+		$this -> printer -> barcode("012abcd", Printer::BARCODE_CODE93);
 		$this -> checkOutput("\x1b@\x1dkH\x07012abcd");
 	}
 
 	public function testBarcodeCode93Empty() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("", Escpos::BARCODE_CODE93);
+		$this -> printer -> barcode("", Printer::BARCODE_CODE93);
 	}
 
 	/* Barcode - Code128 */
 	public function testBarcodeCode128ValidA() {
-		$this -> printer -> barcode("{A" . "012ABCD", Escpos::BARCODE_CODE128);
+		$this -> printer -> barcode("{A" . "012ABCD", Printer::BARCODE_CODE128);
 		$this -> checkOutput("\x1b@\x1dkI\x09{A012ABCD");
 	}
 
 	public function testBarcodeCode128ValidB() {
-		$this -> printer -> barcode("{B" . "012ABCDabcd", Escpos::BARCODE_CODE128);
+		$this -> printer -> barcode("{B" . "012ABCDabcd", Printer::BARCODE_CODE128);
 		$this -> checkOutput("\x1b@\x1dkI\x0d{B012ABCDabcd");
 	}
 	
 	public function testBarcodeCode128ValidC() {
-		$this -> printer -> barcode("{C" . chr ( 21 ) . chr ( 32 ) . chr ( 43 ), Escpos::BARCODE_CODE128);
+		$this -> printer -> barcode("{C" . chr ( 21 ) . chr ( 32 ) . chr ( 43 ), Printer::BARCODE_CODE128);
 		$this -> checkOutput("\x1b@\x1dkI\x05{C\x15 +");
 	}
 	
 	public function testBarcodeCode128NoCodeSet() {
 		$this -> setExpectedException('InvalidArgumentException');
-		$this -> printer -> barcode("ABCD", Escpos::BARCODE_CODE128);
+		$this -> printer -> barcode("ABCD", Printer::BARCODE_CODE128);
 	}
 	
 	/* Pulse */
@@ -685,7 +689,7 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 	
 	public function testQRCodeDefaultsAreCorrect() {
 		// Below tests assume that defaults are as written here (output string should be same as above)
-		$this -> printer -> qrCode("1234", Escpos::QR_ECLEVEL_L, 3, Escpos::QR_MODEL_2);
+		$this -> printer -> qrCode("1234", Printer::QR_ECLEVEL_L, 3, Printer::QR_MODEL_2);
 		$this -> checkOutput("\x1b@\x1d(k\x04\x001A2\x00\x1d(k\x03\x001C\x03\x1d(k\x03\x001E0\x1d(k\x07\x001P01234\x1d(k\x03\x001Q0");
 	}
 	
@@ -695,17 +699,17 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function testQRCodeChangeEC() {
-		$this -> printer -> qrCode("1234", Escpos::QR_ECLEVEL_H);
+		$this -> printer -> qrCode("1234", Printer::QR_ECLEVEL_H);
 		$this -> checkOutput("\x1b@\x1d(k\x04\x001A2\x00\x1d(k\x03\x001C\x03\x1d(k\x03\x001E3\x1d(k\x07\x001P01234\x1d(k\x03\x001Q0");
 	}
 	
 	public function testQRCodeChangeSize() {
-		$this -> printer -> qrCode("1234", Escpos::QR_ECLEVEL_L, 7);
+		$this -> printer -> qrCode("1234", Printer::QR_ECLEVEL_L, 7);
 		$this -> checkOutput("\x1b@\x1d(k\x04\x001A2\x00\x1d(k\x03\x001C\x07\x1d(k\x03\x001E0\x1d(k\x07\x001P01234\x1d(k\x03\x001Q0");
 	}
 	
 	public function testQRCodeChangeModel() {
-		$this -> printer -> qrCode("1234", Escpos::QR_ECLEVEL_L, 3, Escpos::QR_MODEL_1);
+		$this -> printer -> qrCode("1234", Printer::QR_ECLEVEL_L, 3, Printer::QR_MODEL_1);
 		$this -> checkOutput("\x1b@\x1d(k\x04\x001A1\x00\x1d(k\x03\x001C\x03\x1d(k\x03\x001E0\x1d(k\x07\x001P01234\x1d(k\x03\x001Q0");
 	}
 
@@ -719,7 +723,7 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 	public function testGetStatus() {
 		$this -> markTestIncomplete("Status check test code not implemented.");
 		// TODO some unit testing here on statuses
-		// $a = $this -> printer -> getPrinterStatus(Escpos::STATUS_PRINTER);
+		// $a = $this -> printer -> getPrinterStatus(Printer::STATUS_PRINTER);
 	}
 
 	/* Set text size  */
@@ -750,12 +754,12 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 	
 	/* Set color */
 	public function testSetColorDefault() {
-		$this -> printer -> setColor(Escpos::COLOR_1);
+		$this -> printer -> setColor(Printer::COLOR_1);
 		$this -> checkOutput("\x1b@\x1br\x00");
 	}
 	
 	public function testSetColorAlternative() {
-		$this -> printer -> setColor(Escpos::COLOR_2);
+		$this -> printer -> setColor(Printer::COLOR_2);
 		$this -> checkOutput("\x1b@\x1br\x01");
 	}
 	

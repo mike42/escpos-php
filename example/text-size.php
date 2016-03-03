@@ -5,8 +5,9 @@
  *
  * @author Michael Billington <michael.billington@gmail.com>
  */
-require_once(dirname(__FILE__) . "/../Escpos.php");
-$printer = new Escpos();
+require __DIR__ . '/../vendor/autoload.php';
+use Mike42\Escpos\Printer;
+$printer = new Printer();
 
 /* Initialize */
 $printer -> initialize();
@@ -53,8 +54,8 @@ $printer -> text("Hello\nworld!\n");
 $printer -> cut();
 $printer -> close();
 
-function title(Escpos $printer, $text) {
-	$printer -> selectPrintMode(Escpos::MODE_EMPHASIZED);
+function title(Printer $printer, $text) {
+	$printer -> selectPrintMode(Printer::MODE_EMPHASIZED);
 	$printer -> text("\n" . $text);
 	$printer -> selectPrintMode(); // Reset
 }

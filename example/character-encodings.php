@@ -1,6 +1,9 @@
 <?php
 /* Change to the correct path if you copy this example! */
-require_once(dirname(__FILE__) . "/../Escpos.php");
+require __DIR__ . '/../vendor/autoload.php';
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
 
 /**
  * This demonstrates available character encodings. Escpos-php accepts UTF-8,
@@ -27,8 +30,8 @@ try {
 	$profile = DefaultCapabilityProfile::getInstance();
 	
 	/* Print a series of receipts containing i18n example strings */
-	$printer = new Escpos($connector, $profile);
-	$printer -> selectPrintMode(Escpos::MODE_DOUBLE_HEIGHT | Escpos::MODE_EMPHASIZED | Escpos::MODE_DOUBLE_WIDTH);
+	$printer = new Printer($connector, $profile);
+	$printer -> selectPrintMode(Printer::MODE_DOUBLE_HEIGHT | Printer::MODE_EMPHASIZED | Printer::MODE_DOUBLE_WIDTH);
 	$printer -> text("Implemented languages\n");
 	$printer -> selectPrintMode();
 	foreach($inputsOk as $label => $str) {
@@ -39,7 +42,7 @@ try {
 	}
 	$printer -> feed();
 	
-	$printer -> selectPrintMode(Escpos::MODE_DOUBLE_HEIGHT | Escpos::MODE_EMPHASIZED | Escpos::MODE_DOUBLE_WIDTH);
+	$printer -> selectPrintMode(Printer::MODE_DOUBLE_HEIGHT | Printer::MODE_EMPHASIZED | Printer::MODE_DOUBLE_WIDTH);
 	$printer -> text("Works in progress\n");
 	$printer -> selectPrintMode();
 	foreach($inputsNotOk as $label => $str) {

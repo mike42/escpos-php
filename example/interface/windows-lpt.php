@@ -1,6 +1,8 @@
 <?php
 /* Change to the correct path if you copy this example! */
-require_once(dirname(__FILE__) . "/../../Escpos.php");
+require __DIR__ . '/../../vendor/autoload.php';
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 /**
  * Assuming your printer is available at LPT1,
@@ -19,7 +21,7 @@ try {
 	// $connector = new FilePrintConnector("LPT1");
 
 	/* Print a "Hello world" receipt" */
-	$printer = new Escpos($connector);
+	$printer = new Printer($connector);
 	$printer -> text("Hello World!\n");
 	$printer -> cut();
 

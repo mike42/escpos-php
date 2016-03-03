@@ -1,4 +1,9 @@
 <?php
+namespace Mike42\Escpos\PrintConnectors;
+
+use Exception;
+use BadMethodCallException;
+
 /**
  * escpos-php, a Thermal receipt printer library, for use with
  * ESC/POS compatible printers.

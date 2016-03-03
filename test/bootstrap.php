@@ -3,8 +3,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 require_once(dirname(__FILE__) . "/../vendor/autoload.php");
-require_once(dirname(__FILE__) . "/../Escpos.php");
-require_once(dirname(__FILE__) . "/../src/DummyPrintConnector.php");
 
 /**
  * Used in many of the tests to to output known-correct

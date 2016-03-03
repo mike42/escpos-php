@@ -1,7 +1,9 @@
 <?php
 /* Example print-outs using the older bit image print command */
-require_once(dirname(__FILE__) . "/../Escpos.php");
-$printer = new Escpos();
+require __DIR__ . '/../vendor/autoload.php';
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\EscposImage;
+$printer = new Printer();
 
 try {
 	$tux = new EscposImage("resources/tux.png");
@@ -12,15 +14,15 @@ try {
 	$printer -> text("Regular Tux (bit image).\n");
 	$printer -> feed();
 	
-	$printer -> bitImage($tux, Escpos::IMG_DOUBLE_WIDTH);
+	$printer -> bitImage($tux, Printer::IMG_DOUBLE_WIDTH);
 	$printer -> text("Wide Tux (bit image).\n");
 	$printer -> feed();
 	
-	$printer -> bitImage($tux, Escpos::IMG_DOUBLE_HEIGHT);
+	$printer -> bitImage($tux, Printer::IMG_DOUBLE_HEIGHT);
 	$printer -> text("Tall Tux (bit image).\n");
 	$printer -> feed();
 	
-	$printer -> bitImage($tux, Escpos::IMG_DOUBLE_WIDTH | Escpos::IMG_DOUBLE_HEIGHT);
+	$printer -> bitImage($tux, Printer::IMG_DOUBLE_WIDTH | Printer::IMG_DOUBLE_HEIGHT);
 	$printer -> text("Large Tux in correct proportion (bit image).\n");
 } catch(Exception $e) {
 	/* Images not supported on your PHP, or image file not found */

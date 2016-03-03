@@ -1,5 +1,9 @@
 <?php
-require_once(dirname(__FILE__)."/../Escpos.php");
+require __DIR__ . '/../vendor/autoload.php';
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\EscposImage;
+$printer = new Printer(); // Add connector for your printer here.
+
 /*
  * Due to its complxity, escpos-php does not support HTML input. To print HTML,
  * either convert it to calls on the Escpos() object, or rasterise the page with
@@ -43,11 +47,11 @@ try {
 	unlink($dest);
 
 	/* Print it */
-	$printer = new Escpos(); // Add connector for your printer here.
 	$printer -> bitImage($img); // bitImage() seems to allow larger images than graphics() on the TM-T20.
 	$printer -> cut();
-	$printer -> close();
 } catch(Exception $e) {
 	echo $e -> getMessage();
+} finally {
+	$printer -> close();
 }
 

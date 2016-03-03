@@ -9,13 +9,16 @@
  * - http://www.cl.cam.ac.uk/~mgk25/ucs/examples/quickbrown.txt
  * - http://clagnut.com/blog/2380/ (mirrored from the English Wikipedia)
  */
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
+
 class EscposPrintBufferTest extends PHPUnit_Framework_TestCase {
 	protected $buffer;
 	protected $outputConnector;
 	
 	protected function setup() {
 		$this -> outputConnector = new DummyPrintConnector();
-		$printer = new Escpos($this -> outputConnector);
+		$printer = new Printer($this -> outputConnector);
 		$this -> buffer = $printer -> getPrintBuffer();
 	}
 	
@@ -33,7 +36,7 @@ class EscposPrintBufferTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testRawTextNonprintable() {
-		$this -> buffer -> writeTextRaw("Test" . Escpos::ESC . "v1\n");
+		$this -> buffer -> writeTextRaw("Test" . Printer::ESC . "v1\n");
 		$this -> checkOutput("\x1b@Test?v1\x0a"); // ASCII ESC character is substituted for '?'
 	}
 

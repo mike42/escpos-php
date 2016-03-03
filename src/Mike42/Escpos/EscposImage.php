@@ -1,4 +1,8 @@
 <?php
+namespace Mike42\Escpos;
+
+use Exception;
+
 /**
  * escpos-php, a Thermal receipt printer library, for use with
  * ESC/POS compatible printers.
@@ -121,7 +125,7 @@ class EscposImage {
 			}
 		}
 		if($this -> isImagickSupported()) {
-			$im = new Imagick();
+			$im = new \Imagick();
 			try {
 				// Throws an ImagickException if the format is not supported or file is not found
 				$im -> readImage($imgPath);
@@ -130,9 +134,9 @@ class EscposImage {
 				throw new Exception($e);
 			}
 			/* Flatten by doing a composite over white, in case of transparency */
-			$flat = new Imagick();
+			$flat = new \Imagick();
 			$flat -> newImage($im -> getimagewidth(), $im -> getimageheight(), "white");
-			$flat -> compositeimage($im, Imagick::COMPOSITE_OVER, 0, 0);
+			$flat -> compositeimage($im, \Imagick::COMPOSITE_OVER, 0, 0);
 			$this -> readImageFromImagick($flat);
 			return;
 		}
@@ -209,13 +213,13 @@ class EscposImage {
 	}
 
 	/**
-	 * Load actual image pixels from Imagick object
+	 * Load actual image pixels from \Imagick object
 	 * 
 	 * @param Imagick $im Image to load from
 	 */
-	public function readImageFromImagick(Imagick $im) {
+	public function readImageFromImagick(\Imagick $im) {
 		/* Threshold */
-		$im -> setImageType(Imagick::IMGTYPE_TRUECOLOR); // Remove transparency (good for PDF's)
+		$im -> setImageType(\Imagick::IMGTYPE_TRUECOLOR); // Remove transparency (good for PDF's)
 		$max = $im->getQuantumRange();
 		$max = $max["quantumRangeLong"];
 		$im -> thresholdImage(0.5 * $max);
@@ -381,7 +385,7 @@ class EscposImage {
 		 * density to use to achieve $pageWidth
 		 */
 		try {
-			$image = new Imagick();
+			$image = new \Imagick();
 			$testRes = 2; // Test resolution
 			$image -> setresolution($testRes, $testRes);
 			$image -> readimage($pdfFile."[0]");
@@ -409,7 +413,7 @@ class EscposImage {
 				$ret[] = $ep;
 			}
 			return $ret;
-		} catch(ImagickException $e) {
+		} catch(\ImagickException $e) {
 			// Wrap in normal exception, so that classes which call this do not themselves require imagick as a dependency.
 			throw new Exception($e);
 		}
