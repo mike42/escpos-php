@@ -1,7 +1,7 @@
 <?php
 /* Print-outs using the newer graphics print command */
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;
 $printer = new Printer();

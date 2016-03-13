@@ -9,17 +9,26 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 		$this -> exampleDir = dirname(__FILE__) . "/../../example/";
 	}
 	
+	/**
+	 * @medium
+	 */
 	public function testBitImage() {
 		$this -> requireGraphicsLibrary();
 		$outp = $this -> runExample("bit-image.php");
 		$this -> outpTest($outp, "bit-image.bin");
 	}
 	
+	/**
+	 * @medium
+	 */
 	public function testCharacterEncodings() {
 		$outp = $this -> runExample("character-encodings.php");
 		$this -> outpTest($outp, "character-encodings.bin");
 	}
 	
+	/**
+	 * @medium
+	 */
 	public function testCharacterTables() {
 		$outp = $this -> runExample("character-tables.php");
 		$this -> outpTest($outp, "character-tables.bin");
@@ -33,34 +42,52 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 		$this -> assertEquals($outp, file_get_contents($file));
 	}
 	
+	/**
+	 * @medium
+	 */
 	public function testDemo() {
 		$this -> requireGraphicsLibrary();
 		$outp = $this -> runExample("demo.php");
 		$this -> outpTest($outp, "demo.bin");
 	}
 	
+	/**
+	 * @medium
+	 */
 	public function testGraphics() {
 		$this -> requireGraphicsLibrary();
 		$outp = $this -> runExample("graphics.php");
 		$this -> outpTest($outp, "graphics.bin");
 	}
 	
+	/**
+	 * @medium
+	 */
 	public function testReceiptWithLogo() {
 		$this -> requireGraphicsLibrary();
 		$outp = $this -> runExample("receipt-with-logo.php");
 		$this -> outpTest($outp, "receipt-with-logo.bin");
 	}
 	
+	/**
+	 * @medium
+	 */
 	public function testQrCode() {
 		$outp = $this -> runExample("qr-code.php");
 		$this -> outpTest($outp, "qr-code.bin");
 	}
 
+	/**
+	 * @medium
+	 */
 	public function testBarcode() {
 		$outp = $this -> runExample("barcode.php");
 		$this -> outpTest($outp, "barcode.bin");
 	}
 	
+	/**
+	 * @medium
+	 */
 	public function testTextSize() {
 		$outp = $this -> runExample("text-size.php");
 		$this -> outpTest($outp, "text-size.bin");

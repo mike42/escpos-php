@@ -1,6 +1,6 @@
 <?php
 /* Example of Greek text on the P-822D */
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\CapabilityProfiles\P822DCapabilityProfile;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;

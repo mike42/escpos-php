@@ -2,7 +2,14 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require_once(dirname(__FILE__) . "/../vendor/autoload.php");
+$composer_autoload = __DIR__ . "/../vendor/autoload.php";
+$standalone_autoload = __DIR__ . "/../autoload.php";
+
+if(file_exists($composer_autoload)) {
+	require_once($composer_autoload);
+} else {
+	require_once($standalone_autoload);
+}
 
 /**
  * Used in many of the tests to to output known-correct
@@ -23,3 +30,4 @@ function friendlyBinary($in) {
 	}
 	return implode($chars);
 }
+

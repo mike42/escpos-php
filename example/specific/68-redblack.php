@@ -2,7 +2,7 @@
 /*
  * Example of two-color printing, tested on an epson TM-U220 with two-color ribbon installed.
  */
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 

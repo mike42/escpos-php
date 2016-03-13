@@ -6,7 +6,7 @@
  *
  * Use the hardware switch to activate "Two-byte Character Code"
  */
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\CapabilityProfiles\SimpleCapabilityProfile;

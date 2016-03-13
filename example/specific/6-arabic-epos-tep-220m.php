@@ -13,12 +13,12 @@
  *  - Ar-PHP library, available from sourceforge, for the first
  *      part of this example. Drop it in the folder listed below:
  */
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintBuffers\ImagePrintBuffer;
 use Mike42\Escpos\CapabilityProfiles\EposTepCapabilityProfile;
 
-require_once(dirname(__FILE__) . "/../../vendor/I18N/Arabic.php");
+require_once(dirname(__FILE__) . "/../../I18N/Arabic.php");
 
 /*
  * First, convert the text into LTR byte order with joined letters,
