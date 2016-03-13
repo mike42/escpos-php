@@ -1,80 +1,10 @@
-ESC/POS Print Driver for PHP
-============================
+# ESC/POS Print Driver for PHP
+
 This project implements a subset of Epson's ESC/POS protocol for thermal receipt printers. It allows you to generate and print receipts with basic formatting, cutting, and barcodes on a compatible printer.
 
 The library was developed to add drop-in support for receipt printing to any PHP app, including web-based point-of-sale (POS) applications.
 
-Basic usage
------------
-A "hello world" receipt can be generated easily (Call this `hello-world.php`):
-```php
-<?php
-require __DIR__ . '/../vendor/autoload.php';
-use Mike42\Escpos\Printer;
-$printer = new Printer();
-$printer -> text("Hello World!\n");
-$printer -> cut();
-$printer -> close();
-```
-This would be printed as:
-```
-# Networked printer
-php hello-world.php | nc 10.x.x.x. 9100
-# Local printer
-php hello-world.php > /dev/...
-# Windows local printer
-php hello-world.php > foo.txt
-net use LPT1 \\server\printer
-copy foo.txt LPT1
-del foo.txt
-```
-
-From your web app, you could pass the output directly to a socket if your printer is networked:
-```php
-<?php
-require __DIR__ . '/../vendor/autoload.php';
-use Mike42\Escpos\Printer;
-use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
-$printer = new Printer();
-$connector = new NetworkPrintConnector("10.x.x.x", 9100);
-$printer = new Printer($connector);
-$printer -> text("Hello World!\n");
-$printer -> cut();
-$printer -> close();
-```
-
-Or to a local printer:
-```php
-<?php
-require __DIR__ . '/../vendor/autoload.php';
-use Mike42\Escpos\Printer;
-use Mike42\Escpos\PrintConnectors\FilePrintConnector;
-$printer = new Printer();
-$connector = new FilePrintConnector("/dev/ttyS0");
-$printer = new Printer($connector);
-$printer -> text("Hello World!\n");
-$printer -> cut();
-$printer -> close();
-```
-
-### Basic workflow
-The library should be initialised with a PrintConnector, which will pass on the data to your printer.
-Use the table under "Compatibility", or the examples below to choose the appropriate connector for your
-platform & interface. If no connector is specified, then standard output is used.
-
-When you have finished using the print object, call `close()` to finalize any data transfers.
-
-### Tips & examples
-On Linux, your printer device file will be somewhere like `/dev/lp0` (parallel), `/dev/usb/lp1` (USB), `/dev/ttyUSB0` (USB-Serial), `/dev/ttyS0` (serial).
-
-On Windows, the device files will be along the lines of `LPT1` (parallel) or `COM1` (serial). Use the `WindowsPrintConnector` to tap into system printing on Windows (eg. [Windows USB](https://github.com/mike42/escpos-php/tree/master/example/interface/windows-usb.php), [SMB](https://github.com/mike42/escpos-php/tree/master/example/interface/smb.php) or [Windows LPT](https://github.com/mike42/escpos-php/tree/master/example/interface/windows-lpt.php)) - this submits print jobs via a queue rather than communicating directly with the printer.
-
-A complete real-world receipt can be found in the code of [Auth](https://github.com/mike42/Auth) in [ReceiptPrinter.php](https://github.com/mike42/Auth/blob/master/lib/misc/ReceiptPrinter.php). It includes justification, boldness, and a barcode.
-
-Other examples are located in the [example/](https://github.com/mike42/escpos-php/blob/master/example/) directory.
-
-Compatibility
--------------
+## Compatibility
 
 ### Interfaces and operating systems
 This driver is known to work with the following OS/interface combinations:
@@ -152,8 +82,144 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 
 If you use any other printer with this code, please let me know so I can add it to the list.
 
-Available methods
------------------
+## Basic usage
+
+### Include the library
+
+#### Composer
+If you are using composer, then add `mike42/escpos-php` as a dependency:
+
+````
+composer require mike42/escpos-php
+````
+
+In this case, you would include composer's auto-loader at the top of your source files:
+
+````
+<?php
+require __DIR__ . '/vendor/autoload.php';
+````
+
+#### Manually
+If you don't have composer available, then simply download the code and include `autoload.php`:
+
+````
+git clone https://github.com/mike42/escpos-php vendor/mike42/escpos-php
+````
+
+````php
+<?php
+require __DIR__ . '/vendor/mike42/escpos-php/autoload.php');
+````
+
+### The 'Hello World' receipt
+
+To make use of this driver, your server (where PHP is installed) must be able to communicate with your printer. Start by generating a simple receipt and sending it to your printer using the command-line.
+
+```php
+<?php
+/* Call this file 'hello-world.php' */
+require __DIR__ . '/vendor/autoload.php';
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\Printer;
+$connector = new FilePrintConnector("php://stdout");
+$printer = new Printer($connector);
+$printer -> text("Hello World!\n");
+$printer -> cut();
+$printer -> close();
+```
+
+Some examples are below for common interfaces.
+
+Communicate with a printer with an Ethernet interface using `netcat`:
+````
+php hello-world.php | nc 10.x.x.x. 9100
+````
+
+A USB local printer connected with `usblp` on Linux has a device file (Includes USB-parallel interfaces):
+````
+php hello-world.php > /dev/usb/lp0
+````
+
+A computer installed into the local `cups` server is accessed through `lp` or `lpr`:
+````
+php hello-world.php > foo.txt
+lpr -o raw -H localhost -P printer foo.txt
+````
+
+A local or networked printer on a Windows computer is mapped in to a file, and generally requires you to share the printer first:
+
+````
+php hello-world.php > foo.txt
+net use LPT1 \\server\printer
+copy foo.txt LPT1
+del foo.txt
+```
+
+If you have troubles at this point, then you should consult your OS and printer system documentation to try to find a working print command.
+
+### Using a PrintConnector
+
+To print receipts from PHP, use the most applicable [https://github.com/mike42/escpos-php/tree/master/src/Mike42/Escpos/PrintConnectors](PrintConnector) for your setup. The connector simply provides the plumbing to get data to the printer.
+
+For example, a `NetworkPrintConnector` accepts an IP address and port:
+
+````php
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\Printer;
+$connector = new NetworkPrintConnector("10.x.x.x", 9100);
+$printer = new Printer($connector);
+try {
+    // ... Print stuff
+} finally {
+    $printer -> close();
+}
+````
+
+While a serial printer might use:
+```php
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\Printer;
+$connector = new FilePrintConnector("/dev/ttyS0");
+$printer = new Printer($connector);
+```
+
+For each OS/interface combination that's supported, there are examples in the compatibility section of how a `PrintConnector` would be constructed. If you can't get a `PrintConnector` to work, then be sure to include the working print command in bug.
+
+### Using a CapabilityProfile
+
+Support for commands and code pages varies between printer vendors and models. By default, the driver will accept UTF-8, and output commands that are suitable for Epson TM-series printers.
+
+When trying out a new brand of printer, it's a good idea to use the `SimpleCapabilityProfile`, which instructs the driver to avoid the use of advanced features (generally simpler image handling, ASCII-only text).
+
+```php
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\CapabilityProfiles\SimpleCapabilityProfile;
+$connector = new WindowsPrintConnector("smb://computer/printer");
+$printer = new Printer($connector, $profile);
+```
+
+As another example, Star-branded printers use different commands:
+
+```php
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\CapabilityProfiles\StarCapabilityProfile;
+$connector = new WindowsPrintConnector("smb://computer/printer");
+$printer = new Printer($connector, $profile);
+```
+
+Further developing this mechanism is a priority for future releases.
+
+### Tips & examples
+On Linux, your printer device file will be somewhere like `/dev/lp0` (parallel), `/dev/usb/lp1` (USB), `/dev/ttyUSB0` (USB-Serial), `/dev/ttyS0` (serial).
+
+On Windows, the device files will be along the lines of `LPT1` (parallel) or `COM1` (serial). Use the `WindowsPrintConnector` to tap into system printing on Windows (eg. [Windows USB](https://github.com/mike42/escpos-php/tree/master/example/interface/windows-usb.php), [SMB](https://github.com/mike42/escpos-php/tree/master/example/interface/smb.php) or [Windows LPT](https://github.com/mike42/escpos-php/tree/master/example/interface/windows-lpt.php)) - this submits print jobs via a queue rather than communicating directly with the printer.
+
+A complete real-world receipt can be found in the code of [Auth](https://github.com/mike42/Auth) in [ReceiptPrinter.php](https://github.com/mike42/Auth/blob/master/lib/misc/ReceiptPrinter.php). It includes justification, boldness, and a barcode.
+
+Other examples are located in the [example/](https://github.com/mike42/escpos-php/blob/master/example/) directory.
+
+## Available methods
 
 ### __construct(PrintConnector $connector, AbstractCapabilityProfile $profile)
 Construct new print object.
