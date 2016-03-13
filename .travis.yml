@@ -1,7 +1,6 @@
 language: php
 
 php:
-  - 5.2
   - 5.3
   - 5.4
   - 5.5
@@ -12,12 +11,11 @@ php:
 
 matrix:
   allow_failures:
-    - php: 5.2
     - php: hhvm
     - php: nightly
 
 script: phpunit --configuration test/phpunit.xml --coverage-text
 
 install:
-  - composer install || true
+  - composer install
 
