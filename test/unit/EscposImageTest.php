@@ -130,52 +130,12 @@ class EscposImageTest extends PHPUnit_Framework_TestCase {
 	 * @medium
 	 */
 	public function testPdfAllPages() {
-		$this -> loadAndCheckPdf('doc.pdf', null, 1, 1, array("\x00", "\x80"));
+		$this -> loadAndCheckPdf('doc.pdf', 1, 1, array("\x00", "\x80"));
 	}
 
 	public function testPdfBadFilename() {
 		$this -> setExpectedException('Exception');
-		$this -> loadAndCheckPdf('not a real file', null, 1, 1, array());
-	}
-
-	/**
-	 * @medium
-	 */
-	public function testPdfBadRange() {
-		// Start page is after end page.
-		$this -> setExpectedException('Exception');
-		$this -> loadAndCheckPdf('doc.pdf', array(1, 0), 1, 1, array("\x00", "\x80"));
-	}
-
-	/**
-	 * @medium
-	 */
-	public function testPdfFirstPage() {
-		$this -> loadAndCheckPdf('doc.pdf', array(0, 0), 1, 1, array("\x00"));
-	}
-	
-	/**
-	 * @medium
-	 */
-	public function testPdfMorePages() {
-		$this -> loadAndCheckPdf('doc.pdf', array(1, 20), 1, 1, array("\x80"));
-	}
-
-	/**
-	 * @medium
-	 */
-	public function testPdfSecondPage() {
-		$this -> loadAndCheckPdf('doc.pdf', array(1, 1), 1, 1, array("\x80"));
-	}
-
-	/**
-	 * @medium
-	 */
-	public function testPdfStartPastEndOfDoc() {
-		// Doc only has pages 0 and 1, can't start reading from 2.
-		$this -> markTestIncomplete("Test needs revising- produces output due to apparent imagick bug.");
-		$this -> setExpectedException('ImagickException');
-		$this -> loadAndCheckPdf('doc.pdf', array(2, 3), 1, 1, array());
+		$this -> loadAndCheckPdf('not a real file', 1, 1, array());
 	}
 
 	/**
@@ -189,11 +149,11 @@ class EscposImageTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * Same as above, loading document and checking pages against some expected values.
 	 */
-	private function loadAndCheckPdf($fn, array $range = null, $width, $height, array $rasterFormat = null) {
+	private function loadAndCheckPdf($fn, $width, $height, array $rasterFormat = null) {
 		if(!EscposImage::isImagickLoaded()) {
 			$this -> markTestSkipped("imagick plugin required for this test");
 		}
-		$pdfPages = EscposImage::loadPdf(dirname(__FILE__) . "/resources/$fn", $width, $range);
+		$pdfPages = EscposImage::loadPdf(dirname(__FILE__) . "/resources/$fn", $width);
 		$this -> assertTrue(count($pdfPages) == count($rasterFormat), "Got back wrong number of pages");
 		foreach($pdfPages as $id => $img) {
 			$this -> checkImg($img, $width, $height, $rasterFormat[$id]);

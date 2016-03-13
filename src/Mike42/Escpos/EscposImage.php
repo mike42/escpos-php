@@ -376,7 +376,7 @@ class EscposImage {
 	 * @throws Exception Where Imagick is not loaded, or where a missing file or invalid page number is requested.
 	 * @return multitype:EscposImage Array of images, retrieved from the PDF file.
 	 */
-	public static function loadPdf($pdfFile, $pageWidth = 550, array $range = null) {
+	public static function loadPdf($pdfFile, $pageWidth = 550) {
 		if(!extension_loaded('imagick')) {
 			throw new Exception(__FUNCTION__ . " requires imagick extension.");
 		}
@@ -388,21 +388,15 @@ class EscposImage {
 			$image = new \Imagick();
 			$testRes = 2; // Test resolution
 			$image -> setresolution($testRes, $testRes);
-			$image -> readimage($pdfFile."[0]");
+			/* Load document just to measure geometry */
+			$image -> readimage($pdfFile);
 			$geo = $image -> getimagegeometry();
 			$image -> destroy();
 			$width = $geo['width'];
 			$newRes = $pageWidth / $width * $testRes;
-			/* Load actual document (can be very slow!) */
-			$rangeStr = ""; // Set to [0] [0-1] page range if $range is set
-			if($range != null) {
-				if(count($range) != 2 || !isset($range[0]) || !is_integer($range[0]) || !isset($range[1]) || !is_integer($range[1]) || $range[0] > $range[1]) {
-					throw new Exception("Invalid range. Must be two numbers in the array: The start and finish page indexes, starting from 0.");
-				}
-				$rangeStr = "[" .  ($range[0] == $range[1] ? $range[0] : implode($range, "-")) . "]";
-			}
+			/* Load entire document in */
 			$image -> setresolution($newRes, $newRes);
-			$image -> readImage($pdfFile."$rangeStr");
+			$image -> readImage($pdfFile);
 			$pages = $image -> getNumberImages();
 			/* Convert images to Escpos objects */
 			$ret = array();
