@@ -235,7 +235,10 @@ class WindowsPrintConnectorTest extends PHPUnit_Framework_TestCase {
 				"smb://foo-computer/workgroup/FooPrinter",
 				"smb://foo-computer/Foo-Printer",
 				"smb://foo-computer/workgroup/Foo-Printer",
-				"smb://foo-computer/Foo Printer");
+				"smb://foo-computer/Foo Printer",
+				"smb://foo-computer.local/Foo Printer",
+				"smb://127.0.0.1/abcd"
+		);
 		$bad = array("",
 				"http://google.com",
 				"smb:/foo/bar",
@@ -260,7 +263,8 @@ class WindowsPrintConnectorTest extends PHPUnit_Framework_TestCase {
 				"a b",
 				"a-b",
 				"Abcd Efg-",
-				"-a"
+				"-a",
+				"OK1"
 		);
 		$bad = array("",
 				" ",
