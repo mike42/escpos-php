@@ -160,7 +160,7 @@ If you have troubles at this point, then you should consult your OS and printer 
 
 ### Using a PrintConnector
 
-To print receipts from PHP, use the most applicable [https://github.com/mike42/escpos-php/tree/master/src/Mike42/Escpos/PrintConnectors](PrintConnector) for your setup. The connector simply provides the plumbing to get data to the printer.
+To print receipts from PHP, use the most applicable [PrintConnector](https://github.com/mike42/escpos-php/tree/master/src/Mike42/Escpos/PrintConnectors) for your setup. The connector simply provides the plumbing to get data to the printer.
 
 For example, a `NetworkPrintConnector` accepts an IP address and port:
 
