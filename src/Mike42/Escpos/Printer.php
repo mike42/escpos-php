@@ -369,7 +369,7 @@ class Printer {
 	}
 
 	/**
-	 * @param int $type The type of status to request
+	 * @param int $type The type of status to request. May be any of the Printer::STATUS_* constants
 	 * @return stdClass Class containing requested status, or null if either no status was received, or your print connector is unable to read from the printer.
 	 */
 	function getPrinterStatus($type = self::STATUS_PRINTER) {
@@ -435,16 +435,16 @@ class Printer {
 		// Wait for single-character response
 		$f = $this -> connector -> read(1);
 		$i = 0;
-		while($f === false && $i < 50000) {
+		while(($f === false || strlen($f) == 0) && $i < 50000) {
 			usleep(100);
 			$f = $this -> connector -> read(1);
 			$i++;
 		}
-		if($f === false) {
+		if($f === false || strlen($f) == 0) {
 			// Timeout
 			return null;
 		}
-		$ret = new stdClass();
+		$ret = new \stdClass();
 		foreach($flags as $num => $name) {
 			$ret -> $name = (ord($f) & $num) != 0;
 		}

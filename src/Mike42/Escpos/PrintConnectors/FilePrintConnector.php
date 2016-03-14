@@ -69,8 +69,7 @@ class FilePrintConnector implements PrintConnector {
 	 * @see PrintConnector::read()
 	 */
 	public function read($len) {
-		rewind($this -> fp);
-		return fgets($this -> fp, $len + 1);
+		return fread($this -> fp, $len);
 	}
 	
 	/**
