@@ -70,10 +70,10 @@ class CupsPrintConnector implements PrintConnector {
 		try {
 			$this->getCmdOutput ( $cmd );
 		} catch (Exception $e) {
-			throw e;
-		} finally {
 			unlink ( $tmpfname );
+			throw e;
 		}
+		unlink ( $tmpfname );
 	}
 	
 	/**
