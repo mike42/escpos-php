@@ -5,7 +5,7 @@ namespace Mike42\Escpos\PrintConnectors;
 use Exception;
 use BadMethodCallException;
 
-final class CupsPrintConnector implements PrintConnector {
+class CupsPrintConnector implements PrintConnector {
 	
 	/**
 	 *
@@ -31,9 +31,11 @@ final class CupsPrintConnector implements PrintConnector {
 		if (count ( $valid ) == 0) {
 			throw new BadMethodCallException ( "You do not have any printers installed on this system via CUPS. Check 'lpr -a'." );
 		}
-		if (! array_search ( $dest, $valid, true )) {
+		
+		if (array_search ( $dest, $valid, true ) === false) {
 			throw new BadMethodCallException ( "'$dest' is not a printer on this system. Printers are: [" . implode ( ", ", $valid ) . "]" );
 		}
+		$this->buffer = array ();
 		$this->printerName = $dest;
 	}
 	
