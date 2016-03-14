@@ -169,6 +169,7 @@ class EscposPrintBuffer implements PrintBuffer {
 	private function loadAvailableCharacters() {
 		$supportedCodePages = $this -> printer -> getPrinterCapabilityProfile() -> getSupportedCodePages();
 		$capabilityClassName = get_class($this -> printer -> getPrinterCapabilityProfile());
+		$capabilityClassName = str_replace("\\", "-", $capabilityClassName);
 		$cacheFile = dirname(__FILE__) . "/cache/Characters-" . $capabilityClassName . ".ser" . (self::COMPRESS_CACHE ? ".gz" : "");
 		$cacheKey = md5(serialize($supportedCodePages));
 		/* Check for pre-generated file */
