@@ -69,6 +69,8 @@ class CupsPrintConnector implements PrintConnector {
 				escapeshellarg ( $tmpfname ) );
 		try {
 			$this->getCmdOutput ( $cmd );
+		} catch (Exception $e) {
+			throw e;
 		} finally {
 			unlink ( $tmpfname );
 		}
