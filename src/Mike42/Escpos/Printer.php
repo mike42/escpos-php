@@ -499,7 +499,7 @@ class Printer {
 		self::validateInteger($pin, 0, 1, __FUNCTION__);
 		self::validateInteger($on_ms, 1, 511, __FUNCTION__);
 		self::validateInteger($off_ms, 1, 511, __FUNCTION__);
-		$this -> connector -> write(self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
+		$this -> connector -> write(self::ESC . "p" . chr($pin) . chr($on_ms / 2) . chr($off_ms / 2));
 	}
 	
 	/**
