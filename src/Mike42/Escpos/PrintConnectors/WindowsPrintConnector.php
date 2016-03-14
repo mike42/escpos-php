@@ -101,12 +101,12 @@ class WindowsPrintConnector implements PrintConnector {
 	/**
 	 * @var string Valid printer name.
 	 */
-	const REGEX_PRINTERNAME = "/^[\w-]+(\s[\w-]+)*$/";
+	const REGEX_PRINTERNAME = "/^[\d\w-]+(\s[\d\w-]+)*$/";
 
 	/**
 	 * @var string Valid smb:// URI containing hostname & printer with optional user & optional password only.
 	 */
-	const REGEX_SMB = "/^smb:\/\/([\s\w-]+(:[\s\w-]+)?@)?[\w-]+\/([\w-]+\/)?[\w-]+(\s[\w-]+)*$/";
+	const REGEX_SMB = "/^smb:\/\/([\s\d\w-]+(:[\s\d\w-]+)?@)?([\d\w-]+\.)*[\d\w-]+\/([\d\w-]+\/)?[\d\w-]+(\s[\d\w-]+)*$/";
 
 	/**
 	 * @param string $dest
