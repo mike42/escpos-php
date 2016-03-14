@@ -47,6 +47,19 @@ class EscposTest extends PHPUnit_Framework_TestCase {
 		$this -> printer -> text();
 		$this -> checkOutput("\x1b@");
     }
+    
+    public function testTextChinese() {
+    	// Switch to chinese print mode, GBK output, switch back to alphanumeric.
+    	$this -> printer -> textChinese("示例文本打印机!\n");
+    	$this -> checkOutput("\x1b@\x1c&\xca\xbe\xc0\xfd\xce\xc4\xb1\xbe\xb4\xf2\xd3\xa1\xbb\xfa!\x0a\x1c.");
+    }
+    
+    public function testTextRaw() {
+    	// Under raw output, the raw bytes are sent to the printer, so typing a UTF-8 euro literally causes \xE2 \x82 \xAC to be sent.
+    	// Under text(), this would cause a code-page change (to a page that contains a Euro symbol), and single byte.
+    	$this -> printer -> textRaw("€\n");
+    	$this -> checkOutput("\x1b@\xe2\x82\xac\x0a");
+    }
 
     public function testTextString() {
 		$this -> printer -> text("String");

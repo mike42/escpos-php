@@ -708,7 +708,7 @@ class Printer {
 		}
 		/* Set the underline */
 		self::validateInteger($underline, 0, 2, __FUNCTION__);
-		$this -> connector -> write(self::ESC . "-". chr($underline));
+		$this -> connector -> write(self::ESC . "-" . chr ( $underline ) );
 	}
 	
 	/**
@@ -723,7 +723,22 @@ class Printer {
 		self::validateString($str, __FUNCTION__);
 		$this -> buffer -> writeText((string)$str);
 	}
-	
+
+	/**
+	 * Add Chinese text to the buffer. This is a specific workaround for the common Zijian printer- The printer will be switched to a two-byte mode and sent GBK-encoded text.
+	 * 
+	 * Support for this will be merged into a print buffer.
+	 * 
+	 * @param string $str Text to print, as UTF-8
+	 */
+	function textChinese($str = "") {
+		self::validateString($str, __FUNCTION__);
+		$this -> connector -> write(self::FS . "&");
+		$str = iconv("UTF-8","GBK//IGNORE", $str);
+		$this -> buffer -> writeTextRaw((string)$str);
+		$this -> connector -> write(self::FS . ".");
+	}
+
 	/**
 	 * Add text to the buffer without attempting to interpret chararacter codes.
 	 *
