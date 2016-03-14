@@ -164,14 +164,7 @@ class Printer {
 	 * @param AbstractCapabilityProfile $profile Supported features of this printer. If not set, the DefaultCapabilityProfile will be used, which is suitable for Epson printers.
 	 * @throws InvalidArgumentException
 	 */
-	function __construct(PrintConnector $connector = null, AbstractCapabilityProfile $profile = null) {
-		if(is_null($connector)) {
-			if(php_sapi_name() == 'cli') {
-				$connector = new FilePrintConnector("php://stdout");
-			} else {
-				throw new InvalidArgumentException("Argument passed to Printer::__construct() must implement interface PrintConnector, null given.");
-			}
-		}
+	function __construct(PrintConnector $connector, AbstractCapabilityProfile $profile = null) {
 		/* Set connector */
 		$this -> connector = $connector;
 		

@@ -17,8 +17,7 @@ use Mike42\Escpos\PrintConnectors\FilePrintConnector;
  */
 try {
 	// Enter the device file for your USB printer here
-	$connector = null;
-	//$connector = new FilePrintConnector("/dev/usb/lp0");
+	$connector = new FilePrintConnector("/dev/usb/lp0");
 	//$connector = new FilePrintConnector("/dev/usb/lp1");
 	//$connector = new FilePrintConnector("/dev/usb/lp2");
 

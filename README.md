@@ -225,7 +225,7 @@ Other examples are located in the [example/](https://github.com/mike42/escpos-ph
 Construct new print object.
 
 Parameters:
-- `PrintConnector $connector`: The PrintConnector to send data to. If not set, output is sent to standard output.
+- `PrintConnector $connector`: The PrintConnector to send data to.
 - `AbstractCapabilityProfile $profile` Supported features of this printer. If not set, the DefaultCapabilityProfile will be used, which is suitable for Epson printers.
 
 See [example/interface/]("https://github.com/mike42/escpos-php/tree/master/example/interface/) for ways to open connections for different platforms and interfaces.

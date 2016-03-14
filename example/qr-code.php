@@ -2,7 +2,9 @@
 /* Demonstration of available options on the qrCode() command */
 require __DIR__ . '/../autoload.php';
 use Mike42\Escpos\Printer;
-$printer = new Printer();
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+$connector = new FilePrintConnector("php://stdout");
+$printer = new Printer($connector);
 
 // Most simple example
 title($printer, "QR code demo\n");

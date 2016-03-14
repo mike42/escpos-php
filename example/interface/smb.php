@@ -35,8 +35,7 @@ use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
  */
 try {
 	// Enter the share name for your printer here, as a smb:// url format
-	$connector = null;
-	//$connector = new WindowsPrintConnector("smb://computername/Receipt Printer");
+	$connector = new WindowsPrintConnector("smb://computername/Receipt Printer");
 	//$connector = new WindowsPrintConnector("smb://Guest@computername/Receipt Printer");
 	//$connector = new WindowsPrintConnector("smb://FooUser:secret@computername/workgroup/Receipt Printer");
 	//$connector = new WindowsPrintConnector("smb://User:secret@computername/Receipt Printer");

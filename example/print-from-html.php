@@ -2,7 +2,9 @@
 require __DIR__ . '/../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;
-$printer = new Printer(); // Add connector for your printer here.
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+$connector = new FilePrintConnector("php://stdout"); // Add connector for your printer here.
+$printer = new Printer($connector);
 
 /*
  * Due to its complxity, escpos-php does not support HTML input. To print HTML,

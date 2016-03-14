@@ -2,6 +2,7 @@
 require __DIR__ . '/../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 
 /*
  * This is three examples in one:
@@ -12,7 +13,8 @@ use Mike42\Escpos\EscposImage;
 
 /* 1: Print an entire PDF, start-to-finish (shorter form of the example) */
 $pdf = 'resources/document.pdf';
-$printer = new Printer();
+$connector = new FilePrintConnector("php://stdout");
+$printer = new Printer($connector);
 try {
 	$pages = EscposImage::loadPdf($pdf);
 	foreach($pages as $page) {
@@ -36,7 +38,8 @@ try {
  * 
  * Reduce the page width further if necessary: if it extends past the printing area, your prints will be very slow.
  */
-$printer = new Printer();
+$connector = new FilePrintConnector("php://stdout");
+$printer = new Printer($connector);
 $pdf = 'resources/document.pdf';
 $pages = EscposImage::loadPdf($pdf, 260);
 foreach($pages as $page) {
@@ -54,7 +57,8 @@ $printer -> close();
  * 
  * [1]After printing, the pixels are loaded and formatted for the print command you used, so even a raspberry pi can print complex PDF's quickly.
  */
-$printer = new Printer();
+$connector = new FilePrintConnector("php://stdout");
+$printer = new Printer($connector);
 $pdf = 'resources/document.pdf';
 $ser = 'resources/document.z';
 if(!file_exists($ser)) {

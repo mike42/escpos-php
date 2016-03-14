@@ -1,8 +1,10 @@
 <?php
 require __DIR__ . '/../autoload.php';
 use Mike42\Escpos\Printer;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 
-$printer = new Printer();
+$connector = new FilePrintConnector("php://stdout");
+$printer = new Printer($connector);
 $printer->setBarcodeHeight ( 40 );
 
 /* Text position */

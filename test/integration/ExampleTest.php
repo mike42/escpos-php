@@ -105,41 +105,37 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testInterfaceEthernet() {
-		// Test attempts DNS lookup on some machine
-		$outp = $this -> runExample("interface/ethernet.php");
-		$this -> outpTest($outp, "interface.bin");
+		$outp = $this -> runSyntaxCheck("interface/ethernet.php");
 	}
 	
 	public function testInterfaceLinuxUSB() {
-		$outp = $this -> runExample("interface/linux-usb.php");
-		$this -> outpTest($outp, "interface.bin");
+		$outp = $this -> runSyntaxCheck("interface/linux-usb.php");
 	}
 	
 	public function testInterfaceWindowsUSB() {
-		// Output varies between platforms, not checking.
-		$outp = $this -> runExample("interface/windows-usb.php");
-		$this -> outpTest($outp, "interface.bin");
+		$outp = $this -> runSyntaxCheck("interface/windows-usb.php");
 	}
 	
 	public function testInterfaceSMB() {
-		// Output varies between platforms, not checking.
-		$outp = $this -> runExample("interface/smb.php");
-		$this -> outpTest($outp, "interface.bin");
+		$outp = $this -> runSyntaxCheck("interface/smb.php");
 	}
 	
 	public function testInterfaceWindowsLPT() {
-		// Output varies between platforms, not checking.
-		$outp = $this -> runExample("interface/windows-lpt.php");
-		$this -> outpTest($outp, "interface.bin");
+		$outp = $this -> runSyntaxCheck("interface/windows-lpt.php");
 	}
 	
-	private function runExample($fn) {
+	private function runSyntaxCheck($fn) {
+		$this -> runExample($fn, true);
+	}
+	
+	private function runExample($fn, $syntaxCheck = false) {
 		// Change directory and check script
 		chdir($this -> exampleDir);
 		$this -> assertTrue(file_exists($fn), "Script $fn not found.");
-		// Run command and save output
+			// Run command and save output
+		$php = "php" . ($syntaxCheck ? " -l" : "");
 		ob_start();
-		passthru("php " . escapeshellarg($fn), $retval);
+		passthru($php . " " . escapeshellarg($fn), $retval);
 		$outp = ob_get_contents();
 		ob_end_clean();
 		// Check return value

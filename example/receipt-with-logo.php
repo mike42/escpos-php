@@ -2,6 +2,10 @@
 require __DIR__ . '/../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+
+/* Fill in your own connector here */
+$connector = new FilePrintConnector("php://stdout");
 
 /* Information for the receipt */
 $items = array(
@@ -19,7 +23,7 @@ $date = "Monday 6th of April 2015 02:56:25 PM";
 
 /* Start the printer */
 $logo = new EscposImage("resources/escpos-php.png");
-$printer = new Printer();
+$printer = new Printer($connector);
 
 /* Print top logo */
 $printer -> setJustification(Printer::JUSTIFY_CENTER);

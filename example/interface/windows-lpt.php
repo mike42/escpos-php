@@ -13,8 +13,7 @@ use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
  * 	echo "Hello World" > LPT1
  */
 try {
-	$connector = null;
-	//$connector = new WindowsPrintConnector("LPT1");
+	$connector = new WindowsPrintConnector("LPT1");
 	
 	// A FilePrintConnector will also work, but on non-Windows systems, writes
 	// to an actual file called 'LPT1' rather than giving a useful error.
