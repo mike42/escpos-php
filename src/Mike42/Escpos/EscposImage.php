@@ -134,10 +134,7 @@ class EscposImage {
 				throw new Exception($e);
 			}
 			/* Flatten by doing a composite over white, in case of transparency */
-			$flat = new \Imagick();
-			$flat -> newImage($im -> getimagewidth(), $im -> getimageheight(), "white");
-			$flat -> compositeimage($im, \Imagick::COMPOSITE_OVER, 0, 0);
-			$this -> readImageFromImagick($flat);
+			$this -> readImageFromImagick($im);
 			return;
 		}
 		throw new Exception("Images are not supported on your PHP. Please install either the gd or imagick extension.");
@@ -218,6 +215,11 @@ class EscposImage {
 	 * @param Imagick $im Image to load from
 	 */
 	public function readImageFromImagick(\Imagick $im) {
+		/* Strip transparency */
+		$flat = new \Imagick();
+		$flat -> newImage($im -> getimagewidth(), $im -> getimageheight(), "white");
+		$flat -> compositeimage($im, \Imagick::COMPOSITE_OVER, 0, 0);
+		$im = $flat;
 		/* Threshold */
 		$im -> setImageType(\Imagick::IMGTYPE_TRUECOLOR); // Remove transparency (good for PDF's)
 		$max = $im->getQuantumRange();
