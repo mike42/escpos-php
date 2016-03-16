@@ -64,14 +64,14 @@ class CupsPrintConnector implements PrintConnector {
 		// Build command to work on data
 		$tmpfname = tempnam ( sys_get_temp_dir (), 'print-' );
 		file_put_contents ( $tmpfname, $data );
-		$cmd = sprintf ( "lpr -o raw -P %s %s",
+		$cmd = sprintf ( "lp -d %s %s",
 				escapeshellarg ( $this->printerName ),
 				escapeshellarg ( $tmpfname ) );
 		try {
 			$this->getCmdOutput ( $cmd );
 		} catch (Exception $e) {
 			unlink ( $tmpfname );
-			throw e;
+			throw $e;
 		}
 		unlink ( $tmpfname );
 	}

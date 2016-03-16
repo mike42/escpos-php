@@ -4,13 +4,13 @@ class CupsPrintConnectorTest extends PHPUnit_Framework_TestCase {
 	private $connector;
 	public function testPrinterExists() {
 		$connector = $this->getMockConnector ( "FooPrinter", array("FooPrinter") );
- 		$connector->expects ( $this->once () )->method ( 'getCmdOutput' )->with ( $this->stringContains ( "lpr -o raw -P 'FooPrinter' " ) );
+ 		$connector->expects ( $this->once () )->method ( 'getCmdOutput' )->with ( $this->stringContains ( "lp -d 'FooPrinter' " ) );
  		$connector->finalize ();
 	}
 	public function testPrinterDoesntExist() {
 		$this -> setExpectedException('BadMethodCallException');
 		$connector = $this->getMockConnector ( "FooPrinter", array("OtherPrinter") );
-		$connector->expects ( $this->once () )->method ( 'getCmdOutput' )->with ( $this->stringContains ( "lpr -o raw -P 'FooPrinter' " ) );
+		$connector->expects ( $this->once () )->method ( 'getCmdOutput' )->with ( $this->stringContains ( "lp -d 'FooPrinter' " ) );
 		$connector->finalize ();
 	}
 	public function testNoPrinter() {
