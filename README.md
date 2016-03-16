@@ -52,11 +52,18 @@ This driver is known to work with the following OS/interface combinations:
 <td>No</td>
 <td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/smb.php">Yes</a></td>
 </tr>
+<tr>
+<th>CUPS hosted</th>
+<td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/cups.php">Yes</a></td>
+<td><a href="https://github.com/mike42/escpos-php/tree/master/example/interface/cups.php">Yes</a></td>
+<td>No</td>
+</tr>
 </table>
 
 ### Printers
 Many thermal receipt printers support ESC/POS to some degree. This driver has been known to work with:
 
+- Bixolon SRP-350III
 - EPOS TEP 220M
 - Epson TM-T88III
 - Epson TM-T88IV
@@ -69,18 +76,17 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Excelvan HOP-E58 (connect through powered hub)
 - Okipos 80 Plus III
 - P-822D
+- P85A-401 (make unknown)
 - SEYPOS PRP-300 (Also marketed as TYSSO PRP-300)
+- Silicon SP-201 / RP80USE
 - Star TSP-650
 - Star TUP-592
 - Xprinter XP-Q800
 - Zijang NT-58H
 - Zijang ZJ-5870
 - Zijang ZJ-5890T (Marketed as POS 5890T)
-- Silicon SP-201 / RP80USE
-- P85A-401 (make unknown)
-- Bixolon SRP-350III
 
-If you use any other printer with this code, please let me know so I can add it to the list.
+If you use any other printer with this code, please [let us know](https://github.com/mike42/escpos-php/issues/new) so that it can be added to the list.
 
 ## Basic usage
 
@@ -411,26 +417,46 @@ Parameters:
 
 - `string $str`: The string to print.
 
-Further notes
--------------
+# Further notes
 Posts I've written up for people who are learning how to use receipt printers:
 
 * [What is ESC/POS, and how do I use it?](http://mike.bitrevision.com/blog/what-is-escpos-and-how-do-i-use-it), which documents the output of test.php.
 * [Setting up an Epson receipt printer](http://mike.bitrevision.com/blog/2014-20-26-setting-up-an-epson-receipt-printer)
 * [Getting a USB receipt printer working on Linux](http://mike.bitrevision.com/blog/2015-03-getting-a-usb-receipt-printer-working-on-linux)
 
-Other versions
---------------
+# Development
+
+This code is MIT licensed, and you are encouraged to contribute any modifications back to the project.
+
+For development, it's suggested that you load `imagick` and `gd` `Xdebug` PHP modules, and install `composer` and `phpunit`.
+
+The tests are executed on [Travis CI](https://travis-ci.org/mike42/escpos-php) over versions of PHP from 5.3 up to 5.6, 7, and HHVM. Earlier versions of PHP are not supported.
+
+Fetch a copy of this code and load idependencies with composer:
+
+    git clone https://github.com/mike42/escpos-php
+    cd escpos-php/
+    composer install
+
+Execute unit tests via `phpunit`:
+
+    phpunit --configuration test/phpunit.xml --coverage-text
+
+Pull requests and bug reports welcome.
+
+<!-- ## Other versions
+TODO: Some notes about related OSS projects will go here.
 Some forks of this project have been developed by others for specific use cases. Improvements from the following projects have been incorporated into escpos-php:
 
 - [wdoyle/EpsonESCPOS-PHP](https://github.com/wdoyle/EpsonESCPOS-PHP)
-- [ronisaha/php-esc-pos](https://github.com/ronisaha/php-esc-pos)
+- [ronisaha/php-esc-pos](https://github.com/ronisaha/php-esc-pos)-->
 
-Vendor documentation
---------------------
+<!--
+TODO: A table of printer models vs programming guides available via the web would be good, but should go outside this README
+## Vendor documentation
 Epson notes that not all of its printers support all ESC/POS features, and includes a table in their documentation:
 
 * [FAQ about ESC/POS from Epson](http://content.epson.de/fileadmin/content/files/RSD/downloads/escpos.pdf)
 
 Note that many printers produced by other vendors use the same standard, and are compatible by varying degrees.
-
+-->
