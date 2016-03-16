@@ -93,17 +93,10 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
 		$this -> outpTest($outp, "text-size.bin");
 	}
 
-	/**
-	 * @large
-	 */
-	public function testPrintFromPdf() {
-		if(!EscposImage::isImagickLoaded()) {
-			$this -> markTestSkipped("imagick plugin required for this test");
-		}
-		$outp = $this -> runExample("print-from-pdf.php");
-		$this -> outpTest(gzcompress($outp, 9), "print-from-pdf.bin.z"); // Compressing output because it's ~1MB
+	public function testInterfaceCups() {
+		$outp = $this -> runSyntaxCheck("interface/cups.php");
 	}
-
+	
 	public function testInterfaceEthernet() {
 		$outp = $this -> runSyntaxCheck("interface/ethernet.php");
 	}
