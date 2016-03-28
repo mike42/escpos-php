@@ -429,9 +429,9 @@ Posts I've written up for people who are learning how to use receipt printers:
 
 This code is MIT licensed, and you are encouraged to contribute any modifications back to the project.
 
-For development, it's suggested that you load `imagick` and `gd` `Xdebug` PHP modules, and install `composer` and `phpunit`.
+For development, it's suggested that you load `imagick`, `gd` and `Xdebug` PHP modules, and install `composer`.
 
-The tests are executed on [Travis CI](https://travis-ci.org/mike42/escpos-php) over versions of PHP from 5.3 up to 5.6, 7, and HHVM. Earlier versions of PHP are not supported.
+The tests are executed on [Travis CI](https://travis-ci.org/mike42/escpos-php) over PHP 5.3, 5.4, 5.5, 5.7, 7, and HHVM. Earlier versions of PHP are not supported.
 
 Fetch a copy of this code and load idependencies with composer:
 
@@ -441,7 +441,11 @@ Fetch a copy of this code and load idependencies with composer:
 
 Execute unit tests via `phpunit`:
 
-    phpunit --configuration test/phpunit.xml --coverage-text
+    php vendor/bin/phpunit --configuration test/phpunit.xml --coverage-text
+
+This project uses the PSR-2 standard, which can be checked via [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer):
+
+    php vendor/bin/phpcs --standard=psr2 src/ -n
 
 Pull requests and bug reports welcome.
 
