@@ -5,7 +5,7 @@ use Mike42\Escpos\CodePage;
 
 class StarCapabilityProfile extends DefaultCapabilityProfile
 {
-    function getCustomCodePages()
+    public function getCustomCodePages()
     {
         // Code table reference: http://www.starmicronics.com/support/mannualfolder/sp2000pm.pdf
         return array(
@@ -28,7 +28,7 @@ class StarCapabilityProfile extends DefaultCapabilityProfile
         );
     }
 
-    function getSupportedCodePages()
+    public function getSupportedCodePages()
     {
         return array(
                 0 => CodePage::CP437, // "Normal"
@@ -82,7 +82,7 @@ class StarCapabilityProfile extends DefaultCapabilityProfile
                 255 => false);
     }
 
-    function getSupportsStarCommands()
+    public function getSupportsStarCommands()
     {
         /* Allows Escpos.php to substitute emulated ESC/POS commands with native ones for this printer. */
         return true;

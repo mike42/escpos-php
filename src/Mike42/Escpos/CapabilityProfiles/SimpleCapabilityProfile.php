@@ -10,7 +10,7 @@ use Mike42\Escpos\CodePage;
  */
 class SimpleCapabilityProfile extends DefaultCapabilityProfile
 {
-    function getSupportedCodePages()
+    public function getSupportedCodePages()
     {
         /* Use only CP437 output */
         return array(0 => CodePage::CP437);

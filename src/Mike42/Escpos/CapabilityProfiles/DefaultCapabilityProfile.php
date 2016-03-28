@@ -10,12 +10,12 @@ use Mike42\Escpos\CodePage;
  */
 class DefaultCapabilityProfile extends AbstractCapabilityProfile
 {
-    function getCustomCodePages()
+    public function getCustomCodePages()
     {
         return array();
     }
 
-    function getSupportedCodePages()
+    public function getSupportedCodePages()
     {
         /* Character code tables which the printer understands, mapping to known encoding standards we may be able to encode to.
 		 * 
@@ -88,27 +88,27 @@ class DefaultCapabilityProfile extends AbstractCapabilityProfile
             255 => false);
     }
 
-    function getSupportsBarcodeB()
+    public function getSupportsBarcodeB()
     {
         return true;
     }
     
-    function getSupportsBitImage()
+    public function getSupportsBitImage()
     {
         return true;
     }
 
-    function getSupportsGraphics()
+    public function getSupportsGraphics()
     {
         return true;
     }
 
-    function getSupportsStarCommands()
+    public function getSupportsStarCommands()
     {
         return false;
     }
 
-    function getSupportsQrCode()
+    public function getSupportsQrCode()
     {
         return true;
     }

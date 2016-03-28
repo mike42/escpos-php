@@ -42,31 +42,31 @@ class ImagePrintBuffer implements PrintBuffer
 {
     private $printer;
     
-    function __construct()
+    public function __construct()
     {
         if (!EscposImage::isImagickLoaded()) {
             throw new Exception("ImagePrintBuffer requires the imagick extension");
         }
     }
 
-    function flush()
+    public function flush()
     {
         if ($this -> printer == null) {
             throw new LogicException("Not attached to a printer.");
         }
     }
 
-    function getPrinter()
+    public function getPrinter()
     {
         return $this -> printer;
     }
 
-    function setPrinter(Printer $printer = null)
+    public function setPrinter(Printer $printer = null)
     {
         $this -> printer = $printer;
     }
 
-    function writeText($text)
+    public function writeText($text)
     {
         if ($this -> printer == null) {
             throw new LogicException("Not attached to a printer.");
@@ -103,7 +103,7 @@ class ImagePrintBuffer implements PrintBuffer
         $this -> printer -> bitImage($escposImage, $size);
     }
 
-    function writeTextRaw($text)
+    public function writeTextRaw($text)
     {
         if ($this -> printer == null) {
             throw new LogicException("Not attached to a printer.");

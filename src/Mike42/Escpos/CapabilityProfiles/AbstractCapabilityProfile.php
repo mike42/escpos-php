@@ -19,38 +19,38 @@ abstract class AbstractCapabilityProfile
     /**
      * If getSupportedCodePages contains custom code pages, their character maps must be provided here.
      */
-    abstract function getCustomCodePages();
+    abstract public function getCustomCodePages();
 
     /**
      * Return a map of code page numbers to names for this printer. Names
      * should match iconv code page names where possible (non-matching names will not be used).
      */
-    abstract function getSupportedCodePages();
+    abstract public function getSupportedCodePages();
 
     /**
      * True to support barcode "function b", false to use only function A.
      */
-    abstract function getSupportsBarcodeB();
+    abstract public function getSupportsBarcodeB();
 
     /**
      * True for bitImage support, false for no bitImage support.
      */
-    abstract function getSupportsBitImage();
+    abstract public function getSupportsBitImage();
 
     /**
      * True for graphics support, false for no graphics support.
      */
-    abstract function getSupportsGraphics();
+    abstract public function getSupportsGraphics();
 
     /**
      * True for 'STAR original' commands, false for standard ESC/POS only.
      */
-    abstract function getSupportsStarCommands();
+    abstract public function getSupportsStarCommands();
 
     /**
      * True if the printer renders its own QR codes, false to send an image.
      */
-    abstract function getSupportsQrCode();
+    abstract public function getSupportsQrCode();
 
     /**
      * @return AbstractCapabilityProfile Instance of sub-class.

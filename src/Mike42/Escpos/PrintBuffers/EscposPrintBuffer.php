@@ -71,7 +71,7 @@ class EscposPrintBuffer implements PrintBuffer
     /**
      * Empty print buffer.
      */
-    function __construct()
+    public function __construct()
     {
         $this -> printer = null;
     }

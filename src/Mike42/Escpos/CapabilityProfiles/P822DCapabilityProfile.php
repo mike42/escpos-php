@@ -12,7 +12,7 @@ use Mike42\Escpos\CodePage;
  */
 class P822DCapabilityProfile extends DefaultCapabilityProfile
 {
-    function getSupportedCodePages()
+    public function getSupportedCodePages()
     {
         return array(
             0 => CodePage::CP437,
