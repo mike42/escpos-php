@@ -15,7 +15,7 @@ matrix:
 
 script:
   - php vendor/bin/phpcs --standard=psr2 src/ -n
-  - phpunit --configuration test/phpunit.xml --coverage-text
+  - php vendor/bin/phpunit --configuration test/phpunit.xml --coverage-text
 
 install:
   - composer install
