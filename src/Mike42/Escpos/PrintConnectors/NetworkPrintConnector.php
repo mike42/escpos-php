@@ -8,7 +8,7 @@ use Exception;
  * ESC/POS compatible printers.
  *
  * Copyright (c) 2014-2015 Michael Billington <michael.billington@gmail.com>,
- * 	incorporating modifications by:
+ *  incorporating modifications by:
  *  - Roni Saha <roni.cse@gmail.com>
  *  - Gergely Radics <gerifield@ustream.tv>
  *  - Warren Doyle <w.doyle@fuelled.co>
@@ -30,14 +30,16 @@ use Exception;
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  * PrintConnector for directly opening a network socket to a printer to send it commands.
  */
-class NetworkPrintConnector extends FilePrintConnector {
-	public function __construct($ip, $port = "9100") {
-		$this -> fp = @fsockopen($ip, $port, $errno, $errstr);
-		if($this -> fp === false) {
-			throw new Exception("Cannot initialise NetworkPrintConnector: " . $errstr);
-		}
-	}
+class NetworkPrintConnector extends FilePrintConnector
+{
+    public function __construct($ip, $port = "9100")
+    {
+        $this -> fp = @fsockopen($ip, $port, $errno, $errstr);
+        if ($this -> fp === false) {
+            throw new Exception("Cannot initialise NetworkPrintConnector: " . $errstr);
+        }
+    }
 }

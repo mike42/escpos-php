@@ -1,11 +1,12 @@
 <?php
 namespace Mike42\Escpos\PrintConnectors;
+
 /**
  * escpos-php, a Thermal receipt printer library, for use with
  * ESC/POS compatible printers.
  *
  * Copyright (c) 2014-2015 Michael Billington <michael.billington@gmail.com>,
- * 	incorporating modifications by:
+ *  incorporating modifications by:
  *  - Roni Saha <roni.cse@gmail.com>
  *  - Gergely Radics <gerifield@ustream.tv>
  *  - Warren Doyle <w.doyle@fuelled.co>
@@ -27,31 +28,32 @@ namespace Mike42\Escpos\PrintConnectors;
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  * Interface passed to Escpos class for receiving print data. Print connectors
  * are responsible for transporting this to the actual printer.
  */
-interface PrintConnector {
-	/**
-	 * Print connectors should cause a NOTICE if they are deconstructed
-	 * when they have not been finalized.
-	 */
-	public function __destruct();
+interface PrintConnector
+{
+    /**
+     * Print connectors should cause a NOTICE if they are deconstructed
+     * when they have not been finalized.
+     */
+    public function __destruct();
 
-	/**
-	 * Finish using this print connector (close file, socket, send
-	 * accumulated output, etc).
-	 */
-	public function finalize();
+    /**
+     * Finish using this print connector (close file, socket, send
+     * accumulated output, etc).
+     */
+    public function finalize();
 
-	/**
-	 * @param string $data
-	 * @return Data read from the printer, or false where reading is not possible.
-	 */
-	public function read($len);
-	
-	/**
-	 * @param string $data
-	 */
-	public function write($data);
+    /**
+     * @param string $data
+     * @return Data read from the printer, or false where reading is not possible.
+     */
+    public function read($len);
+    
+    /**
+     * @param string $data
+     */
+    public function write($data);
 }

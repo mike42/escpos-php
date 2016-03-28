@@ -6,7 +6,7 @@ namespace Mike42\Escpos\PrintConnectors;
  * ESC/POS compatible printers.
  *
  * Copyright (c) 2014-2015 Michael Billington <michael.billington@gmail.com>,
- * 	incorporating modifications by:
+ *  incorporating modifications by:
  *  - Roni Saha <roni.cse@gmail.com>
  *  - Gergely Radics <gerifield@ustream.tv>
  *  - Warren Doyle <w.doyle@fuelled.co>
@@ -28,53 +28,60 @@ namespace Mike42\Escpos\PrintConnectors;
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  * Print connector that writes to nowhere, but allows the user to retrieve the
  * buffered data. Used for testing.
  */
-final class DummyPrintConnector implements PrintConnector {
-	/**
-	 * @var array Buffer of accumilated data.
-	 */
-	private $buffer;
+final class DummyPrintConnector implements PrintConnector
+{
+    /**
+     * @var array Buffer of accumilated data.
+     */
+    private $buffer;
 
-	/**
-	 * @var string data which the printer will provide on next read
-	 */
-	private $readData;
+    /**
+     * @var string data which the printer will provide on next read
+     */
+    private $readData;
 
-	/**
-	 * Create new print connector
-	 */
-	public function __construct() {
-		$this -> buffer = array();
-	}
+    /**
+     * Create new print connector
+     */
+    public function __construct()
+    {
+        $this -> buffer = array();
+    }
 
-	public function __destruct() {
-		if($this -> buffer !== null) {
-			trigger_error("Print connector was not finalized. Did you forget to close the printer?", E_USER_NOTICE);
-		}
-	}
+    public function __destruct()
+    {
+        if ($this -> buffer !== null) {
+            trigger_error("Print connector was not finalized. Did you forget to close the printer?", E_USER_NOTICE);
+        }
+    }
 
-	public function finalize() {
-		$this -> buffer = null;
-	}
+    public function finalize()
+    {
+        $this -> buffer = null;
+    }
 
-	/**
-	 * @return string Get the accumulated data that has been sent to this buffer.
-	 */
-	public function getData() {
-		return implode($this -> buffer);
-	}
+    /**
+     * @return string Get the accumulated data that has been sent to this buffer.
+     */
+    public function getData()
+    {
+        return implode($this -> buffer);
+    }
 
-	/* (non-PHPdoc)
+    /* (non-PHPdoc)
 	 * @see PrintConnector::read()
 	 */
-	public function read($len) {
-		return $len >= strlen($this -> readData) ? $this -> readData : substr($this -> readData, 0, $len);
-	}
+    public function read($len)
+    {
+        return $len >= strlen($this -> readData) ? $this -> readData : substr($this -> readData, 0, $len);
+    }
 
-	public function write($data) {
-		$this -> buffer[] = $data;
-	}
+    public function write($data)
+    {
+        $this -> buffer[] = $data;
+    }
 }
