@@ -1,4 +1,4 @@
-<?php 
+<?php
 require __DIR__ . '/../../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
@@ -23,4 +23,3 @@ $printer -> setPrintBuffer($buffer);
 $printer -> text("Glāžšķūņa rūķīši dzērumā čiepj Baha koncertflīģeļu vākus\n");
 $printer -> cut();
 $printer -> close();
-?>

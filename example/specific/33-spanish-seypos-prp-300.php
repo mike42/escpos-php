@@ -17,4 +17,3 @@ $printer = new Printer($connector);
 $printer -> text("El pingüino Wenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro.\n");
 $printer -> cut();
 $printer -> close();
-

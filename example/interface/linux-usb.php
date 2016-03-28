@@ -16,19 +16,18 @@ use Mike42\Escpos\PrintConnectors\FilePrintConnector;
  * other drivers are unloading the module.
  */
 try {
-	// Enter the device file for your USB printer here
-	$connector = new FilePrintConnector("/dev/usb/lp0");
-	//$connector = new FilePrintConnector("/dev/usb/lp1");
-	//$connector = new FilePrintConnector("/dev/usb/lp2");
+    // Enter the device file for your USB printer here
+    $connector = new FilePrintConnector("/dev/usb/lp0");
+    //$connector = new FilePrintConnector("/dev/usb/lp1");
+    //$connector = new FilePrintConnector("/dev/usb/lp2");
 
-	/* Print a "Hello world" receipt" */
-	$printer = new Printer($connector);
-	$printer -> text("Hello World!\n");
-	$printer -> cut();
+    /* Print a "Hello world" receipt" */
+    $printer = new Printer($connector);
+    $printer -> text("Hello World!\n");
+    $printer -> cut();
 
-	/* Close printer */
-	$printer -> close();
-} catch(Exception $e) {
-	echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
+    /* Close printer */
+    $printer -> close();
+} catch (Exception $e) {
+    echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
 }
-
