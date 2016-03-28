@@ -8,15 +8,15 @@ use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
  * address of your receipt printer, and then fsockopen() it on that port.
  */
 try {
-	$connector = new NetworkPrintConnector("10.x.x.x", 9100);
-	
-	/* Print a "Hello world" receipt" */
-	$printer = new Printer($connector);
-	$printer -> text("Hello World!\n");
-	$printer -> cut();
-	
-	/* Close printer */
-	$printer -> close();
-} catch(Exception $e) {
-	echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
+    $connector = new NetworkPrintConnector("10.x.x.x", 9100);
+    
+    /* Print a "Hello world" receipt" */
+    $printer = new Printer($connector);
+    $printer -> text("Hello World!\n");
+    $printer -> cut();
+    
+    /* Close printer */
+    $printer -> close();
+} catch (Exception $e) {
+    echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
 }

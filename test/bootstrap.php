@@ -5,29 +5,29 @@ ini_set('display_errors', 1);
 $composer_autoload = __DIR__ . "/../vendor/autoload.php";
 $standalone_autoload = __DIR__ . "/../autoload.php";
 
-if(file_exists($composer_autoload)) {
-	require_once($composer_autoload);
+if (file_exists($composer_autoload)) {
+    require_once($composer_autoload);
 } else {
-	require_once($standalone_autoload);
+    require_once($standalone_autoload);
 }
 
 /**
  * Used in many of the tests to to output known-correct
- * strings for use in tests. 
+ * strings for use in tests.
  */
-function friendlyBinary($in) {
-	if(strlen($in) == 0) {
-		return $in;
-	}
-	/* Print out binary data with PHP \x00 escape codes,
+function friendlyBinary($in)
+{
+    if (strlen($in) == 0) {
+        return $in;
+    }
+    /* Print out binary data with PHP \x00 escape codes,
 	 for builting test cases. */
-	$chars = str_split($in);
-	foreach($chars as $i => $c) {
-		$code = ord($c);
-		if($code < 32 || $code > 126) {
-			$chars[$i] = "\\x" . bin2hex($c);
-		}
-	}
-	return implode($chars);
+    $chars = str_split($in);
+    foreach ($chars as $i => $c) {
+        $code = ord($c);
+        if ($code < 32 || $code > 126) {
+            $chars[$i] = "\\x" . bin2hex($c);
+        }
+    }
+    return implode($chars);
 }
-
