@@ -154,14 +154,15 @@ abstract class EscposImage
     
     /**
      * Output the image in column format.
-     * 
+     *
      * @param string $doubleDensity True for double density (24px) lines, false for single-density (8px) lines.
      * @return string[] an array, one item per line of output. All lines will be of equal size.
      */
-    public function toColumnFormat($doubleDensity = false) {
+    public function toColumnFormat($doubleDensity = false)
+    {
         $out = array();
         $i = 0;
-        while(($line = $this -> toColumnFormatLine($i, $doubleDensity)) !== null) {
+        while (($line = $this -> toColumnFormatLine($i, $doubleDensity)) !== null) {
             $out[] = $line;
             $i++;
         }
@@ -255,20 +256,20 @@ abstract class EscposImage
     /**
      * This is a convinience method to load an image from file, auto-selecting
      * an EscposImage implementation which uses an available library.
-     * 
+     *
      * The sub-classes can be constructed directly if you know that you will
      * have Imagick or GD on the print server.
-     * 
+     *
      * @param string $filename
      *  File to load from
      * @param string $allow_optimisations
-     *  True to allow the fastest rendering shortcuts, false to force the library to read the image into an internal raster format and use PHP to render the image (slower but less fragile). 
+     *  True to allow the fastest rendering shortcuts, false to force the library to read the image into an internal raster format and use PHP to render the image (slower but less fragile).
      * @param array $preferred
      *  Order to try to load libraries in- escpos-php supports pluggable image libraries. Items can be 'imagick', 'gd', 'native'.
      * @throws Exception
      *  Where no suitable library could be found for the type of file being loaded.
      * @return EscposImage
-     *  
+     *
      */
     public static function load($filename, $allow_optimisations = true, array $preferred = array('imagick', 'gd', 'native'))
     {

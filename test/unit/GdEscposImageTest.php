@@ -3,7 +3,8 @@ use Mike42\Escpos\GdEscposImage;
 use Mike42\Escpos\EscposImage;
 
 class GdEscposImageTest extends PHPUnit_Framework_TestCase
-{    
+{
+
     /**
      * Gd tests - Load tiny images and check how they are printed
      * These are skipped if you don't have imagick
@@ -67,7 +68,7 @@ class GdEscposImageTest extends PHPUnit_Framework_TestCase
      */
     private function loadAndCheckImg($fn, $width, $height, $rasterFormat = null, $columnFormat = null)
     {
-        if(!EscposImage::isGdLoaded()) {
+        if (!EscposImage::isGdLoaded()) {
             $this -> markTestSkipped("imagick plugin is required for this test");
         }
         $onDisk = ($fn === null ? null : (dirname(__FILE__) . "/resources/$fn"));

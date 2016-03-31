@@ -29,7 +29,7 @@ class GdEscposImage extends EscposImage
      * @throws Exception
      *  Where image loading failed (eg. unsupported format, no such file, permission error).
      */
-    function __construct($filename = null, $allow_optimisations = true)
+    public function __construct($filename = null, $allow_optimisations = true)
     {
         if ($filename === null) {
             return;

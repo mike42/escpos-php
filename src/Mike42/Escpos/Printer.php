@@ -243,7 +243,7 @@ class Printer
         // Header and density code (0, 1, 32, 33) re-used for every line
         $densityCode = ($highDensityHorizontal ? 1 : 0) + ($highDensityVertical ? 32 : 0);
         $header = self::dataHeader(array($img -> getWidth()), true);
-        foreach($img -> toColumnFormat($highDensityVertical) as $line) {
+        foreach ($img -> toColumnFormat($highDensityVertical) as $line) {
             // Print each line, double density etc for printing are set here also
             $this -> connector -> write(self::ESC . "*" . chr($densityCode) . $header . $line);
             $this -> feed();

@@ -28,7 +28,7 @@ class NativeEscposImage extends EscposImage
      * @throws Exception
      *  Where image loading failed (eg. unsupported format, no such file, permission error).
      */
-    function __construct($filename = null, $allow_optimisations = true)
+    public function __construct($filename = null, $allow_optimisations = true)
     {
         // TODO. wbmp, pbm, bmp files.
         throw new \BadMethodCallException("Native bitmaps not yet supported. Please convert the file to a supported raster format.");
