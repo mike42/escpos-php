@@ -160,13 +160,18 @@ abstract class EscposImage
      */
     public function toColumnFormat($doubleDensity = false)
     {
+        if ($this -> imgColumnData != null) {
+            /* Use previous calculation */
+            return $this -> imgColumnData;
+        }
         $out = array();
         $i = 0;
         while (($line = $this -> toColumnFormatLine($i, $doubleDensity)) !== null) {
             $out[] = $line;
             $i++;
         }
-        return $out;
+        $this -> imgColumnData = $out;
+        return $this -> imgColumnData;
     }
     
     /**
