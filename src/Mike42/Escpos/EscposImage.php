@@ -34,97 +34,42 @@ use Exception;
  *    also not complex to add, and is a likely future feature.
  *  - Support for native use of the BMP format is a goal, for maximum compatibility with target environments.
  */
-class EscposImage
+abstract class EscposImage
 {
     /**
-     * @var string The image's bitmap data (if it is a Windows BMP).
+     * @var int $imgHeight
+     *  height of the image.
      */
-    protected $imgBmpData;
+    protected $imgHeight = 0;
     
     /**
-     * @var string image data in rows: 1 for black, 0 for white.
+     * @var int $imgWidth
+     *  width of the image
      */
-    protected $imgData;
+    protected $imgWidth = 0;
     
     /**
-     * @var string cached raster format data to avoid re-computation
+     * @var string $imgData
+     *  Image data in rows: 1 for black, 0 for white.
      */
-    protected $imgRasterData;
+    protected $imgData = "";
     
     /**
-     * @var int height of the image
+     * @var string $imgColumnData
+     *  Cached raster format data to avoid re-computation
      */
-    protected $imgHeight;
-
-    /**
-     * @var int width of the image
-     */
-    protected $imgWidth;
+    protected $imgColumnData = null;
     
     /**
-     * Load up an image from a filename
-     *
-     * @param string $imgPath The path to the image to load, or null to skip
-     *          loading the image (some other functions are available for
-     *          populating the data). Supported graphics types depend on your PHP configuration.
+     * @var array:string $imgRasterData
+     *  Cached raster format data to avoid re-computation
      */
-    public function __construct($imgPath = null)
-    {
-        /* Can't use bitmaps yet */
-        $this -> imgBmpData = null;
-        $this -> imgRasterData = null;
-        if ($imgPath === null) {
-            // Blank image
-            $this -> imgHeight = 0;
-            $this -> imgWidth = 0;
-            $this -> imgData = "";
-            return;
-        }
-
-        /* Load up using GD */
-        if (!file_exists($imgPath)) {
-            throw new Exception("File '$imgPath' does not exist.");
-        }
-        $ext = pathinfo($imgPath, PATHINFO_EXTENSION);
-        if ($ext == "bmp") {
-            // The plan is to implement BMP handling directly in
-            // PHP, as some printers understand this format themselves.
-            // TODO implement PHP bitmap handling
-            throw new Exception("Native bitmaps not yet supported. Please convert the file to a supported raster format.");
-        }
-        if ($this -> isGdSupported()) {
-            // Prefer to use gd. It is installed by default, so
-            // most systems will have it, giving a consistent UX.
-            switch ($ext) {
-                case "png":
-                    $im = @imagecreatefrompng($imgPath);
-                    $this -> readImageFromGdResource($im);
-                    return;
-                case "jpg":
-                    $im = @imagecreatefromjpeg($imgPath);
-                    $this -> readImageFromGdResource($im);
-                    return;
-                case "gif":
-                    $im = @imagecreatefromgif($imgPath);
-                    $this -> readImageFromGdResource($im);
-                    return;
-            }
-        }
-        if ($this -> isImagickSupported()) {
-            $im = new \Imagick();
-            try {
-                // Throws an ImagickException if the format is not supported or file is not found
-                $im -> readImage($imgPath);
-            } catch (ImagickException $e) {
-                // Wrap in normal exception, so that classes which call this do not themselves require imagick as a dependency.
-                throw new Exception($e);
-            }
-            /* Flatten by doing a composite over white, in case of transparency */
-            $this -> readImageFromImagick($im);
-            return;
-        }
-        throw new Exception("Images are not supported on your PHP. Please install either the gd or imagick extension.");
-    }
+    protected $imgRasterData = null;
+    
+    /**
+     * @param string $filename Path to image filename, or null to create an empty image.
+     */
+    abstract public function __construct($filename = null);
 
     /**
      * @return int height of the image in pixels
@@ -157,86 +102,7 @@ class EscposImage
     {
         return (int)(($this -> imgWidth + 7) / 8);
     }
-    
-    /**
-     * @return string binary data of the original file, for function which accept bitmaps.
-     */
-    public function getWindowsBMPData()
-    {
-        return $this -> imgBmpData;
-    }
-    
-    /**
-     * @return boolean True if the image was a windows bitmap, false otherwise
-     */
-    public function isWindowsBMP()
-    {
-        return $this -> imgBmpData != null;
-    }
 
-    /**
-     * Load actual image pixels from GD resource.
-     *
-     * @param resouce $im GD resource to use
-     * @throws Exception Where the image can't be read.
-     */
-    public function readImageFromGdResource($im)
-    {
-        if (!is_resource($im)) {
-            throw new Exception("Failed to load image.");
-        } elseif (!$this -> isGdSupported()) {
-            throw new Exception(__FUNCTION__ . " requires 'gd' extension.");
-        }
-        /* Make a string of 1's and 0's */
-        $this -> imgHeight = imagesy($im);
-        $this -> imgWidth = imagesx($im);
-        $this -> imgData = str_repeat("\0", $this -> imgHeight * $this -> imgWidth);
-        for ($y = 0; $y < $this -> imgHeight; $y++) {
-            for ($x = 0; $x < $this -> imgWidth; $x++) {
-                /* Faster to average channels, blend alpha and negate the image here than via filters (tested!) */
-                $cols = imagecolorsforindex($im, imagecolorat($im, $x, $y));
-                $greyness = (int)(($cols['red'] + $cols['green'] + $cols['blue']) / 3) >> 7; // 1 for white, 0 for black
-                $black = (1 - $greyness) >> ($cols['alpha'] >> 6); // 1 for black, 0 for white, taking into account transparency
-                $this -> imgData[$y * $this -> imgWidth + $x] = $black;
-            }
-        }
-    }
-
-    /**
-     * Load actual image pixels from \Imagick object
-     *
-     * @param Imagick $im Image to load from
-     */
-    public function readImageFromImagick(\Imagick $im)
-    {
-        /* Strip transparency */
-        $flat = new \Imagick();
-        $flat -> newImage($im -> getimagewidth(), $im -> getimageheight(), "white");
-        $flat -> compositeimage($im, \Imagick::COMPOSITE_OVER, 0, 0);
-        $im = $flat;
-        /* Threshold */
-        $im -> setImageType(\Imagick::IMGTYPE_TRUECOLOR); // Remove transparency (good for PDF's)
-        $max = $im->getQuantumRange();
-        $max = $max["quantumRangeLong"];
-        $im -> thresholdImage(0.5 * $max);
-        /* Make a string of 1's and 0's */
-        $geometry = $im -> getimagegeometry();
-        $this -> imgHeight = $im -> getimageheight();
-        $this -> imgWidth = $im -> getimagewidth();
-        $this -> imgData = str_repeat("\0", $this -> imgHeight * $this -> imgWidth);
-
-        for ($y = 0; $y < $this -> imgHeight; $y++) {
-            for ($x = 0; $x < $this -> imgWidth; $x++) {
-                /* Faster to average channels, blend alpha and negate the image here than via filters (tested!) */
-                $cols = $im -> getImagePixelColor($x, $y);
-                $cols = $cols -> getcolor();
-                $greyness = (int)(($cols['r'] + $cols['g'] + $cols['b']) / 3) >> 7;  // 1 for white, 0 for black
-                $this -> imgData[$y * $this -> imgWidth + $x] = (1 - $greyness); // 1 for black, 0 for white
-            }
-        }
-
-    }
-    
     /**
      * Output the image in raster (row) format. This can result in padding on the right of the image, if its width is not divisible by 8.
      *
@@ -287,9 +153,25 @@ class EscposImage
     }
     
     /**
+     * Output the image in column format.
+     * 
+     * @param string $doubleDensity True for double density (24px) lines, false for single-density (8px) lines.
+     * @return string[] an array, one item per line of output. All lines will be of equal size.
+     */
+    public function toColumnFormat($doubleDensity = false) {
+        $out = array();
+        $i = 0;
+        while(($line = $this -> toColumnFormatLine($i, $doubleDensity)) !== null) {
+            $out[] = $line;
+            $i++;
+        }
+        return $out;
+    }
+    
+    /**
      * Output image in column format. Must be called once for each line of output.
      */
-    public function toColumnFormat($lineNo = 0, $doubleDensity = false)
+    protected function toColumnFormatLine($lineNo, $doubleDensity)
     {
         // Currently double density in both directions, very experimental
         $widthPixels = $this -> getWidth();
@@ -300,12 +182,12 @@ class EscposImage
         // Initialise to zero
         $x = $y = $bit = $byte = $byteVal = 0;
         $data = str_repeat("\x00", $widthPixels * $lineHeight);
-        if (strlen($data) == 0) {
-            return $data;
-        }
         $yStart = $lineHeight * 8 * $lineNo;
         if ($yStart >= $heightPixels) {
             return null;
+        }
+        if (strlen($data) == 0) {
+            return $data;
         }
         do {
             $yReal = $y + $yStart;
@@ -369,50 +251,57 @@ class EscposImage
         return extension_loaded('imagick');
     }
     
+
     /**
-     * Load a PDF for use on the printer
-     *
-     * @param string $pdfFile The file to load
-     * @param string $pageWidth The width, in pixels, of the printer's output. The first page of the PDF will be scaled to approximately fit in this area.
-     * @param array $range array indicating the first and last page (starting from 0) to load. If not set, the entire document is loaded.
-     * @throws Exception Where Imagick is not loaded, or where a missing file or invalid page number is requested.
-     * @return multitype:EscposImage Array of images, retrieved from the PDF file.
+     * This is a convinience method to load an image from file, auto-selecting
+     * an EscposImage implementation which uses an available library.
+     * 
+     * The sub-classes can be constructed directly if you know that you will
+     * have Imagick or GD on the print server.
+     * 
+     * @param string $filename
+     *  File to load from
+     * @param string $allow_optimisations
+     *  True to allow the fastest rendering shortcuts, false to force the library to read the image into an internal raster format and use PHP to render the image (slower but less fragile). 
+     * @param array $preferred
+     *  Order to try to load libraries in- escpos-php supports pluggable image libraries. Items can be 'imagick', 'gd', 'native'.
+     * @throws Exception
+     *  Where no suitable library could be found for the type of file being loaded.
+     * @return EscposImage
+     *  
      */
-    public static function loadPdf($pdfFile, $pageWidth = 550)
+    public static function load($filename, $allow_optimisations = true, array $preferred = array('imagick', 'gd', 'native'))
     {
-        if (!extension_loaded('imagick')) {
-            throw new Exception(__FUNCTION__ . " requires imagick extension.");
+        /* Fail early if file is not readble */
+        if (!file_exists($filename) || !is_readable($filename)) {
+            throw new Exception("File '$filename' does not exist, or is not readable.");
         }
-        /*
-		 * Load first page at very low density (resolution), to figure out what
-		 * density to use to achieve $pageWidth
-		 */
-        try {
-            $image = new \Imagick();
-            $testRes = 2; // Test resolution
-            $image -> setresolution($testRes, $testRes);
-            /* Load document just to measure geometry */
-            $image -> readimage($pdfFile);
-            $geo = $image -> getimagegeometry();
-            $image -> destroy();
-            $width = $geo['width'];
-            $newRes = $pageWidth / $width * $testRes;
-            /* Load entire document in */
-            $image -> setresolution($newRes, $newRes);
-            $image -> readImage($pdfFile);
-            $pages = $image -> getNumberImages();
-            /* Convert images to Escpos objects */
-            $ret = array();
-            for ($i = 0; $i < $pages; $i++) {
-                $image -> setIteratorIndex($i);
-                $ep = new EscposImage();
-                $ep -> readImageFromImagick($image);
-                $ret[] = $ep;
+        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+        /* Choose the first implementation which can handle this format */
+        foreach ($preferred as $implemetnation) {
+            if ($implemetnation === 'imagick') {
+                if (!self::isImagickLoaded()) {
+                    // Skip option if Imagick is not loaded
+                    continue;
+                }
+                return new \Mike42\Escpos\ImagickEscposImage($filename, $allow_optimisations);
+            } elseif ($implemetnation === 'gd') {
+                if (!self::isGdLoaded()) {
+                    // Skip option if GD not loaded
+                    continue;
+                }
+                return new \Mike42\Escpos\GdEscposImage($filename, $allow_optimisations);
+            } elseif ($implemetnation === 'native') {
+                if (!in_array($ext, array('wbmp', 'pbm', 'bmp'))) {
+                    // Pure PHP is fastest way to generate raster output from wbmp and pbm formats.
+                    continue;
+                }
+                return new \Mike42\Escpos\NativeEscposImage($filename, $allow_optimisations);
+            } else {
+                // Something else on the 'preferred' list.
+                throw new InvalidArgumentException("'$implemetnation' is not a known EscposImage implementation");
             }
-            return $ret;
-        } catch (\ImagickException $e) {
-            // Wrap in normal exception, so that classes which call this do not themselves require imagick as a dependency.
-            throw new Exception($e);
         }
+        throw new InvalidArgumentException("No suitable EscposImage implementation found for '$filename'.");
     }
 }

@@ -240,15 +240,13 @@ class Printer
         // Experimental column format printing
         // This feature is not yet complete and may produce unpredictable results.
         $this -> connector -> write(self::ESC . "3" . chr(16)); // 16-dot line spacing. This is the correct value on both TM-T20 and TM-U220
-        $lineNo = 0;
         // Header and density code (0, 1, 32, 33) re-used for every line
         $densityCode = ($highDensityHorizontal ? 1 : 0) + ($highDensityVertical ? 32 : 0);
         $header = self::dataHeader(array($img -> getWidth()), true);
-        while (($line = $img -> toColumnFormat($lineNo, $highDensityVertical)) !== null) {
+        foreach($img -> toColumnFormat($highDensityVertical) as $line) {
             // Print each line, double density etc for printing are set here also
             $this -> connector -> write(self::ESC . "*" . chr($densityCode) . $header . $line);
             $this -> feed();
-            $lineNo++;
             // sleep(0.1); // Reduces the amount of trouble that a TM-U220 has keeping up with large images
         }
         $this -> connector -> write(self::ESC . "2"); // Revert to default line spacing
