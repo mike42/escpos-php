@@ -52,24 +52,46 @@ abstract class EscposImage
      * @var string $imgData
      *  Image data in rows: 1 for black, 0 for white.
      */
-    protected $imgData = "";
+    private $imgData = null;
     
     /**
      * @var string $imgColumnData
-     *  Cached raster format data to avoid re-computation
+     *  Cached column-format data to avoid re-computation
      */
-    protected $imgColumnData = null;
+    private $imgColumnData = array();
     
     /**
      * @var array:string $imgRasterData
      *  Cached raster format data to avoid re-computation
      */
-    protected $imgRasterData = null;
+    private $imgRasterData = null;
     
     /**
-     * @param string $filename Path to image filename, or null to create an empty image.
+     * @var string $filename
+     *  Filename of image on disk - null if not loaded from disk.
      */
-    abstract public function __construct($filename = null);
+    private $filename = null;
+    
+    /**
+     * @var boolean $allowOptimisations
+     *  True to allow faster library-specific rendering shortcuts, false to always just use
+     *  image libraries to read pixels (more reproducible between systems).
+     */
+    private $allowOptimisations = true;
+    
+    /**
+     * Construct a new EscposImage.
+     *
+     * @param string $filename Path to image filename, or null to create an empty image.
+     * @param boolean $allowOptimisations True (default) to use any library-specific tricks
+     *  to speed up rendering, false to force the image to be read in pixel-by-pixel,
+     *  which is easier to unit test and more reproducible between systems, but slower.
+     */
+    public function __construct($filename = null, $allowOptimisations = true)
+    {
+        $this -> filename = $filename;
+        $this -> allowOptimisations = $allowOptimisations;
+    }
 
     /**
      * @return int height of the image in pixels
@@ -104,17 +126,144 @@ abstract class EscposImage
     }
 
     /**
-     * Output the image in raster (row) format. This can result in padding on the right of the image, if its width is not divisible by 8.
+     * Output the image in raster (row) format. This can result in padding on the
+     * right of the image, if its width is not divisible by 8.
      *
-     * @throws Exception Where the generated data is unsuitable for the printer (indicates a bug or oversized image).
+     * @throws Exception Where the generated data is unsuitable for the printer
+     *  (indicates a bug or oversized image).
      * @return string The image in raster format.
      */
     public function toRasterFormat()
     {
-        if ($this -> imgRasterData != null) {
-            /* Use previous calculation */
+        // Just wraps implementations for caching & lazy loading
+        if ($this -> imgRasterData !== null) {
+            /* Return cached value */
             return $this -> imgRasterData;
         }
+        if ($this -> allowOptimisations) {
+            /* Use optimised code if allowed */
+            $this -> imgRasterData = $this -> getRasterFormatOptimised($this -> filename);
+        }
+        if ($this -> imgRasterData === null) {
+            /* Load in full image and render the slow way if no faster implementation
+             is available, or if we've been asked not to use it */
+            if ($this -> imgData === null) {
+                $this -> loadImageData($this -> filename);
+            }
+            $this -> imgRasterData = $this -> getRasterFormat();
+        }
+        return $this -> imgRasterData;
+    }
+    
+    /**
+     * Output the image in column format.
+     *
+     * @param boolean $doubleDensity True for double density (24px) lines, false for single-density (8px) lines.
+     * @return string[] an array, one item per line of output. All lines will be of equal size.
+     */
+    public function toColumnFormat($doubleDensity = false)
+    {
+        // Just wraps implementations for caching and lazy loading
+        if (isset($this -> imgColumnData[$doubleDensity])) {
+            /* Return cached value */
+            return $this -> imgColumnData[$doubleDensity];
+        }
+        $this -> imgColumnData[$doubleDensity] = null;
+        if ($this -> allowOptimisations) {
+            /* Use optimised code if allowed */
+            $data = $this -> getColumnFormatOptimised($this -> filename, $doubleDensity);
+            $this -> imgColumnData[$doubleDensity] = $data;
+        }
+        if ($this -> imgColumnData[$doubleDensity] === null) {
+            /* Load in full image and render the slow way if no faster implementation
+             is available, or if we've been asked not to use it */
+            if ($this -> imgData === null) {
+                $this -> loadImageData($this -> filename);
+            }
+            $this -> imgColumnData[$doubleDensity] = $this -> getColumnFormat($doubleDensity);
+        }
+        return $this -> imgColumnData[$doubleDensity];
+    }
+
+    /**
+     * Load an image from disk. This default implementation always gives a zero-sized image.
+     *
+     * @param string $filename Filename to load from.
+     */
+    protected function loadImageData($filename = null)
+    {
+        // Load image in to string of 1's and 0's, also set width & height
+        $this -> setImgWidth(0);
+        $this -> setImgHeight(0);
+        $this -> setImgData("");
+    }
+    
+    /**
+     * Set image data.
+     *
+     * @param string $data Image data to use, string of 1's (black) and 0's (white) in row-major order.
+     */
+    protected function setImgData($data)
+    {
+        $this -> imgData = $data;
+    }
+    
+    /**
+     * Set image width.
+     *
+     * @param int $width width of the image
+     */
+    protected function setImgWidth($width)
+    {
+        $this -> imgWidth = $width;
+    }
+    
+    /**
+     * Set image height.
+     *
+     * @param int $height height of the image.
+     */
+    protected function setImgHeight($height)
+    {
+        $this -> imgHeight = $height;
+    }
+    
+    /**
+     * @param string $filename
+     *  Filename to load from
+     * @return string|NULL
+     *  Raster format data, or NULL if no optimised renderer is available in
+     *  this implementation.
+     */
+    protected function getRasterFormatOptimised($filename = null)
+    {
+        // No optimised implementation to provide
+        return null;
+    }
+    
+    /**
+     * @param string $filename
+     *  Filename to load from
+     * @return string[]|NULL
+     *  Column format data as array, or NULL if optimised renderer isn't
+     *  available in this implementation.
+     */
+    protected function getColumnFormatOptimised($filename = null)
+    {
+        // No optimised implementation to provide
+        return null;
+    }
+    
+    /**
+     * Get column fromat from loaded image pixels, line by line.
+     *
+     * @throws Exception
+     *  Where wrong number of bytes has been generated.
+     * @return string
+     *  Raster format data
+     */
+    private function getRasterFormat()
+    {
         /* Loop through and convert format */
         $widthPixels = $this -> getWidth();
         $heightPixels = $this -> getHeight();
@@ -148,43 +297,48 @@ abstract class EscposImage
         if (strlen($data) != ($this -> getWidthBytes() * $this -> getHeight())) {
             throw new Exception("Bug in " . __FUNCTION__ . ", wrong number of bytes.");
         }
-        $this -> imgRasterData = $data;
-        return $this -> imgRasterData;
+        return $data;
     }
     
     /**
-     * Output the image in column format.
+     * Get column fromat from loaded image pixels, line by line.
      *
-     * @param string $doubleDensity True for double density (24px) lines, false for single-density (8px) lines.
-     * @return string[] an array, one item per line of output. All lines will be of equal size.
+     * @param boolean $highDensity
+     *  True for high density output (24px lines), false for regular density (8px)
+     * @return string[]
+     *  Array of column format data, one item per row.
      */
-    public function toColumnFormat($doubleDensity = false)
+    private function getColumnFormat($highDensity)
     {
-        if ($this -> imgColumnData != null) {
-            /* Use previous calculation */
-            return $this -> imgColumnData;
-        }
         $out = array();
         $i = 0;
-        while (($line = $this -> toColumnFormatLine($i, $doubleDensity)) !== null) {
+        while (($line = $this -> getColumnFormatLine($i, $highDensity)) !== null) {
             $out[] = $line;
             $i++;
         }
-        $this -> imgColumnData = $out;
-        return $this -> imgColumnData;
+        return $out;
     }
     
     /**
      * Output image in column format. Must be called once for each line of output.
+     *
+     * @param string $lineNo
+     *  Line number to retrieve
+     * @param string $highDensity
+     *  True for high density output (24px lines), false for regular density (8px)
+     * @throws Exception
+     *  Where wrong number of bytes has been generated.
+     * @return NULL|string
+     *  Column format data, or null if there is no more data (when iterating)
      */
-    protected function toColumnFormatLine($lineNo, $doubleDensity)
+    private function getColumnFormatLine($lineNo, $highDensity)
     {
         // Currently double density in both directions, very experimental
         $widthPixels = $this -> getWidth();
         $heightPixels = $this -> getHeight();
         $widthBytes = $this -> getWidthBytes();
         $heightBytes = $this -> getHeightBytes();
-        $lineHeight = $doubleDensity ? 3 : 1; // Vertical density. 1 or 3 (for 8 and 24 pixel lines)
+        $lineHeight = $highDensity ? 3 : 1; // Vertical density. 1 or 3 (for 8 and 24 pixel lines)
         // Initialise to zero
         $x = $y = $bit = $byte = $byteVal = 0;
         $data = str_repeat("\x00", $widthPixels * $lineHeight);
@@ -225,23 +379,6 @@ abstract class EscposImage
     }
     
     /**
-     * @return boolean True if GD is supported, false otherwise (a wrapper for the static version, for mocking in tests)
-     */
-    protected function isGdSupported()
-    {
-        return self::isGdLoaded();
-    }
-    
-    /**
-     * @return boolean True if Imagick is supported, false otherwise (a wrapper for the static version, for mocking in tests)
-     */
-    protected function isImagickSupported()
-    {
-        return self::isImagickLoaded();
-    }
-    
-    
-    /**
      * @return boolean True if GD is loaded, false otherwise
      */
     public static function isGdLoaded()
@@ -268,16 +405,22 @@ abstract class EscposImage
      * @param string $filename
      *  File to load from
      * @param string $allow_optimisations
-     *  True to allow the fastest rendering shortcuts, false to force the library to read the image into an internal raster format and use PHP to render the image (slower but less fragile).
+     *  True to allow the fastest rendering shortcuts, false to force the library
+     *  to read the image into an internal raster format and use PHP to render
+     *  the image (slower but less fragile).
      * @param array $preferred
-     *  Order to try to load libraries in- escpos-php supports pluggable image libraries. Items can be 'imagick', 'gd', 'native'.
+     *  Order to try to load libraries in- escpos-php supports pluggable image
+     *  libraries. Items can be 'imagick', 'gd', 'native'.
      * @throws Exception
      *  Where no suitable library could be found for the type of file being loaded.
      * @return EscposImage
      *
      */
-    public static function load($filename, $allow_optimisations = true, array $preferred = array('imagick', 'gd', 'native'))
-    {
+    public static function load(
+        $filename,
+        $allow_optimisations = true,
+        array $preferred = array('imagick', 'gd', 'native')
+    ) {
         /* Fail early if file is not readble */
         if (!file_exists($filename) || !is_readable($filename)) {
             throw new Exception("File '$filename' does not exist, or is not readable.");

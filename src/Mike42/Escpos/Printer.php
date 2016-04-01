@@ -222,9 +222,10 @@ class Printer
     public function bitImage(EscposImage $img, $size = self::IMG_DEFAULT)
     {
         self::validateInteger($size, 0, 3, __FUNCTION__);
+        $rasterData = $img -> toRasterFormat();
         $header = self::dataHeader(array($img -> getWidthBytes(), $img -> getHeight()), true);
         $this -> connector -> write(self::GS . "v0" . chr($size) . $header);
-        $this -> connector -> write($img -> toRasterFormat());
+        $this -> connector -> write($rasterData);
     }
 
     /**
@@ -242,8 +243,9 @@ class Printer
         $this -> connector -> write(self::ESC . "3" . chr(16)); // 16-dot line spacing. This is the correct value on both TM-T20 and TM-U220
         // Header and density code (0, 1, 32, 33) re-used for every line
         $densityCode = ($highDensityHorizontal ? 1 : 0) + ($highDensityVertical ? 32 : 0);
+        $colFormatData = $img -> toColumnFormat($highDensityVertical);
         $header = self::dataHeader(array($img -> getWidth()), true);
-        foreach ($img -> toColumnFormat($highDensityVertical) as $line) {
+        foreach ($colFormatData as $line) {
             // Print each line, double density etc for printing are set here also
             $this -> connector -> write(self::ESC . "*" . chr($densityCode) . $header . $line);
             $this -> feed();
@@ -443,13 +445,14 @@ class Printer
     public function graphics(EscposImage $img, $size = self::IMG_DEFAULT)
     {
         self::validateInteger($size, 0, 3, __FUNCTION__);
+        $rasterData = $img -> toRasterFormat();
         $imgHeader = self::dataHeader(array($img -> getWidth(), $img -> getHeight()), true);
         $tone = '0';
         $colors = '1';
         $xm = (($size & self::IMG_DOUBLE_WIDTH) == self::IMG_DOUBLE_WIDTH) ? chr(2) : chr(1);
         $ym = (($size & self::IMG_DOUBLE_HEIGHT) == self::IMG_DOUBLE_HEIGHT) ? chr(2) : chr(1);
         $header = $tone . $xm . $ym . $colors . $imgHeader;
-        $this -> wrapperSendGraphicsData('0', 'p', $header . $img -> toRasterFormat());
+        $this -> wrapperSendGraphicsData('0', 'p', $header . $rasterData);
         $this -> wrapperSendGraphicsData('0', '2');
     }
     

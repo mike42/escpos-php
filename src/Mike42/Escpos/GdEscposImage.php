@@ -21,19 +21,13 @@ use Exception;
 class GdEscposImage extends EscposImage
 {
 
-    /**
-     * @param string $filename
-     *  Path to load image from disk. Use 'null' to get an empty image.
-     * @param string $allow_optimisations
-     *  True to use library-specific speed optimisations.
-     * @throws Exception
-     *  Where image loading failed (eg. unsupported format, no such file, permission error).
-     */
-    public function __construct($filename = null, $allow_optimisations = true)
+    protected function loadImageData($filename = null)
     {
         if ($filename === null) {
-            return;
+            /* Set to blank image */
+            return parent::loadImageData($filename);
         }
+        
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
         switch ($ext) {
             case "png":
@@ -49,9 +43,8 @@ class GdEscposImage extends EscposImage
                 throw new \Exception("Image format not supported in GD");
         }
         $this -> readImageFromGdResource($im);
-        // TODO implement optimised version of these methods. Rendering is too slow.
     }
-    
+
     /**
      * Load actual image pixels from GD resource.
      *
@@ -62,21 +55,24 @@ class GdEscposImage extends EscposImage
     {
         if (!is_resource($im)) {
             throw new Exception("Failed to load image.");
-        } elseif (!$this -> isGdSupported()) {
+        } elseif (!EscposImage::isGdLoaded()) {
             throw new Exception(__FUNCTION__ . " requires 'gd' extension.");
         }
         /* Make a string of 1's and 0's */
-        $this -> imgHeight = imagesy($im);
-        $this -> imgWidth = imagesx($im);
-        $this -> imgData = str_repeat("\0", $this -> imgHeight * $this -> imgWidth);
-        for ($y = 0; $y < $this -> imgHeight; $y++) {
-            for ($x = 0; $x < $this -> imgWidth; $x++) {
+        $imgHeight = imagesy($im);
+        $imgWidth = imagesx($im);
+        $imgData = str_repeat("\0", $imgHeight * $imgWidth);
+        for ($y = 0; $y < $imgHeight; $y++) {
+            for ($x = 0; $x < $imgWidth; $x++) {
                 /* Faster to average channels, blend alpha and negate the image here than via filters (tested!) */
                 $cols = imagecolorsforindex($im, imagecolorat($im, $x, $y));
                 $greyness = (int)(($cols['red'] + $cols['green'] + $cols['blue']) / 3) >> 7; // 1 for white, 0 for black
                 $black = (1 - $greyness) >> ($cols['alpha'] >> 6); // 1 for black, 0 for white, taking into account transparency
-                $this -> imgData[$y * $this -> imgWidth + $x] = $black;
+                $imgData[$y * $imgWidth + $x] = $black;
             }
         }
+        $this -> setImgWidth($imgWidth);
+        $this -> setImgHeight($imgHeight);
+        $this -> setImgData($imgData);
     }
 }

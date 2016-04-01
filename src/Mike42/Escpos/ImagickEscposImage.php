@@ -23,31 +23,25 @@ class ImagickEscposImage extends EscposImage
 {
     
     /**
-     * @param string $filename
-     *  Path to load image from disk. Use 'null' to get an empty image.
-     * @param string $allow_optimisations
-     *  True to use library-specific speed optimisations.
-     * @throws Exception
-     *  Where image loading failed (eg. unsupported format, no such file, permission error).
+     * {@inheritDoc}
+     * @see EscposImage::loadImageData()
      */
-    public function __construct($filename = null, $allow_optimisations = true)
+    protected function loadImageData($filename = null)
     {
         if ($filename === null) {
-            return;
+            /* Set to blank image */
+            return parent::loadImageData($filename);
         }
-
+        
         $im = new \Imagick();
         try {
-            // Throws an ImagickException if the format is not supported or file is not found
+            /* Throws an ImagickException if the format is not supported or file is not found */
             $im -> readImage($filename);
         } catch (ImagickException $e) {
-            // Wrap in normal exception, so that classes which call this do not themselves require imagick as a dependency.
+            /* Wrap in normal exception, so that classes which call this do not themselves require imagick as a dependency. */
             throw new Exception($e);
         }
-        /* Flatten by doing a composite over white, in case of transparency */
         $this -> readImageFromImagick($im);
-        return;
-        // TODO implement optimised version of these methods. Rendering is too slow.
     }
     
     /**
@@ -68,20 +62,21 @@ class ImagickEscposImage extends EscposImage
         $max = $max["quantumRangeLong"];
         $im -> thresholdImage(0.5 * $max);
         /* Make a string of 1's and 0's */
-        $geometry = $im -> getimagegeometry();
-        $this -> imgHeight = $im -> getimageheight();
-        $this -> imgWidth = $im -> getimagewidth();
-        $this -> imgData = str_repeat("\0", $this -> imgHeight * $this -> imgWidth);
-    
-        for ($y = 0; $y < $this -> imgHeight; $y++) {
-            for ($x = 0; $x < $this -> imgWidth; $x++) {
+        $imgHeight = $im -> getimageheight();
+        $imgWidth = $im -> getimagewidth();
+        $imgData = str_repeat("\0", $imgHeight * $imgWidth);
+        for ($y = 0; $y < $imgHeight; $y++) {
+            for ($x = 0; $x < $imgWidth; $x++) {
                 /* Faster to average channels, blend alpha and negate the image here than via filters (tested!) */
                 $cols = $im -> getImagePixelColor($x, $y);
                 $cols = $cols -> getcolor();
                 $greyness = (int)(($cols['r'] + $cols['g'] + $cols['b']) / 3) >> 7;  // 1 for white, 0 for black
-                $this -> imgData[$y * $this -> imgWidth + $x] = (1 - $greyness); // 1 for black, 0 for white
+                $imgData[$y * $imgWidth + $x] = (1 - $greyness); // 1 for black, 0 for white
             }
         }
+        $this -> setImgWidth($imgWidth);
+        $this -> setImgHeight($imgHeight);
+        $this -> setImgData($imgData);
     }
     
     /**
