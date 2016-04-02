@@ -16,21 +16,9 @@ use Mike42\Escpos\EscposImage;
 
 /**
  * Implementation of EscposImage using only native PHP.
+ * TODO: wbmp, pbm, bmp files.
  */
 class NativeEscposImage extends EscposImage
 {
-    
-    /**
-     * @param string $filename
-     *  Path to load image from disk. Use 'null' to get an empty image.
-     * @param string $allow_optimisations
-     *  True to use library-specific speed optimisations.
-     * @throws Exception
-     *  Where image loading failed (eg. unsupported format, no such file, permission error).
-     */
-    public function __construct($filename = null, $allow_optimisations = true)
-    {
-        // TODO. wbmp, pbm, bmp files.
-        throw new \BadMethodCallException("Native bitmaps not yet supported. Please convert the file to a supported raster format.");
-    }
+
 }

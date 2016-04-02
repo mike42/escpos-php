@@ -9,7 +9,6 @@
  * This software is distributed under the terms of the MIT license. See LICENSE.md
  * for details.
  */
-
 namespace Mike42\Escpos;
 
 use Exception;
@@ -21,29 +20,6 @@ use Mike42\Escpos\EscposImage;
  */
 class ImagickEscposImage extends EscposImage
 {
-    
-    /**
-     * {@inheritDoc}
-     * @see EscposImage::loadImageData()
-     */
-    protected function loadImageData($filename = null)
-    {
-        if ($filename === null) {
-            /* Set to blank image */
-            return parent::loadImageData($filename);
-        }
-        
-        $im = new \Imagick();
-        try {
-            /* Throws an ImagickException if the format is not supported or file is not found */
-            $im -> readImage($filename);
-        } catch (ImagickException $e) {
-            /* Wrap in normal exception, so that classes which call this do not themselves require imagick as a dependency. */
-            throw new Exception($e);
-        }
-        $this -> readImageFromImagick($im);
-    }
-    
     /**
      * Load actual image pixels from Imagick object
      *
@@ -78,18 +54,177 @@ class ImagickEscposImage extends EscposImage
         $this -> setImgHeight($imgHeight);
         $this -> setImgData($imgData);
     }
+
+    /**
+     * @param string $filename
+     *  Filename to load from
+     * @param boolean $highDensityVertical
+     *  True for high density output (24px lines), false for regular density (8px)
+     * @return string[]|NULL
+     *  Column format data as array, or NULL if optimised renderer isn't
+     *  available in this implementation.
+     */
+    protected function getColumnFormatFromFile($filename = null, $highDensityVertical = true)
+    {
+        if ($filename === null) {
+            return null;
+        }
+        $im = $this -> getImageFromFile($filename);
+        $this -> setImgWidth($im -> getimagewidth());
+        $this -> setImgHeight($im -> getimageheight());
+        
+        // Initial rotate. mirror, and extract blobs for each 8 or 24-pixel row
+        $im -> setImageBackgroundColor('white');
+        $im -> setImageAlphaChannel(Imagick::ALPHACHANNEL_REMOVE);
+        $im -> mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
+        $im -> setformat('pbm');
+        $im -> getimageblob(); // Forces 1-bit rendering now, so that subsequent operations are faster
+        $im -> rotateImage('#fff', 90.0);
+        $im -> flopImage();
+        $lineHeight = $highDensityVertical ? 3 : 1;
+        $blobs = $this -> getColumnFormatFromImage($im, $lineHeight * 8);
+        return $blobs;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see EscposImage::loadImageData()
+     */
+    protected function loadImageData($filename = null)
+    {
+        if ($filename === null) {
+            /* Set to blank image */
+            return parent::loadImageData($filename);
+        }
     
+        $im = $im = $this -> getImageFromFile($filename);
+        $this -> readImageFromImagick($im);
+    }
+
+    /**
+     * Return data in column format as array of slices.
+     * Operates recursively to save cloning larger image many times.
+     *
+     * @param Imagick $im
+     * @param int $lineHeight
+     *          Height of printed line in dots. 8 or 24.
+     * @return string[]
+     */
+    private function getColumnFormatFromImage(Imagick $im, $lineHeight)
+    {
+        $imgWidth = $im->getimagewidth();
+        if ($imgWidth == $lineHeight) {
+            // Return glob of this panel
+            return array($this -> getRasterBlobFromImage($im));
+        } elseif ($imgWidth > $lineHeight) {
+            // Calculations
+            $slicesLeft = ceil($imgWidth / $lineHeight / 2);
+            $widthLeft = $slicesLeft * $lineHeight;
+            $widthRight = $imgWidth - $widthLeft;
+            // Slice up (left)
+            $left = clone $im;
+            $left -> extentimage($widthLeft, $left -> getimageheight(), 0, 0);
+            // Slice up (right - ensure width is divisible by lineHeight also)
+            $right = clone $im;
+            $widthRightRounded = $widthRight < $lineHeight ? $lineHeight : $widthRight;
+            $right -> extentimage($widthRightRounded, $right -> getimageheight(), $widthLeft, 0);
+            // Recurse
+            $leftBlobs = $this -> getColumnFormatFromImage($left, $lineHeight);
+            $rightBlobs = $this -> getColumnFormatFromImage($right, $lineHeight);
+            return array_merge($leftBlobs, $rightBlobs);
+        } else {
+            /* Image is smaller than full width */
+            $im -> extentimage($lineHeight, $im -> getimageheight(), 0, 0);
+            return array($this -> getRasterBlobFromImage($im));
+        }
+    }
+
+    /**
+     * Load Imagick file from image
+     *
+     * @param string $filename Filename to load
+     * @throws Exception Wrapped Imagick error if image can't be loaded
+     * @return \Imagick Loaded image
+     */
+    private function getImageFromFile($filename)
+    {
+        $im = new Imagick();
+        try {
+            $im->setResourceLimit(6, 1); // Prevent libgomp1 segfaults, grumble grumble.
+            $im -> readimage($filename);
+        } catch (ImagickException $e) {
+            /* Re-throw as normal exception */
+            throw new Exception($e);
+        }
+        return $im;
+    }
+
+    /**
+     * Pull blob (from PBM-formatted image only!), and spit out a blob or raster data.
+     * Will crash out on anything which is not a valid 'P4' file.
+     *
+     * @param Imagick $im Image which has format PBM.
+     * @return string raster data from the image
+     */
+    private function getRasterBlobFromImage(Imagick $im)
+    {
+        $blob = $im -> getimageblob();
+        /* Find where header ends */
+        $i = strpos($blob, "P4\n") + 2;
+        while ($blob[$i + 1] == '#') {
+            $i = strpos($blob, "\n", $i + 1);
+        }
+        $i = strpos($blob, "\n", $i + 1);
+        /* Return raster data only */
+        $subBlob = substr($blob, $i + 1);
+        return $subBlob;
+    }
+
+    /**
+     * @param string $filename
+     *  Filename to load from
+     * @return string|NULL
+     *  Raster format data, or NULL if no optimised renderer is available in
+     *  this implementation.
+     */
+    protected function getRasterFormatFromFile($filename = null)
+    {
+        if ($filename === null) {
+            return null;
+        }
+        $im = new Imagick();
+        try {
+            $im->setResourceLimit(6, 1); // Prevent libgomp1 segfaults, grumble grumble.
+            $im -> readimage($filename);
+        } catch (ImagickException $e) {
+            /* Re-throw as normal exception */
+            throw new Exception($e);
+        }
+        $this -> setImgWidth($im -> getimagewidth());
+        $this -> setImgHeight($im -> getimageheight());
+        /* Convert to PBM and extract raster portion */
+        $im -> setImageBackgroundColor('white');
+        $im -> setImageAlphaChannel(Imagick::ALPHACHANNEL_REMOVE);
+        $im -> mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
+        $im -> setFormat('pbm');
+        $this -> getRasterBlobFromImage($im);
+    }
+
     /**
      * Load a PDF for use on the printer
      *
-     * @param string $pdfFile The file to load
-     * @param string $pageWidth The width, in pixels, of the printer's output. The first page of the PDF will be scaled to approximately fit in this area.
-     * @throws Exception Where Imagick is not loaded, or where a missing file or invalid page number is requested.
+     * @param string $pdfFile
+     *  The file to load
+     * @param string $pageWidth
+     *  The width, in pixels, of the printer's output. The first page of the
+     *  PDF will be scaled to approximately fit in this area.
+     * @throws Exception Where Imagick is not loaded, or where a missing file
+     *  or invalid page number is requested.
      * @return multitype:EscposImage Array of images, retrieved from the PDF file.
      */
     public static function loadPdf($pdfFile, $pageWidth = 550)
     {
-        if (!extension_loaded('imagick')) {
+        if (!EscposImage::isImagickLoaded()) {
             throw new Exception(__FUNCTION__ . " requires imagick extension.");
         }
         /*
@@ -120,7 +255,8 @@ class ImagickEscposImage extends EscposImage
             }
             return $ret;
         } catch (\ImagickException $e) {
-            // Wrap in normal exception, so that classes which call this do not themselves require imagick as a dependency.
+            /* Wrap in normal exception, so that classes which call this do not
+             * themselves require imagick as a dependency. */
             throw new Exception($e);
         }
     }

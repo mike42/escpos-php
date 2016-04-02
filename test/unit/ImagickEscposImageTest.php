@@ -124,9 +124,9 @@ class ImagickEscposImageTest extends PHPUnit_Framework_TestCase
         if ($columnFormatExpected === null) {
             echo "\nImage was: " . $img -> getWidth() . "x" . $img -> getHeight() . ", column data \"" . friendlyBinary($columnFormatActual) . "\"";
         }
-        $this -> assertTrue($img -> getHeight() == $height);
-        $this -> assertTrue($img -> getWidth() == $width);
-        $this -> assertTrue($rasterFormatExpected === $rasterFormatActual);
-        $this -> assertTrue($columnFormatExpected === $columnFormatActual);
+        $this -> assertEquals($height , $img -> getHeight());
+        $this -> assertEquals($width, $img -> getWidth());
+        $this -> assertEquals($rasterFormatExpected, $rasterFormatActual, "Raster format did not match expected");
+        $this -> assertEquals($columnFormatExpected, $columnFormatActual, "Column format did not match expected");
     }
 }

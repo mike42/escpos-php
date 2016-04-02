@@ -142,7 +142,7 @@ abstract class EscposImage
         }
         if ($this -> allowOptimisations) {
             /* Use optimised code if allowed */
-            $this -> imgRasterData = $this -> getRasterFormatOptimised($this -> filename);
+            $this -> imgRasterData = $this -> getRasterFormatFromFile($this -> filename);
         }
         if ($this -> imgRasterData === null) {
             /* Load in full image and render the slow way if no faster implementation
@@ -171,7 +171,7 @@ abstract class EscposImage
         $this -> imgColumnData[$doubleDensity] = null;
         if ($this -> allowOptimisations) {
             /* Use optimised code if allowed */
-            $data = $this -> getColumnFormatOptimised($this -> filename, $doubleDensity);
+            $data = $this -> getColumnFormatFromFile($this -> filename, $doubleDensity);
             $this -> imgColumnData[$doubleDensity] = $data;
         }
         if ($this -> imgColumnData[$doubleDensity] === null) {
@@ -235,7 +235,7 @@ abstract class EscposImage
      *  Raster format data, or NULL if no optimised renderer is available in
      *  this implementation.
      */
-    protected function getRasterFormatOptimised($filename = null)
+    protected function getRasterFormatFromFile($filename = null)
     {
         // No optimised implementation to provide
         return null;
@@ -244,11 +244,13 @@ abstract class EscposImage
     /**
      * @param string $filename
      *  Filename to load from
+     * @param boolean $highDensityVertical
+     *  True for high density output (24px lines), false for regular density (8px)
      * @return string[]|NULL
      *  Column format data as array, or NULL if optimised renderer isn't
      *  available in this implementation.
      */
-    protected function getColumnFormatOptimised($filename = null)
+    protected function getColumnFormatFromFile($filename = null, $highDensityVertical = true)
     {
         // No optimised implementation to provide
         return null;
