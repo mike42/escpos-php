@@ -68,8 +68,8 @@ abstract class AbstractCapabilityProfile
      */
     final public static function getInstance()
     {
-        $context = static::class;
         static $profile = array();
+        $context = get_called_class();
         if (!isset($profile[$context])) {
             $profile[$context] = new static();
         }
