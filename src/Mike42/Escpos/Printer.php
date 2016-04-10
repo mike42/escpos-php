@@ -17,10 +17,12 @@ use InvalidArgumentException;
 use Mike42\Escpos\PrintBuffers\PrintBuffer;
 use Mike42\Escpos\PrintBuffers\EscposPrintBuffer;
 use Mike42\Escpos\PrintConnectors\PrintConnector;
-use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\CapabilityProfiles\AbstractCapabilityProfile;
 use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
 
+/**
+ * Main class for ESC/POS code generation
+ */
 class Printer
 {
     /* ASCII codes */
@@ -33,17 +35,51 @@ class Printer
     const DLE = "\x10";
     const EOT = "\x04";
 
-    /* Barcode types */
+    /**
+     * Indicates UPC-A barcode when used with  with Printer::barcode
+     */
     const BARCODE_UPCA = 65;
+
+    /**
+     * Indicates UPC-E barcode when used with  with Printer::barcode
+     */
     const BARCODE_UPCE = 66;
+
+    /**
+     * Indicates JAN13 barcode when used with  with Printer::barcode
+     */
     const BARCODE_JAN13 = 67;
+
+    /**
+     * Indicates JAN8 barcode when used with  with Printer::barcode
+     */
     const BARCODE_JAN8 = 68;
+
+    /**
+     * Indicates CODE39 barcode when used with  with Printer::barcode
+     */
     const BARCODE_CODE39 = 69;
+
+    /**
+     * Indicates ITF barcode when used with  with Printer::barcode
+     */
     const BARCODE_ITF = 70;
+
+    /**
+     * Indicates CODABAR barcode when used with  with Printer::barcode
+     */
     const BARCODE_CODABAR = 71;
+
+    /**
+     * Indicates CODE93 barcode when used with  with Printer::barcode
+     */
     const BARCODE_CODE93 = 72;
+
+    /**
+     * Indicates CODE128 barcode when used with  with Printer::barcode
+     */
     const BARCODE_CODE128 = 73;
-    
+
     /* Barcode HRI (human-readable interpretation) text position */
     const BARCODE_TEXT_NONE = 0;
     const BARCODE_TEXT_ABOVE = 1;
@@ -99,29 +135,43 @@ class Printer
     const STATUS_INK_A = 7;
     const STATUS_INK_B = 6;
     const STATUS_PEELER = 8;
-    
-    /* Underline */
-    const UNDERLINE_NONE = 0;
-    const UNDERLINE_SINGLE = 1;
-    const UNDERLINE_DOUBLE = 2;
-    
+
     /**
-     * @var PrintBuffer The printer's output buffer.
+     * Indicates no underline when used with Printer::setUnderline
+     */
+    const UNDERLINE_NONE = 0;
+
+    /**
+     * Indicates single underline when used with Printer::setUnderline
+     */
+    const UNDERLINE_SINGLE = 1;
+
+    /**
+     * Indicates double underline when used with Printer::setUnderline
+     */
+    const UNDERLINE_DOUBLE = 2;
+
+    /**
+     * @var PrintBuffer $buffer
+     *  The printer's output buffer.
      */
     private $buffer;
-    
+
     /**
-     * @var PrintConnector
+     * @var PrintConnector $connector
+     *  Connector showing how to print to this printer
      */
     private $connector;
 
     /**
-     * @var AbstractCapabilityProfile
+     * @var AbstractCapabilityProfile $profile
+     *  Profile showing supported features for this printer
      */
     private $profile;
-    
+
     /**
-     * @var int Current character code table
+     * @var int $characterTable
+     *  Current character code table
      */
     private $characterTable;
 
@@ -153,7 +203,13 @@ class Printer
      * Print a barcode.
      *
      * @param string $content The information to encode.
-     * @param int $type The barcode standard to output. If not specified, `Printer::BARCODE_CODE39` will be used. Note that some barcode formats only support specific lengths or sets of characters.
+     * @param int $type The barcode standard to output. Supported values are
+     * `Printer::BARCODE_UPCA`, `Printer::BARCODE_UPCE`, `Printer::BARCODE_JAN13`,
+     * `Printer::BARCODE_JAN8`, `Printer::BARCODE_CODE39`, `Printer::BARCODE_ITF`,
+     * `Printer::BARCODE_CODABAR`, `Printer::BARCODE_CODE93`, and `Printer::BARCODE_CODE128`.
+     * If not specified, `Printer::BARCODE_CODE39` will be used. Note that some
+     * barcode formats only support specific lengths or sets of characters, and that
+     * available barcode types vary between printers.
      * @throws InvalidArgumentException Where the length or characters used in $content is invalid for the requested barcode format.
      */
     public function barcode($content, $type = self::BARCODE_CODE39)
@@ -806,7 +862,8 @@ class Printer
     
     /**
      * Generate two characters for a number: In lower and higher parts, or more parts as needed.
-     * @param int $int Input number
+     *
+     * @param int $input Input number
      * @param int $length The number of bytes to output (1 - 4).
      */
     private static function intLowHigh($input, $length)
@@ -889,7 +946,8 @@ class Printer
      *
      * @param string $test the input to test
      * @param string $source the name of the function calling this
-     * @param string $argument the name of the invalid parameter
+     * @param string $argument the name of the parameter being validated
+     * @throws InvalidArgumentException Where the argument is not valid
      */
     protected static function validateString($test, $source, $argument = "Argument")
     {
@@ -898,6 +956,15 @@ class Printer
         }
     }
     
+    /**
+     * Throw an exception if the argument doesn't match the given regex.
+     *
+     * @param string $test the input to test
+     * @param string $source the name of the function calling this
+     * @param string $regex valid values for this attribute, as a regex
+     * @param string $argument the name of the parameter being validated
+     * @throws InvalidArgumentException Where the argument is not valid
+     */
     protected static function validateStringRegex($test, $source, $regex, $argument = "Argument")
     {
         if (preg_match($regex, $test) === 0) {
