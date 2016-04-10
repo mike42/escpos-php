@@ -23,7 +23,7 @@ use Mike42\Escpos\Printer;
 class EscposPrintBuffer implements PrintBuffer
 {
     /**
-     * @var boolean True to cache output as .gz, false to leave un-compressed (useful for debugging)
+     * @var boolean True to cache output as .z, false to leave un-compressed (useful for debugging)
      */
     const COMPRESS_CACHE = true;
 
@@ -164,13 +164,13 @@ class EscposPrintBuffer implements PrintBuffer
         $profile = $this -> printer -> getPrinterCapabilityProfile();
         $profileClass = explode("\\", get_class($profile));
         $profileName = array_pop($profileClass);
-        $cacheFile = dirname(__FILE__) . "/cache/Characters-" . $profileName . ".ser" . (self::COMPRESS_CACHE ? ".gz" : "");
+        $cacheFile = dirname(__FILE__) . "/cache/Characters-" . $profileName . ".ser" . (self::COMPRESS_CACHE ? ".z" : "");
         $cacheKey = md5(serialize($supportedCodePages));
         /* Check for pre-generated file */
         if (file_exists($cacheFile)) {
             $cacheData = file_get_contents($cacheFile);
             if (self::COMPRESS_CACHE) {
-                $cacheData = gzdecode($cacheData);
+                $cacheData = gzuncompress($cacheData);
             }
             if ($cacheData) {
                 $dataArray = unserialize($cacheData);
@@ -238,7 +238,7 @@ class EscposPrintBuffer implements PrintBuffer
         $this -> encode = $dataArray["encode"];
         $cacheData = serialize($dataArray);
         if (self::COMPRESS_CACHE) {
-            $cacheData = gzencode($cacheData);
+            $cacheData = gzcompress($cacheData);
         }
         /* Attempt to cache, but don't worry if we can't */
         @file_put_contents($cacheFile, $cacheData);

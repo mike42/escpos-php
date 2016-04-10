@@ -58,7 +58,7 @@ class EscposCapabilityProfileTest extends PHPUnit_Framework_TestCase
             // Check for character cache
             $profileClass = explode("\\", get_class($obj));
             $profileName = array_pop($profileClass);
-            $expected = "Characters-$profileName.ser.gz";
+            $expected = "Characters-$profileName.ser.z";
             $filename = __DIR__ . "/../../src/Mike42/Escpos/PrintBuffers/cache/$expected";
             $this -> assertFileExists($filename);
         }
