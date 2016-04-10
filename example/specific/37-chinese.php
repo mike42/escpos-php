@@ -22,4 +22,3 @@ $printer -> textChinese("艾德蒙 AOC E2450SWH 23.6吋 LED液晶寬螢幕特價
 // Note that on the printer tested (ZJ5890), the font only contained simplified characters.
 $printer -> textChinese("示例文本打印机!\n\n");
 $printer -> close();
-

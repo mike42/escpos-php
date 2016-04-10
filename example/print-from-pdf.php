@@ -16,19 +16,19 @@ $pdf = 'resources/document.pdf';
 $connector = new FilePrintConnector("php://stdout");
 $printer = new Printer($connector);
 try {
-	$pages = EscposImage::loadPdf($pdf);
-	foreach($pages as $page) {
-		$printer -> graphics($page);
-	}
-	$printer -> cut();
-} catch(Exception $e) {
-	/* 
+    $pages = EscposImage::loadPdf($pdf);
+    foreach ($pages as $page) {
+        $printer -> graphics($page);
+    }
+    $printer -> cut();
+} catch (Exception $e) {
+    /*
 	 * loadPdf() throws exceptions if files or not found, or you don't have the
 	 * imagick extension to read PDF's
 	 */
-	echo $e -> getMessage() . "\n";
+    echo $e -> getMessage() . "\n";
 } finally {
-	$printer -> close();
+    $printer -> close();
 }
 
 
@@ -42,8 +42,8 @@ $connector = new FilePrintConnector("php://stdout");
 $printer = new Printer($connector);
 $pdf = 'resources/document.pdf';
 $pages = EscposImage::loadPdf($pdf, 260);
-foreach($pages as $page) {
-	$printer -> graphics($page, Printer::IMG_DOUBLE_HEIGHT | Printer::IMG_DOUBLE_WIDTH);
+foreach ($pages as $page) {
+    $printer -> graphics($page, Printer::IMG_DOUBLE_HEIGHT | Printer::IMG_DOUBLE_WIDTH);
 }
 $printer -> cut();
 $printer -> close();
@@ -61,18 +61,18 @@ $connector = new FilePrintConnector("php://stdout");
 $printer = new Printer($connector);
 $pdf = 'resources/document.pdf';
 $ser = 'resources/document.z';
-if(!file_exists($ser)) {
-	$pages = EscposImage::loadPdf($pdf);
+if (!file_exists($ser)) {
+    $pages = EscposImage::loadPdf($pdf);
 } else {
-	$pages = unserialize(gzuncompress(file_get_contents($ser)));
+    $pages = unserialize(gzuncompress(file_get_contents($ser)));
 }
 
-foreach($pages as $page) {
-	$printer -> graphics($page);
+foreach ($pages as $page) {
+    $printer -> graphics($page);
 }
 $printer -> cut();
 $printer -> close();
 
-if(!file_exists($ser)) {
-	file_put_contents($ser, gzcompress(serialize($pages)));
+if (!file_exists($ser)) {
+    file_put_contents($ser, gzcompress(serialize($pages)));
 }

@@ -42,8 +42,8 @@ $text = $Arabic -> utf8Glyphs($text);
 $buffer = new ImagePrintBuffer();
 $profile = EposTepCapabilityProfile::getInstance();
 $connector = new FilePrintConnector("php://output");
-		// = WindowsPrintConnector("LPT2");
-		// Windows LPT2 was used in the bug tracker
+        // = WindowsPrintConnector("LPT2");
+        // Windows LPT2 was used in the bug tracker
 
 $printer = new Printer($connector, $profile);
 $printer -> setPrintBuffer($buffer);

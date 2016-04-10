@@ -30,7 +30,6 @@ $printer -> getPrintConnector() -> write($cmd);
 $printer -> text("Beispieltext in Deutsch\n");
 $printer -> cut();
 $printer -> close();
-
 /*
  * Hex-dump of output confirms that ESC V 1 being sent:
  *

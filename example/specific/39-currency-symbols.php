@@ -1,4 +1,4 @@
-<?php 
+<?php
 require __DIR__ . '/../../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
@@ -40,27 +40,30 @@ $printer -> close();
  are not available in CP437. CP858 has good printer support, but is not
  included in all iconv builds.
 */
-class CustomCapabilityProfile extends SimpleCapabilityProfile {
-	function getCustomCodePages() {
-		/*
+class CustomCapabilityProfile extends SimpleCapabilityProfile
+{
+    function getCustomCodePages()
+    {
+        /*
 		 * Example to print in a specific, user-defined character set
 		 * on a printer which has been configured to use i
 		 */
-		return array(
-		'CP858' => "ÇüéâäàåçêëèïîìÄÅ" .
-				"ÉæÆôöòûùÿÖÜø£Ø×ƒ" .
-				"áíóúñÑªº¿®¬½¼¡«»" .
-				"░▒▓│┤ÁÂÀ©╣║╗╝¢¥┐" .
-				"└┴┬├─┼ãÃ╚╔╩╦╠═╬¤" .
-				"ðÐÊËÈ€ÍÎÏ┘┌█▄¦Ì▀" .
-				"ÓßÔÒõÕµþÞÚÛÙýÝ¯´" .
-				" ±‗¾¶§÷¸°¨·¹³²■ ");
-	}
-	
-	function getSupportedCodePages() {
-		return array(
-				0 => 'custom:CP858');
-	}
+        return array(
+        'CP858' => "ÇüéâäàåçêëèïîìÄÅ" .
+                "ÉæÆôöòûùÿÖÜø£Ø×ƒ" .
+                "áíóúñÑªº¿®¬½¼¡«»" .
+                "░▒▓│┤ÁÂÀ©╣║╗╝¢¥┐" .
+                "└┴┬├─┼ãÃ╚╔╩╦╠═╬¤" .
+                "ðÐÊËÈ€ÍÎÏ┘┌█▄¦Ì▀" .
+                "ÓßÔÒõÕµþÞÚÛÙýÝ¯´" .
+                " ±‗¾¶§÷¸°¨·¹³²■ ");
+    }
+    
+    function getSupportedCodePages()
+    {
+        return array(
+                0 => 'custom:CP858');
+    }
 }
 
 $connector = new FilePrintConnector("php://stdout");

@@ -10,9 +10,15 @@
  * for details.
  */
 
-namespace Mike42\Escpos\CapabilityProfiles;
+namespace Mike42\Escpos;
 
-class EposTepCapabilityProfile extends DefaultCapabilityProfile
+use Mike42\Escpos\EscposImage;
+
+/**
+ * Implementation of EscposImage using only native PHP.
+ * TODO: wbmp, pbm, bmp files.
+ */
+class NativeEscposImage extends EscposImage
 {
-    // TODO override list of code pages
+
 }
