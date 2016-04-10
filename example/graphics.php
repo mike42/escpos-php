@@ -10,7 +10,7 @@ $connector = new FilePrintConnector("php://stdout");
 $printer = new Printer($connector);
 
 try {
-    $tux = EscposImage::load("resources/tux.png");
+    $tux = EscposImage::load("resources/tux.png", false);
     
     $printer -> graphics($tux);
     $printer -> text("Regular Tux.\n");

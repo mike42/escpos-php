@@ -28,10 +28,7 @@ class ImagickEscposImage extends EscposImage
     public function readImageFromImagick(\Imagick $im)
     {
         /* Strip transparency */
-        $flat = new \Imagick();
-        $flat -> newImage($im -> getimagewidth(), $im -> getimageheight(), "white");
-        $flat -> compositeimage($im, \Imagick::COMPOSITE_OVER, 0, 0);
-        $im = $flat;
+        $im = self::alphaRemove($im);
         /* Threshold */
         $im -> setImageType(\Imagick::IMGTYPE_TRUECOLOR); // Remove transparency (good for PDF's)
         $max = $im->getQuantumRange();
@@ -73,10 +70,8 @@ class ImagickEscposImage extends EscposImage
         $this -> setImgWidth($im -> getimagewidth());
         $this -> setImgHeight($im -> getimageheight());
         
-        // Initial rotate. mirror, and extract blobs for each 8 or 24-pixel row
-        $im -> setImageBackgroundColor('white');
-        $im -> setImageAlphaChannel(Imagick::ALPHACHANNEL_REMOVE);
-        $im -> mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
+        /* Strip transparency */
+        $im = self::alphaRemove($im);
         $im -> setformat('pbm');
         $im -> getimageblob(); // Forces 1-bit rendering now, so that subsequent operations are faster
         $im -> rotateImage('#fff', 90.0);
@@ -192,22 +187,13 @@ class ImagickEscposImage extends EscposImage
         if ($filename === null) {
             return null;
         }
-        $im = new Imagick();
-        try {
-            $im->setResourceLimit(6, 1); // Prevent libgomp1 segfaults, grumble grumble.
-            $im -> readimage($filename);
-        } catch (ImagickException $e) {
-            /* Re-throw as normal exception */
-            throw new Exception($e);
-        }
+        $im = $this -> getImageFromFile($filename);
         $this -> setImgWidth($im -> getimagewidth());
         $this -> setImgHeight($im -> getimageheight());
         /* Convert to PBM and extract raster portion */
-        $im -> setImageBackgroundColor('white');
-        $im -> setImageAlphaChannel(Imagick::ALPHACHANNEL_REMOVE);
-        $im -> mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
+        $im = self::alphaRemove($im);
         $im -> setFormat('pbm');
-        $this -> getRasterBlobFromImage($im);
+        return $this -> getRasterBlobFromImage($im);
     }
 
     /**
@@ -259,5 +245,25 @@ class ImagickEscposImage extends EscposImage
              * themselves require imagick as a dependency. */
             throw new Exception($e);
         }
+    }
+
+    /**
+     * Paste image over white canvas to stip transparency reliably on different
+     * versions of ImageMagick.
+     *
+     * There are other methods for this:
+     * - flattenImages() is deprecated
+     * - setImageAlphaChannel(Imagick::ALPHACHANNEL_REMOVE) is not available on
+     *      ImageMagick < 6.8.
+     *
+     * @param Imagick $im Image to flatten
+     * @return Imagick Flattened image
+     */
+    private static function alphaRemove(Imagick $im)
+    {
+        $flat = new \Imagick();
+        $flat -> newImage($im -> getimagewidth(), $im -> getimageheight(), "white", $im -> getimageformat());
+        $flat -> compositeimage($im, \Imagick::COMPOSITE_OVER, 0, 0);
+        return $flat;
     }
 }
