@@ -303,7 +303,7 @@ A minimal example:
 
 ```php
 <?php
-$img = new EscposImage("logo.png");
+$img = EscposImage::load("logo.png");
 $printer -> graphics($img);
 ```
 

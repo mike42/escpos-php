@@ -1,5 +1,5 @@
-html: escpos.conf
-	doxygen escpos.conf
+html: escpos.doxyfile
+	doxygen escpos.doxyfile
 
 latex: html
 	# Do nothing

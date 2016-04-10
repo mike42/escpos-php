@@ -17,6 +17,13 @@ if (file_exists($composer_autoload)) {
  */
 function friendlyBinary($in)
 {
+    if (is_array($in)) {
+        $out = array();
+        foreach ($in as $line) {
+            $out[] = friendlyBinary($line);
+        }
+        return "[" . implode(", ", $out) . "]";
+    }
     if (strlen($in) == 0) {
         return $in;
     }

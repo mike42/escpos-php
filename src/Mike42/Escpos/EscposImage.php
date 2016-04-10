@@ -34,96 +34,63 @@ use Exception;
  *    also not complex to add, and is a likely future feature.
  *  - Support for native use of the BMP format is a goal, for maximum compatibility with target environments.
  */
-class EscposImage
+abstract class EscposImage
 {
     /**
-     * @var string The image's bitmap data (if it is a Windows BMP).
+     * @var int $imgHeight
+     *  height of the image.
      */
-    protected $imgBmpData;
+    protected $imgHeight = 0;
     
     /**
-     * @var string image data in rows: 1 for black, 0 for white.
+     * @var int $imgWidth
+     *  width of the image
      */
-    protected $imgData;
+    protected $imgWidth = 0;
     
     /**
-     * @var string cached raster format data to avoid re-computation
+     * @var string $imgData
+     *  Image data in rows: 1 for black, 0 for white.
      */
-    protected $imgRasterData;
+    private $imgData = null;
     
     /**
-     * @var int height of the image
+     * @var string $imgColumnData
+     *  Cached column-format data to avoid re-computation
      */
-    protected $imgHeight;
-
-    /**
-     * @var int width of the image
-     */
-    protected $imgWidth;
+    private $imgColumnData = array();
     
     /**
-     * Load up an image from a filename
+     * @var array:string $imgRasterData
+     *  Cached raster format data to avoid re-computation
+     */
+    private $imgRasterData = null;
+    
+    /**
+     * @var string $filename
+     *  Filename of image on disk - null if not loaded from disk.
+     */
+    private $filename = null;
+    
+    /**
+     * @var boolean $allowOptimisations
+     *  True to allow faster library-specific rendering shortcuts, false to always just use
+     *  image libraries to read pixels (more reproducible between systems).
+     */
+    private $allowOptimisations = true;
+    
+    /**
+     * Construct a new EscposImage.
      *
-     * @param string $imgPath The path to the image to load, or null to skip
-     *          loading the image (some other functions are available for
-     *          populating the data). Supported graphics types depend on your PHP configuration.
+     * @param string $filename Path to image filename, or null to create an empty image.
+     * @param boolean $allowOptimisations True (default) to use any library-specific tricks
+     *  to speed up rendering, false to force the image to be read in pixel-by-pixel,
+     *  which is easier to unit test and more reproducible between systems, but slower.
      */
-    public function __construct($imgPath = null)
+    public function __construct($filename = null, $allowOptimisations = true)
     {
-        /* Can't use bitmaps yet */
-        $this -> imgBmpData = null;
-        $this -> imgRasterData = null;
-        if ($imgPath === null) {
-            // Blank image
-            $this -> imgHeight = 0;
-            $this -> imgWidth = 0;
-            $this -> imgData = "";
-            return;
-        }
-
-        /* Load up using GD */
-        if (!file_exists($imgPath)) {
-            throw new Exception("File '$imgPath' does not exist.");
-        }
-        $ext = pathinfo($imgPath, PATHINFO_EXTENSION);
-        if ($ext == "bmp") {
-            // The plan is to implement BMP handling directly in
-            // PHP, as some printers understand this format themselves.
-            // TODO implement PHP bitmap handling
-            throw new Exception("Native bitmaps not yet supported. Please convert the file to a supported raster format.");
-        }
-        if ($this -> isGdSupported()) {
-            // Prefer to use gd. It is installed by default, so
-            // most systems will have it, giving a consistent UX.
-            switch ($ext) {
-                case "png":
-                    $im = @imagecreatefrompng($imgPath);
-                    $this -> readImageFromGdResource($im);
-                    return;
-                case "jpg":
-                    $im = @imagecreatefromjpeg($imgPath);
-                    $this -> readImageFromGdResource($im);
-                    return;
-                case "gif":
-                    $im = @imagecreatefromgif($imgPath);
-                    $this -> readImageFromGdResource($im);
-                    return;
-            }
-        }
-        if ($this -> isImagickSupported()) {
-            $im = new \Imagick();
-            try {
-                // Throws an ImagickException if the format is not supported or file is not found
-                $im -> readImage($imgPath);
-            } catch (ImagickException $e) {
-                // Wrap in normal exception, so that classes which call this do not themselves require imagick as a dependency.
-                throw new Exception($e);
-            }
-            /* Flatten by doing a composite over white, in case of transparency */
-            $this -> readImageFromImagick($im);
-            return;
-        }
-        throw new Exception("Images are not supported on your PHP. Please install either the gd or imagick extension.");
+        $this -> filename = $filename;
+        $this -> allowOptimisations = $allowOptimisations;
     }
 
     /**
@@ -157,98 +124,148 @@ class EscposImage
     {
         return (int)(($this -> imgWidth + 7) / 8);
     }
-    
-    /**
-     * @return string binary data of the original file, for function which accept bitmaps.
-     */
-    public function getWindowsBMPData()
-    {
-        return $this -> imgBmpData;
-    }
-    
-    /**
-     * @return boolean True if the image was a windows bitmap, false otherwise
-     */
-    public function isWindowsBMP()
-    {
-        return $this -> imgBmpData != null;
-    }
 
     /**
-     * Load actual image pixels from GD resource.
+     * Output the image in raster (row) format. This can result in padding on the
+     * right of the image, if its width is not divisible by 8.
      *
-     * @param resouce $im GD resource to use
-     * @throws Exception Where the image can't be read.
-     */
-    public function readImageFromGdResource($im)
-    {
-        if (!is_resource($im)) {
-            throw new Exception("Failed to load image.");
-        } elseif (!$this -> isGdSupported()) {
-            throw new Exception(__FUNCTION__ . " requires 'gd' extension.");
-        }
-        /* Make a string of 1's and 0's */
-        $this -> imgHeight = imagesy($im);
-        $this -> imgWidth = imagesx($im);
-        $this -> imgData = str_repeat("\0", $this -> imgHeight * $this -> imgWidth);
-        for ($y = 0; $y < $this -> imgHeight; $y++) {
-            for ($x = 0; $x < $this -> imgWidth; $x++) {
-                /* Faster to average channels, blend alpha and negate the image here than via filters (tested!) */
-                $cols = imagecolorsforindex($im, imagecolorat($im, $x, $y));
-                $greyness = (int)(($cols['red'] + $cols['green'] + $cols['blue']) / 3) >> 7; // 1 for white, 0 for black
-                $black = (1 - $greyness) >> ($cols['alpha'] >> 6); // 1 for black, 0 for white, taking into account transparency
-                $this -> imgData[$y * $this -> imgWidth + $x] = $black;
-            }
-        }
-    }
-
-    /**
-     * Load actual image pixels from \Imagick object
-     *
-     * @param Imagick $im Image to load from
-     */
-    public function readImageFromImagick(\Imagick $im)
-    {
-        /* Strip transparency */
-        $flat = new \Imagick();
-        $flat -> newImage($im -> getimagewidth(), $im -> getimageheight(), "white");
-        $flat -> compositeimage($im, \Imagick::COMPOSITE_OVER, 0, 0);
-        $im = $flat;
-        /* Threshold */
-        $im -> setImageType(\Imagick::IMGTYPE_TRUECOLOR); // Remove transparency (good for PDF's)
-        $max = $im->getQuantumRange();
-        $max = $max["quantumRangeLong"];
-        $im -> thresholdImage(0.5 * $max);
-        /* Make a string of 1's and 0's */
-        $geometry = $im -> getimagegeometry();
-        $this -> imgHeight = $im -> getimageheight();
-        $this -> imgWidth = $im -> getimagewidth();
-        $this -> imgData = str_repeat("\0", $this -> imgHeight * $this -> imgWidth);
-
-        for ($y = 0; $y < $this -> imgHeight; $y++) {
-            for ($x = 0; $x < $this -> imgWidth; $x++) {
-                /* Faster to average channels, blend alpha and negate the image here than via filters (tested!) */
-                $cols = $im -> getImagePixelColor($x, $y);
-                $cols = $cols -> getcolor();
-                $greyness = (int)(($cols['r'] + $cols['g'] + $cols['b']) / 3) >> 7;  // 1 for white, 0 for black
-                $this -> imgData[$y * $this -> imgWidth + $x] = (1 - $greyness); // 1 for black, 0 for white
-            }
-        }
-
-    }
-    
-    /**
-     * Output the image in raster (row) format. This can result in padding on the right of the image, if its width is not divisible by 8.
-     *
-     * @throws Exception Where the generated data is unsuitable for the printer (indicates a bug or oversized image).
+     * @throws Exception Where the generated data is unsuitable for the printer
+     *  (indicates a bug or oversized image).
      * @return string The image in raster format.
      */
     public function toRasterFormat()
     {
-        if ($this -> imgRasterData != null) {
-            /* Use previous calculation */
+        // Just wraps implementations for caching & lazy loading
+        if ($this -> imgRasterData !== null) {
+            /* Return cached value */
             return $this -> imgRasterData;
         }
+        if ($this -> allowOptimisations) {
+            /* Use optimised code if allowed */
+            $this -> imgRasterData = $this -> getRasterFormatFromFile($this -> filename);
+        }
+        if ($this -> imgRasterData === null) {
+            /* Load in full image and render the slow way if no faster implementation
+             is available, or if we've been asked not to use it */
+            if ($this -> imgData === null) {
+                $this -> loadImageData($this -> filename);
+            }
+            $this -> imgRasterData = $this -> getRasterFormat();
+        }
+        return $this -> imgRasterData;
+    }
+    
+    /**
+     * Output the image in column format.
+     *
+     * @param boolean $doubleDensity True for double density (24px) lines, false for single-density (8px) lines.
+     * @return string[] an array, one item per line of output. All lines will be of equal size.
+     */
+    public function toColumnFormat($doubleDensity = false)
+    {
+        // Just wraps implementations for caching and lazy loading
+        if (isset($this -> imgColumnData[$doubleDensity])) {
+            /* Return cached value */
+            return $this -> imgColumnData[$doubleDensity];
+        }
+        $this -> imgColumnData[$doubleDensity] = null;
+        if ($this -> allowOptimisations) {
+            /* Use optimised code if allowed */
+            $data = $this -> getColumnFormatFromFile($this -> filename, $doubleDensity);
+            $this -> imgColumnData[$doubleDensity] = $data;
+        }
+        if ($this -> imgColumnData[$doubleDensity] === null) {
+            /* Load in full image and render the slow way if no faster implementation
+             is available, or if we've been asked not to use it */
+            if ($this -> imgData === null) {
+                $this -> loadImageData($this -> filename);
+            }
+            $this -> imgColumnData[$doubleDensity] = $this -> getColumnFormat($doubleDensity);
+        }
+        return $this -> imgColumnData[$doubleDensity];
+    }
+
+    /**
+     * Load an image from disk. This default implementation always gives a zero-sized image.
+     *
+     * @param string $filename Filename to load from.
+     */
+    protected function loadImageData($filename = null)
+    {
+        // Load image in to string of 1's and 0's, also set width & height
+        $this -> setImgWidth(0);
+        $this -> setImgHeight(0);
+        $this -> setImgData("");
+    }
+    
+    /**
+     * Set image data.
+     *
+     * @param string $data Image data to use, string of 1's (black) and 0's (white) in row-major order.
+     */
+    protected function setImgData($data)
+    {
+        $this -> imgData = $data;
+    }
+    
+    /**
+     * Set image width.
+     *
+     * @param int $width width of the image
+     */
+    protected function setImgWidth($width)
+    {
+        $this -> imgWidth = $width;
+    }
+    
+    /**
+     * Set image height.
+     *
+     * @param int $height height of the image.
+     */
+    protected function setImgHeight($height)
+    {
+        $this -> imgHeight = $height;
+    }
+    
+    /**
+     * @param string $filename
+     *  Filename to load from
+     * @return string|NULL
+     *  Raster format data, or NULL if no optimised renderer is available in
+     *  this implementation.
+     */
+    protected function getRasterFormatFromFile($filename = null)
+    {
+        // No optimised implementation to provide
+        return null;
+    }
+    
+    /**
+     * @param string $filename
+     *  Filename to load from
+     * @param boolean $highDensityVertical
+     *  True for high density output (24px lines), false for regular density (8px)
+     * @return string[]|NULL
+     *  Column format data as array, or NULL if optimised renderer isn't
+     *  available in this implementation.
+     */
+    protected function getColumnFormatFromFile($filename = null, $highDensityVertical = true)
+    {
+        // No optimised implementation to provide
+        return null;
+    }
+    
+    /**
+     * Get column fromat from loaded image pixels, line by line.
+     *
+     * @throws Exception
+     *  Where wrong number of bytes has been generated.
+     * @return string
+     *  Raster format data
+     */
+    private function getRasterFormat()
+    {
         /* Loop through and convert format */
         $widthPixels = $this -> getWidth();
         $heightPixels = $this -> getHeight();
@@ -282,30 +299,57 @@ class EscposImage
         if (strlen($data) != ($this -> getWidthBytes() * $this -> getHeight())) {
             throw new Exception("Bug in " . __FUNCTION__ . ", wrong number of bytes.");
         }
-        $this -> imgRasterData = $data;
-        return $this -> imgRasterData;
+        return $data;
+    }
+    
+    /**
+     * Get column fromat from loaded image pixels, line by line.
+     *
+     * @param boolean $highDensity
+     *  True for high density output (24px lines), false for regular density (8px)
+     * @return string[]
+     *  Array of column format data, one item per row.
+     */
+    private function getColumnFormat($highDensity)
+    {
+        $out = array();
+        $i = 0;
+        while (($line = $this -> getColumnFormatLine($i, $highDensity)) !== null) {
+            $out[] = $line;
+            $i++;
+        }
+        return $out;
     }
     
     /**
      * Output image in column format. Must be called once for each line of output.
+     *
+     * @param string $lineNo
+     *  Line number to retrieve
+     * @param string $highDensity
+     *  True for high density output (24px lines), false for regular density (8px)
+     * @throws Exception
+     *  Where wrong number of bytes has been generated.
+     * @return NULL|string
+     *  Column format data, or null if there is no more data (when iterating)
      */
-    public function toColumnFormat($lineNo = 0, $doubleDensity = false)
+    private function getColumnFormatLine($lineNo, $highDensity)
     {
         // Currently double density in both directions, very experimental
         $widthPixels = $this -> getWidth();
         $heightPixels = $this -> getHeight();
         $widthBytes = $this -> getWidthBytes();
         $heightBytes = $this -> getHeightBytes();
-        $lineHeight = $doubleDensity ? 3 : 1; // Vertical density. 1 or 3 (for 8 and 24 pixel lines)
+        $lineHeight = $highDensity ? 3 : 1; // Vertical density. 1 or 3 (for 8 and 24 pixel lines)
         // Initialise to zero
         $x = $y = $bit = $byte = $byteVal = 0;
         $data = str_repeat("\x00", $widthPixels * $lineHeight);
-        if (strlen($data) == 0) {
-            return $data;
-        }
         $yStart = $lineHeight * 8 * $lineNo;
         if ($yStart >= $heightPixels) {
             return null;
+        }
+        if (strlen($data) == 0) {
+            return $data;
         }
         do {
             $yReal = $y + $yStart;
@@ -337,23 +381,6 @@ class EscposImage
     }
     
     /**
-     * @return boolean True if GD is supported, false otherwise (a wrapper for the static version, for mocking in tests)
-     */
-    protected function isGdSupported()
-    {
-        return self::isGdLoaded();
-    }
-    
-    /**
-     * @return boolean True if Imagick is supported, false otherwise (a wrapper for the static version, for mocking in tests)
-     */
-    protected function isImagickSupported()
-    {
-        return self::isImagickLoaded();
-    }
-    
-    
-    /**
      * @return boolean True if GD is loaded, false otherwise
      */
     public static function isGdLoaded()
@@ -369,50 +396,63 @@ class EscposImage
         return extension_loaded('imagick');
     }
     
+
     /**
-     * Load a PDF for use on the printer
+     * This is a convinience method to load an image from file, auto-selecting
+     * an EscposImage implementation which uses an available library.
      *
-     * @param string $pdfFile The file to load
-     * @param string $pageWidth The width, in pixels, of the printer's output. The first page of the PDF will be scaled to approximately fit in this area.
-     * @param array $range array indicating the first and last page (starting from 0) to load. If not set, the entire document is loaded.
-     * @throws Exception Where Imagick is not loaded, or where a missing file or invalid page number is requested.
-     * @return multitype:EscposImage Array of images, retrieved from the PDF file.
+     * The sub-classes can be constructed directly if you know that you will
+     * have Imagick or GD on the print server.
+     *
+     * @param string $filename
+     *  File to load from
+     * @param string $allow_optimisations
+     *  True to allow the fastest rendering shortcuts, false to force the library
+     *  to read the image into an internal raster format and use PHP to render
+     *  the image (slower but less fragile).
+     * @param array $preferred
+     *  Order to try to load libraries in- escpos-php supports pluggable image
+     *  libraries. Items can be 'imagick', 'gd', 'native'.
+     * @throws Exception
+     *  Where no suitable library could be found for the type of file being loaded.
+     * @return EscposImage
+     *
      */
-    public static function loadPdf($pdfFile, $pageWidth = 550)
-    {
-        if (!extension_loaded('imagick')) {
-            throw new Exception(__FUNCTION__ . " requires imagick extension.");
+    public static function load(
+        $filename,
+        $allow_optimisations = true,
+        array $preferred = array('imagick', 'gd', 'native')
+    ) {
+        /* Fail early if file is not readble */
+        if (!file_exists($filename) || !is_readable($filename)) {
+            throw new Exception("File '$filename' does not exist, or is not readable.");
         }
-        /*
-		 * Load first page at very low density (resolution), to figure out what
-		 * density to use to achieve $pageWidth
-		 */
-        try {
-            $image = new \Imagick();
-            $testRes = 2; // Test resolution
-            $image -> setresolution($testRes, $testRes);
-            /* Load document just to measure geometry */
-            $image -> readimage($pdfFile);
-            $geo = $image -> getimagegeometry();
-            $image -> destroy();
-            $width = $geo['width'];
-            $newRes = $pageWidth / $width * $testRes;
-            /* Load entire document in */
-            $image -> setresolution($newRes, $newRes);
-            $image -> readImage($pdfFile);
-            $pages = $image -> getNumberImages();
-            /* Convert images to Escpos objects */
-            $ret = array();
-            for ($i = 0; $i < $pages; $i++) {
-                $image -> setIteratorIndex($i);
-                $ep = new EscposImage();
-                $ep -> readImageFromImagick($image);
-                $ret[] = $ep;
+        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+        /* Choose the first implementation which can handle this format */
+        foreach ($preferred as $implemetnation) {
+            if ($implemetnation === 'imagick') {
+                if (!self::isImagickLoaded()) {
+                    // Skip option if Imagick is not loaded
+                    continue;
+                }
+                return new \Mike42\Escpos\ImagickEscposImage($filename, $allow_optimisations);
+            } elseif ($implemetnation === 'gd') {
+                if (!self::isGdLoaded()) {
+                    // Skip option if GD not loaded
+                    continue;
+                }
+                return new \Mike42\Escpos\GdEscposImage($filename, $allow_optimisations);
+            } elseif ($implemetnation === 'native') {
+                if (!in_array($ext, array('wbmp', 'pbm', 'bmp'))) {
+                    // Pure PHP is fastest way to generate raster output from wbmp and pbm formats.
+                    continue;
+                }
+                return new \Mike42\Escpos\NativeEscposImage($filename, $allow_optimisations);
+            } else {
+                // Something else on the 'preferred' list.
+                throw new InvalidArgumentException("'$implemetnation' is not a known EscposImage implementation");
             }
-            return $ret;
-        } catch (\ImagickException $e) {
-            // Wrap in normal exception, so that classes which call this do not themselves require imagick as a dependency.
-            throw new Exception($e);
         }
+        throw new InvalidArgumentException("No suitable EscposImage implementation found for '$filename'.");
     }
 }

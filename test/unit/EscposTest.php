@@ -754,7 +754,7 @@ class EscposTest extends PHPUnit_Framework_TestCase
     public function testBitImageBlack()
     {
         $this -> requireGraphicsLibrary();
-        $img = new EscposImage(dirname(__FILE__)."/resources/canvas_black.png");
+        $img = EscposImage::load(dirname(__FILE__)."/resources/canvas_black.png");
         $this -> printer -> bitImage($img);
         $this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x01\x00\x80");
     }
@@ -762,7 +762,7 @@ class EscposTest extends PHPUnit_Framework_TestCase
     public function testBitImageWhite()
     {
         $this -> requireGraphicsLibrary();
-        $img = new EscposImage(dirname(__FILE__)."/resources/canvas_white.png");
+        $img = EscposImage::load(dirname(__FILE__)."/resources/canvas_white.png");
         $this -> printer -> bitImage($img);
         $this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x01\x00\x00");
     }
@@ -770,7 +770,7 @@ class EscposTest extends PHPUnit_Framework_TestCase
     public function testBitImageBoth()
     {
         $this -> requireGraphicsLibrary();
-        $img = new EscposImage(dirname(__FILE__)."/resources/black_white.png");
+        $img = EscposImage::load(dirname(__FILE__)."/resources/black_white.png");
         $this -> printer -> bitImage($img);
         $this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x02\x00\xc0\x00");
     }
@@ -778,7 +778,7 @@ class EscposTest extends PHPUnit_Framework_TestCase
     public function testBitImageTransparent()
     {
         $this -> requireGraphicsLibrary();
-        $img = new EscposImage(dirname(__FILE__)."/resources/black_transparent.png");
+        $img = EscposImage::load(dirname(__FILE__)."/resources/black_transparent.png");
         $this -> printer -> bitImage($img);
         $this -> checkOutput("\x1b@\x1dv0\x00\x01\x00\x02\x00\xc0\x00");
     }
@@ -787,7 +787,7 @@ class EscposTest extends PHPUnit_Framework_TestCase
     public function testBitImageColumnFormatBlack()
     {
         $this -> requireGraphicsLibrary();
-        $img = new EscposImage(dirname(__FILE__)."/resources/canvas_black.png");
+        $img = EscposImage::load(dirname(__FILE__)."/resources/canvas_black.png");
         $this -> printer -> bitImageColumnFormat($img);
         $this -> checkOutput("\x1b@\x1b3\x10\x1b*!\x01\x00\x80\x00\x00\x0a\x1b2");
     }
@@ -795,7 +795,7 @@ class EscposTest extends PHPUnit_Framework_TestCase
     public function testBitImageColumnFormatWhite()
     {
         $this -> requireGraphicsLibrary();
-        $img = new EscposImage(dirname(__FILE__)."/resources/canvas_white.png");
+        $img = EscposImage::load(dirname(__FILE__)."/resources/canvas_white.png");
         $this -> printer -> bitImageColumnFormat($img);
         $this -> checkOutput("\x1b@\x1b3\x10\x1b*!\x01\x00\x00\x00\x00\x0a\x1b2");
     }
@@ -803,7 +803,7 @@ class EscposTest extends PHPUnit_Framework_TestCase
     public function testBitImageColumnFormatBoth()
     {
         $this -> requireGraphicsLibrary();
-        $img = new EscposImage(dirname(__FILE__)."/resources/black_white.png");
+        $img = EscposImage::load(dirname(__FILE__)."/resources/black_white.png");
         $this -> printer -> bitImageColumnFormat($img);
         $this -> checkOutput("\x1b@\x1b3\x10\x1b*!\x02\x00\x80\x00\x00\x80\x00\x00\x0a\x1b2");
     }
@@ -811,7 +811,7 @@ class EscposTest extends PHPUnit_Framework_TestCase
     public function testBitImageColumnFormatTransparent()
     {
         $this -> requireGraphicsLibrary();
-        $img = new EscposImage(dirname(__FILE__)."/resources/black_transparent.png");
+        $img = EscposImage::load(dirname(__FILE__)."/resources/black_transparent.png");
         $this -> printer -> bitImageColumnFormat($img);
         $this -> checkOutput("\x1b@\x1b3\x10\x1b*!\x02\x00\x80\x00\x00\x80\x00\x00\x0a\x1b2");
     }
@@ -820,7 +820,7 @@ class EscposTest extends PHPUnit_Framework_TestCase
     public function testGraphicsWhite()
     {
         $this -> requireGraphicsLibrary();
-        $img = new EscposImage(dirname(__FILE__)."/resources/canvas_white.png");
+        $img = EscposImage::load(dirname(__FILE__)."/resources/canvas_white.png");
         $this -> printer -> graphics($img);
         $this -> checkOutput("\x1b@\x1d(L\x0b\x000p0\x01\x011\x01\x00\x01\x00\x00\x1d(L\x02\x0002");
     }
@@ -828,7 +828,7 @@ class EscposTest extends PHPUnit_Framework_TestCase
     public function testGraphicsBlack()
     {
         $this -> requireGraphicsLibrary();
-        $img = new EscposImage(dirname(__FILE__)."/resources/canvas_black.png");
+        $img = EscposImage::load(dirname(__FILE__)."/resources/canvas_black.png");
         $this -> printer -> graphics($img);
         $this -> checkOutput("\x1b@\x1d(L\x0b\x000p0\x01\x011\x01\x00\x01\x00\x80\x1d(L\x02\x0002");
     }
@@ -836,7 +836,7 @@ class EscposTest extends PHPUnit_Framework_TestCase
     public function testGraphicsBoth()
     {
         $this -> requireGraphicsLibrary();
-        $img = new EscposImage(dirname(__FILE__)."/resources/black_white.png");
+        $img = EscposImage::load(dirname(__FILE__)."/resources/black_white.png");
         $this -> printer -> graphics($img);
         $this -> checkOutput("\x1b@\x1d(L\x0c\x000p0\x01\x011\x02\x00\x02\x00\xc0\x00\x1d(L\x02\x0002");
     }
@@ -844,7 +844,7 @@ class EscposTest extends PHPUnit_Framework_TestCase
     public function testGraphicsTransparent()
     {
         $this -> requireGraphicsLibrary();
-        $img = new EscposImage(dirname(__FILE__)."/resources/black_transparent.png");
+        $img = EscposImage::load(dirname(__FILE__)."/resources/black_transparent.png");
         $this -> printer -> graphics($img);
         $this -> checkOutput("\x1b@\x1d(L\x0c\x000p0\x01\x011\x02\x00\x02\x00\xc0\x00\x1d(L\x02\x0002");
     }

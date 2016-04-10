@@ -9,7 +9,7 @@ $connector = new FilePrintConnector("php://stdout");
 $printer = new Printer($connector);
 
 try {
-    $tux = new EscposImage("resources/tux.png");
+    $tux = EscposImage::load("resources/tux.png", false);
 
     $printer -> text("These example images are printed with the older\nbit image print command. You should only use\n\$p -> bitImage() if \$p -> graphics() does not\nwork on your printer.\n\n");
     
