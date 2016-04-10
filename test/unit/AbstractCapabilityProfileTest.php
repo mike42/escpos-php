@@ -4,6 +4,8 @@
  * are creating data in the right format.
  */
 use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
+use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
+use Mike42\Escpos\Printer;
 
 class EscposCapabilityProfileTest extends PHPUnit_Framework_TestCase
 {
@@ -41,6 +43,24 @@ class EscposCapabilityProfileTest extends PHPUnit_Framework_TestCase
                 }
                 $this -> assertTrue(isset($custom[implode(":", $part)]));
             }
+        }
+    }
+    
+    function testText() {
+        /* Smoke test over text rendering with each profile.
+         * Just makes sure we can attempt to print 'hello world' and a non-ASCII
+         * char without anything blowing up */
+        foreach ($this -> checklist as $obj) {
+            $connector = new DummyPrintConnector();
+            $printer = new Printer($connector, $obj);
+            $printer -> text("Hello world €\n");
+            $printer -> close();
+            // Check for character cache
+            $profileClass = explode("\\", get_class($obj));
+            $profileName = array_pop($profileClass);
+            $expected = "Characters-$profileName.ser.gz";
+            $filename = __DIR__ . "/../../src/Mike42/Escpos/PrintBuffers/cache/$expected";
+            $this -> assertFileExists($filename);
         }
     }
     
