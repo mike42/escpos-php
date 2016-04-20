@@ -625,7 +625,17 @@ class Printer
         self::validateInteger($height, 1, 255, __FUNCTION__);
         $this -> connector -> write(self::GS . "h" . chr($height));
     }
-    
+
+    /**
+     * Set barcode width.
+     *
+     * @param int $width Width in dots. If not specified, 2 will be used.
+     */
+    public function setBarcodeWidth($width = 2)
+    {
+        self::validateInteger($width, 1, 255, __FUNCTION__);
+        $this -> connector -> write(self::GS . "w" . chr($width));
+    }
     
     /**
      * Set the position for the Human Readable Interpretation (HRI) of barcode characters.
