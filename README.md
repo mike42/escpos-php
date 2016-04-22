@@ -102,7 +102,7 @@ composer require mike42/escpos-php
 
 In this case, you would include composer's auto-loader at the top of your source files:
 
-````
+````php
 <?php
 require __DIR__ . '/vendor/autoload.php';
 ````
