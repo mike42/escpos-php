@@ -1,5 +1,4 @@
 language: php
-sudo: required
 
 php:
   - 5.3
@@ -21,7 +20,4 @@ script:
 
 install:
   - composer install
-
-before_install:
-  - sudo apt-get install doxygen
 
