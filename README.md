@@ -159,7 +159,7 @@ lpr -o raw -H localhost -P printer foo.txt
 
 A local or networked printer on a Windows computer is mapped in to a file, and generally requires you to share the printer first:
 
-````
+```
 php hello-world.php > foo.txt
 net use LPT1 \\server\printer
 copy foo.txt LPT1
@@ -431,7 +431,7 @@ Parameters:
 # Further notes
 Posts I've written up for people who are learning how to use receipt printers:
 
-* [What is ESC/POS, and how do I use it?](http://mike.bitrevision.com/blog/what-is-escpos-and-how-do-i-use-it), which documents the output of test.php.
+* [What is ESC/POS, and how do I use it?](http://mike.bitrevision.com/blog/what-is-escpos-and-how-do-i-use-it), which documents the output of `example/demo.php`.
 * [Setting up an Epson receipt printer](http://mike.bitrevision.com/blog/2014-20-26-setting-up-an-epson-receipt-printer)
 * [Getting a USB receipt printer working on Linux](http://mike.bitrevision.com/blog/2015-03-getting-a-usb-receipt-printer-working-on-linux)
 
@@ -443,7 +443,7 @@ For development, it's suggested that you load `imagick`, `gd` and `Xdebug` PHP m
 
 The tests are executed on [Travis CI](https://travis-ci.org/mike42/escpos-php) over PHP 5.3, 5.4, 5.5, 5.7, 7, and HHVM. Earlier versions of PHP are not supported.
 
-Fetch a copy of this code and load idependencies with composer:
+Fetch a copy of this code and load dependencies with composer:
 
     git clone https://github.com/mike42/escpos-php
     cd escpos-php/
