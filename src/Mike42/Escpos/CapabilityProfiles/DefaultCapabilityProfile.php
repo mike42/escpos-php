@@ -21,11 +21,17 @@ use Mike42\Escpos\CodePage;
  */
 class DefaultCapabilityProfile extends AbstractCapabilityProfile
 {
+    /**
+     * List of custom code pages
+     */
     public function getCustomCodePages()
     {
         return array();
     }
 
+    /**
+     * Return map of numbers to code page ID's.
+     */
     public function getSupportedCodePages()
     {
         /* Character code tables which the printer understands, mapping to known encoding standards we may be able to encode to.
@@ -99,26 +105,41 @@ class DefaultCapabilityProfile extends AbstractCapabilityProfile
             255 => false);
     }
 
+    /**
+     * Return true for Barcode function B support, false if not supported.
+     */
     public function getSupportsBarcodeB()
     {
         return true;
     }
     
+    /**
+     * Return true for bitImage support, false if not supported.
+     */
     public function getSupportsBitImage()
     {
         return true;
     }
 
+    /**
+     * Return true for graphics support, false if not supported.
+     */
     public function getSupportsGraphics()
     {
         return true;
     }
-
+    
+    /**
+     * Return true for Star command extensions, false if not supported.
+     */
     public function getSupportsStarCommands()
     {
         return false;
     }
 
+    /**
+     * Return true for native QR code support, false if not supported.
+     */
     public function getSupportsQrCode()
     {
         return true;

@@ -19,7 +19,8 @@ namespace Mike42\Escpos\PrintConnectors;
 final class DummyPrintConnector implements PrintConnector
 {
     /**
-     * @var array Buffer of accumilated data.
+     * @var array $buffer
+     *  Buffer of accumilated data.
      */
     private $buffer;
 
@@ -56,9 +57,10 @@ final class DummyPrintConnector implements PrintConnector
         return implode($this -> buffer);
     }
 
-    /* (non-PHPdoc)
-	 * @see PrintConnector::read()
-	 */
+    /**
+     * {@inheritDoc}
+     * @see PrintConnector::read()
+     */
     public function read($len)
     {
         return $len >= strlen($this -> readData) ? $this -> readData : substr($this -> readData, 0, $len);

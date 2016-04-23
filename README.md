@@ -96,28 +96,28 @@ If you use any other printer with this code, please [let us know](https://github
 #### Composer
 If you are using composer, then add `mike42/escpos-php` as a dependency:
 
-````
+```bash
 composer require mike42/escpos-php
-````
+```
 
 In this case, you would include composer's auto-loader at the top of your source files:
 
-````
+```php
 <?php
 require __DIR__ . '/vendor/autoload.php';
-````
+```
 
 #### Manually
 If you don't have composer available, then simply download the code and include `autoload.php`:
 
-````
+```bash
 git clone https://github.com/mike42/escpos-php vendor/mike42/escpos-php
-````
+```
 
-````php
+```php
 <?php
 require __DIR__ . '/vendor/mike42/escpos-php/autoload.php');
-````
+```
 
 ### The 'Hello World' receipt
 
@@ -139,24 +139,27 @@ $printer -> close();
 Some examples are below for common interfaces.
 
 Communicate with a printer with an Ethernet interface using `netcat`:
-````
+
+```bash
 php hello-world.php | nc 10.x.x.x. 9100
-````
+```
 
 A USB local printer connected with `usblp` on Linux has a device file (Includes USB-parallel interfaces):
-````
+
+```bash
 php hello-world.php > /dev/usb/lp0
-````
+```
 
 A computer installed into the local `cups` server is accessed through `lp` or `lpr`:
-````
+
+```bash
 php hello-world.php > foo.txt
 lpr -o raw -H localhost -P printer foo.txt
-````
+```
 
 A local or networked printer on a Windows computer is mapped in to a file, and generally requires you to share the printer first:
 
-````
+```bash
 php hello-world.php > foo.txt
 net use LPT1 \\server\printer
 copy foo.txt LPT1
@@ -171,7 +174,7 @@ To print receipts from PHP, use the most applicable [PrintConnector](https://git
 
 For example, a `NetworkPrintConnector` accepts an IP address and port:
 
-````php
+```php
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
 $connector = new NetworkPrintConnector("10.x.x.x", 9100);
@@ -181,7 +184,7 @@ try {
 } finally {
     $printer -> close();
 }
-````
+```
 
 While a serial printer might use:
 ```php
@@ -235,7 +238,7 @@ Parameters:
 - `PrintConnector $connector`: The PrintConnector to send data to.
 - `AbstractCapabilityProfile $profile` Supported features of this printer. If not set, the DefaultCapabilityProfile will be used, which is suitable for Epson printers.
 
-See [example/interface/]("https://github.com/mike42/escpos-php/tree/master/example/interface/) for ways to open connections for different platforms and interfaces.
+See [example/interface/](https://github.com/mike42/escpos-php/tree/master/example/interface/) for ways to open connections for different platforms and interfaces.
 
 ### barcode($content, $type)
 Print a barcode.

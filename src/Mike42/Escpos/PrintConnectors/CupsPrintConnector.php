@@ -15,18 +15,23 @@ namespace Mike42\Escpos\PrintConnectors;
 use Exception;
 use BadMethodCallException;
 
+/**
+ * Print connector that passes print data to CUPS print commands.
+ * Your printer mut be installed on the local CUPS instance to use this connector.
+ */
 class CupsPrintConnector implements PrintConnector
 {
     
     /**
-     *
-     * @var array Buffer of accumilated data.
+     * @var array $buffer
+     *  Buffer of accumilated data.
      */
     private $buffer;
     
     /**
      *
-     * @var string The name of the target printer.
+     * @var string $printerName
+     *  The name of the target printer.
      */
     private $printerName;
     
@@ -41,21 +46,20 @@ class CupsPrintConnector implements PrintConnector
     {
         $valid = $this->getLocalPrinters();
         if (count($valid) == 0) {
-            throw new BadMethodCallException("You do not have any printers installed on this system via CUPS. Check 'lpr -a'.");
+            throw new BadMethodCallException("You do not have any printers installed on " .
+                "this system via CUPS. Check 'lpr -a'.");
         }
         
         if (array_search($dest, $valid, true) === false) {
-            throw new BadMethodCallException("'$dest' is not a printer on this system. Printers are: [" . implode(", ", $valid) . "]");
+            throw new BadMethodCallException("'$dest' is not a printer on this system. " . 
+                "Printers are: [" . implode(", ", $valid) . "]");
         }
         $this->buffer = array ();
         $this->printerName = $dest;
     }
     
     /**
-     *
-     * {@inheritDoc}
-     *
-     * @see \Mike42\Escpos\PrintConnectors\PrintConnector::__destruct()
+     * Cause a NOTICE if deconstructed before the job was printed.
      */
     public function __destruct()
     {
@@ -65,10 +69,7 @@ class CupsPrintConnector implements PrintConnector
     }
     
     /**
-     *
-     * {@inheritDoc}
-     *
-     * @see \Mike42\Escpos\PrintConnectors\PrintConnector::finalize()
+     * Send job to printer.
      */
     public function finalize()
     {
@@ -130,10 +131,10 @@ class CupsPrintConnector implements PrintConnector
     }
     
     /**
+     * Read data from the printer.
      *
-     * {@inheritDoc}
-     *
-     * @see \Mike42\Escpos\PrintConnectors\PrintConnector::read()
+     * @param string $len Length of data to read.
+     * @return Data read from the printer, or false where reading is not possible.
      */
     public function read($len)
     {
@@ -141,10 +142,7 @@ class CupsPrintConnector implements PrintConnector
     }
     
     /**
-     *
-     * {@inheritDoc}
-     *
-     * @see \Mike42\Escpos\PrintConnectors\PrintConnector::write()
+     * @param string $data
      */
     public function write($data)
     {
@@ -154,7 +152,8 @@ class CupsPrintConnector implements PrintConnector
     /**
      * Load a list of CUPS printers.
      *
-     * @return array A list of printer names installed on this system. Any item on this list is valid for constructing a printer.
+     * @return array A list of printer names installed on this system. Any item
+     *  on this list is valid for constructing a printer.
      */
     protected function getLocalPrinters()
     {

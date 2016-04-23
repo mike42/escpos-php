@@ -21,12 +21,18 @@ use Mike42\Escpos\CodePage;
  */
 class SimpleCapabilityProfile extends DefaultCapabilityProfile
 {
+    /**
+     * Map of numbers to supported code pages.
+     */
     public function getSupportedCodePages()
     {
         /* Use only CP437 output */
         return array(0 => CodePage::CP437);
     }
-    
+
+    /**
+     * True for graphics support, false if not supported.
+     */
     public function getSupportsGraphics()
     {
         /* Ask the driver to use bitImage wherever possible instead of graphics */

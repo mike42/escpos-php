@@ -31,13 +31,17 @@ interface PrintConnector
     public function finalize();
 
     /**
-     * @param string $data
+     * Read data from the printer.
+     *
+     * @param string $len Length of data to read.
      * @return Data read from the printer, or false where reading is not possible.
      */
     public function read($len);
-    
+
     /**
-     * @param string $data
+     * Write data to the print connector.
+     *
+     * @param string $data The data to write
      */
     public function write($data);
 }

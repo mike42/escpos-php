@@ -18,78 +18,87 @@ use BadMethodCallException;
 /**
  * Connector for sending print jobs to
  * - local ports on windows (COM1, LPT1, etc)
- * - shared (SMB) printers from any platform (\\server\foo)
- * For USB printers or other ports, the trick is to share the printer with a generic text driver, then access it locally.
+ * - shared (SMB) printers from any platform (smb://server/foo)
+ * For USB printers or other ports, the trick is to share the printer with a
+ * generic text driver, then connect to the shared printer locally.
  */
 class WindowsPrintConnector implements PrintConnector
 {
     /**
-     * @var array Accumulated lines of output for later use.
+     * @var array $buffer
+     *  Accumulated lines of output for later use.
      */
     private $buffer;
 
     /**
-     * @var string The hostname of the target machine, or null if this is a local connection.
+     * @var string $hostname
+     *  The hostname of the target machine, or null if this is a local connection.
      */
     private $hostname;
 
     /**
-     * @var boolean True if a port is being used directly (must be Windows), false if network shares will be used.
+     * @var boolean $isLocal
+     *  True if a port is being used directly (must be Windows), false if network shares will be used.
      */
     private $isLocal;
 
     /**
-     * @var int Platform we're running on, for selecting different commands. See PLATFORM_* constants.
+     * @var int $platform
+     *  Platform we're running on, for selecting different commands. See PLATFORM_* constants.
      */
     private $platform;
 
     /**
-     * @var string The name of the target printer (eg "Foo Printer") or port ("COM1", "LPT1").
+     * @var string $printerName
+     *  The name of the target printer (eg "Foo Printer") or port ("COM1", "LPT1").
      */
     private $printerName;
 
     /**
-     * @var string Login name for network printer, or null if not using authentication.
+     * @var string $userName
+     *  Login name for network printer, or null if not using authentication.
      */
     private $userName;
 
     /**
-     * @var string Password for network printer, or null if no password is required.
+     * @var string $userPassword
+     *  Password for network printer, or null if no password is required.
      */
     private $userPassword;
 
     /**
-     * @var string Workgroup that the printer is located on
+     * @var string $workgroup
+     *  Workgroup that the printer is located on
      */
     private $workgroup;
 
     /**
-     * @var int represents Linux
+     * Represents Linux
      */
     const PLATFORM_LINUX = 0;
 
     /**
-     * @var int represents Mac
+     * Represents Mac
      */
     const PLATFORM_MAC = 1;
 
     /**
-     * @var int represents Windows
+     * Represents Windows
      */
     const PLATFORM_WIN = 2;
 
     /**
-     * @var string Valid local ports.
+     * Valid local ports.
      */
     const REGEX_LOCAL = "/^(LPT\d|COM\d)$/";
 
     /**
-     * @var string Valid printer name.
+     * Valid printer name.
      */
     const REGEX_PRINTERNAME = "/^[\d\w-]+(\s[\d\w-]+)*$/";
 
     /**
-     * @var string Valid smb:// URI containing hostname & printer with optional user & optional password only.
+     * Valid smb:// URI containing hostname & printer with optional user & optional password only.
      */
     const REGEX_SMB = "/^smb:\/\/([\s\d\w-]+(:[\s\d\w-]+)?@)?([\d\w-]+\.)*[\d\w-]+\/([\d\w-]+\/)?[\d\w-]+(\s[\d\w-]+)*$/";
 
@@ -108,7 +117,8 @@ class WindowsPrintConnector implements PrintConnector
         if (preg_match(self::REGEX_LOCAL, $dest) == 1) {
             // Straight to LPT1, COM1 or other local port. Allowed only if we are actually on windows.
             if ($this -> platform !== self::PLATFORM_WIN) {
-                throw new BadMethodCallException("WindowsPrintConnector can only be used to print to a local printer ('".$dest."') on a Windows computer.");
+                throw new BadMethodCallException("WindowsPrintConnector can only be " .
+                    "used to print to a local printer ('".$dest."') on a Windows computer.");
             }
             $this -> isLocal = true;
             $this -> hostname = null;
@@ -142,7 +152,8 @@ class WindowsPrintConnector implements PrintConnector
             $this -> hostname = $hostname;
             $this -> printerName = $dest;
         } else {
-            throw new BadMethodCallException("Printer '" . $dest . "' is not a valid printer name. Use local port (LPT1, COM1, etc) or smb://computer/printer notation.");
+            throw new BadMethodCallException("Printer '" . $dest . "' is not a valid " .
+                "printer name. Use local port (LPT1, COM1, etc) or smb://computer/printer notation.");
         }
         $this -> buffer = array();
     }
@@ -216,10 +227,17 @@ class WindowsPrintConnector implements PrintConnector
         }
         $retval = $this -> runCommand($command, $outputStr, $errorStr, $data);
         if ($retval != 0) {
-            throw new Exception("Failed to print. Command \"$redactedCommand\" failed with exit code $retval: " . trim($outputStr));
+            throw new Exception("Failed to print. Command \"$redactedCommand\" " .
+                "failed with exit code $retval: " . trim($outputStr));
         }
     }
-    
+
+    /**
+     * Send job to printer -- platform-specific Mac code.
+     *
+     * @param string $data Print data
+     * @throws Exception
+     */
     protected function finalizeMac($data)
     {
         throw new Exception("Mac printing not implemented.");
@@ -262,7 +280,8 @@ class WindowsPrintConnector implements PrintConnector
                 }
                 $retval = $this -> runCommand($command, $outputStr, $errorStr);
                 if ($retval != 0) {
-                    throw new Exception("Failed to print. Command \"$redactedCommand\" failed with exit code $retval: " . trim($errorStr));
+                    throw new Exception("Failed to print. Command \"$redactedCommand\" " .
+                        "failed with exit code $retval: " . trim($errorStr));
                 }
             }
             /* Final print-out */
