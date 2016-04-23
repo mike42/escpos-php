@@ -14,6 +14,7 @@ matrix:
     - php: nightly
 
 script:
+  - make -C doc
   - php vendor/bin/phpcs --standard=psr2 src/ -n
   - php vendor/bin/phpunit --configuration test/phpunit.xml --coverage-text
 
