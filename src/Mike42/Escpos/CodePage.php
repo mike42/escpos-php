@@ -174,9 +174,9 @@ abstract class CodePage
     const CP850 = "CP850";
 
     /**
-     * CP851
+     * CP851 - not used due to differences between the tables in iconv and tested printers.
      */
-    const CP851 = "CP851";
+    const CP851 = false;
 
     /**
      * CP852
