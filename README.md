@@ -354,6 +354,13 @@ Parameters:
 
 - `int $height`: Height in dots. If not specified, 8 will be used.
 
+### setBarcodeWidth($width)
+Set barcode bar width.
+
+Parameters:
+
+- `int $width`: Bar width in dots. If not specified, 3 will be used. Values above 6 appear to have no effect.
+
 ### setColor($color)
 Select print color - on printers that support multiple colors.
 

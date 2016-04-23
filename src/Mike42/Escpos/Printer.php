@@ -627,11 +627,12 @@ class Printer
     }
 
     /**
-     * Set barcode width.
+     * Set barcode bar width.
      *
-     * @param int $width Width in dots. If not specified, 2 will be used.
+     * @param int $width Bar width in dots. If not specified, 3 will be used.
+     *  Values above 6 appear to have no effect.
      */
-    public function setBarcodeWidth($width = 2)
+    public function setBarcodeWidth($width = 3)
     {
         self::validateInteger($width, 1, 255, __FUNCTION__);
         $this -> connector -> write(self::GS . "w" . chr($width));
