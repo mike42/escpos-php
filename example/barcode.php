@@ -15,7 +15,6 @@ $widths = array(1, 2, 3, 4, 5, 6, 7, 8);
 $printer -> text("Default look\n");
 $printer->barcode("ABC", Printer::BARCODE_CODE39);
 
-$printer->setBarcodeHeight(40);
 foreach($heights as $height) {
     $printer -> text("\nHeight $height\n");
     $printer->setBarcodeHeight($height);
