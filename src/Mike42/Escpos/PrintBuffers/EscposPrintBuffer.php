@@ -23,32 +23,35 @@ use Mike42\Escpos\Printer;
 class EscposPrintBuffer implements PrintBuffer
 {
     /**
-     * @var boolean True to cache output as .z, false to leave un-compressed (useful for debugging)
+     *  True to cache output as .z, false to leave un-compressed (useful for debugging)
      */
     const COMPRESS_CACHE = true;
 
     /**
-     * @var string The input encoding of the buffer.
+     * The input encoding of the buffer.
      */
     const INPUT_ENCODING = "UTF-8";
 
     /**
-     * @var string Un-recorgnised characters will be replaced with this.
+     * Un-recorgnised characters will be replaced with this.
      */
     const REPLACEMENT_CHAR = "?";
 
     /**
-     * This array Maps ESC/POS character tables to names iconv encodings
+     * @var array $available
+     *  This array Maps ESC/POS character tables to names iconv encodings
      */
     private $available = null;
 
     /**
-     * @var array Maps of UTF-8 to code-pages
+     * @var array $encode
+     *  Maps of UTF-8 to code-pages
      */
     private $encode = null;
 
     /**
-     * @var Printer Printer for output
+     * @var Printer $printer
+     *  Printer for output
      */
     private $printer;
 
@@ -135,14 +138,17 @@ class EscposPrintBuffer implements PrintBuffer
     }
 
     /**
-     * Return an encoding which we can start to use for outputting this text. Later parts of the text need not be included in the returned code page.
+     * Return an encoding which we can start to use for outputting this text.
+     * Later parts of the text need not be included in the returned code page.
      *
      * @param string $text Input text to check.
-     * @return boolean|integer Code page number, or FALSE if the text is not printable on any supported encoding.
+     * @return boolean|integer Code page number, or FALSE if the text is not
+     *  printable on any supported encoding.
      */
     private function identifyText($text)
     {
-        // TODO Replace this with an algorithm to choose the encoding which will encode the farthest into the string, to minimise code page changes.
+        // TODO Replace this with an algorithm to choose the encoding which will
+        //      encode the farthest into the string, to minimise code page changes.
         $char = mb_substr($text, 0, 1, self::INPUT_ENCODING);
         if (!isset($this -> available[$char])) {
             /* Character not available anywhere */
@@ -156,7 +162,8 @@ class EscposPrintBuffer implements PrintBuffer
     }
     
     /**
-     * Based on the printer's connector, compute (or load a cached copy of) maps of UTF character to unicode characters for later use.
+     * Based on the printer's connector, compute (or load a cached copy of) maps
+     * of UTF character to unicode characters for later use.
      */
     private function loadAvailableCharacters()
     {
@@ -164,7 +171,8 @@ class EscposPrintBuffer implements PrintBuffer
         $profile = $this -> printer -> getPrinterCapabilityProfile();
         $profileClass = explode("\\", get_class($profile));
         $profileName = array_pop($profileClass);
-        $cacheFile = dirname(__FILE__) . "/cache/Characters-" . $profileName . ".ser" . (self::COMPRESS_CACHE ? ".z" : "");
+        $cacheFile = dirname(__FILE__) . "/cache/Characters-" . $profileName . ".ser" .
+            (self::COMPRESS_CACHE ? ".z" : "");
         $cacheKey = md5(serialize($supportedCodePages));
         /* Check for pre-generated file */
         if (file_exists($cacheFile)) {
@@ -174,7 +182,8 @@ class EscposPrintBuffer implements PrintBuffer
             }
             if ($cacheData) {
                 $dataArray = unserialize($cacheData);
-                if (isset($dataArray["key"]) && isset($dataArray["available"]) && isset($dataArray["encode"]) && $dataArray["key"] == $cacheKey) {
+                if (isset($dataArray["key"]) && isset($dataArray["available"]) &&
+                        isset($dataArray["encode"]) && $dataArray["key"] == $cacheKey) {
                     $this -> available = $dataArray["available"];
                     $this -> encode = $dataArray["encode"];
                     return;

@@ -82,8 +82,11 @@ class ImagickEscposImage extends EscposImage
     }
 
     /**
-     * {@inheritDoc}
-     * @see EscposImage::loadImageData()
+     * Load an image from disk, into memory, using Imagick.
+     *
+     * @param string $filename The filename to load from
+     * @throws Exception if the image format is not supported,
+     *  or the file cannot be opened.
      */
     protected function loadImageData($filename = null)
     {
@@ -139,7 +142,7 @@ class ImagickEscposImage extends EscposImage
      *
      * @param string $filename Filename to load
      * @throws Exception Wrapped Imagick error if image can't be loaded
-     * @return \Imagick Loaded image
+     * @return Imagick Loaded image
      */
     private function getImageFromFile($filename)
     {
