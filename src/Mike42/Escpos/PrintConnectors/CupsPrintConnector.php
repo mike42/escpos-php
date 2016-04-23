@@ -51,7 +51,7 @@ class CupsPrintConnector implements PrintConnector
         }
         
         if (array_search($dest, $valid, true) === false) {
-            throw new BadMethodCallException("'$dest' is not a printer on this system. " . 
+            throw new BadMethodCallException("'$dest' is not a printer on this system. " .
                 "Printers are: [" . implode(", ", $valid) . "]");
         }
         $this->buffer = array ();

@@ -39,9 +39,9 @@ abstract class CodePage
     const CP273 = "CP273";
 
     /**
-     * CP273
+     * CP274
      */
-    const CP273 = "CP274";
+    const CP274 = "CP274";
 
     /**
      * CP275
@@ -49,9 +49,9 @@ abstract class CodePage
     const CP275 = "CP275";
 
     /**
-     * CP275
+     * CP278
      */
-    const CP275 = "CP278";
+    const CP278 = "CP278";
 
     /**
      * CP280
@@ -79,9 +79,9 @@ abstract class CodePage
     const CP285 = "CP285";
 
     /**
-     * CP285
+     * CP290
      */
-    const CP285 = "CP290";
+    const CP290 = "CP290";
 
     /**
      * CP297
@@ -174,9 +174,9 @@ abstract class CodePage
     const CP850 = "CP850";
 
     /**
-     * CP850
+     * CP851
      */
-    const CP850 = "CP851";
+    const CP851 = "CP851";
 
     /**
      * CP852
@@ -224,9 +224,9 @@ abstract class CodePage
     const CP864 = "CP864";
 
     /**
-     * CP864
+     * CP865
      */
-    const CP864 = "CP865";
+    const CP865 = "CP865";
 
     /**
      * CP866
