@@ -19,6 +19,13 @@ use Exception;
  */
 class NetworkPrintConnector extends FilePrintConnector
 {
+    /**
+     * Construct a new NetworkPrintConnector
+     *
+     * @param string $ip IP address or hostname to use.
+     * @param string $port The port number to connect on.
+     * @throws Exception Where the socket cannot be opened.
+     */
     public function __construct($ip, $port = "9100")
     {
         $this -> fp = @fsockopen($ip, $port, $errno, $errstr);

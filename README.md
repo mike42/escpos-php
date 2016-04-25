@@ -96,28 +96,28 @@ If you use any other printer with this code, please [let us know](https://github
 #### Composer
 If you are using composer, then add `mike42/escpos-php` as a dependency:
 
-````
+```bash
 composer require mike42/escpos-php
-````
+```
 
 In this case, you would include composer's auto-loader at the top of your source files:
 
-````php
+```php
 <?php
 require __DIR__ . '/vendor/autoload.php';
-````
+```
 
 #### Manually
 If you don't have composer available, then simply download the code and include `autoload.php`:
 
-````
+```bash
 git clone https://github.com/mike42/escpos-php vendor/mike42/escpos-php
-````
+```
 
-````php
+```php
 <?php
 require __DIR__ . '/vendor/mike42/escpos-php/autoload.php');
-````
+```
 
 ### The 'Hello World' receipt
 
@@ -139,24 +139,27 @@ $printer -> close();
 Some examples are below for common interfaces.
 
 Communicate with a printer with an Ethernet interface using `netcat`:
-````
+
+```bash
 php hello-world.php | nc 10.x.x.x. 9100
-````
+```
 
 A USB local printer connected with `usblp` on Linux has a device file (Includes USB-parallel interfaces):
-````
+
+```bash
 php hello-world.php > /dev/usb/lp0
-````
+```
 
 A computer installed into the local `cups` server is accessed through `lp` or `lpr`:
-````
+
+```bash
 php hello-world.php > foo.txt
 lpr -o raw -H localhost -P printer foo.txt
-````
+```
 
 A local or networked printer on a Windows computer is mapped in to a file, and generally requires you to share the printer first:
 
-````
+```
 php hello-world.php > foo.txt
 net use LPT1 \\server\printer
 copy foo.txt LPT1
@@ -171,7 +174,7 @@ To print receipts from PHP, use the most applicable [PrintConnector](https://git
 
 For example, a `NetworkPrintConnector` accepts an IP address and port:
 
-````php
+```php
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
 $connector = new NetworkPrintConnector("10.x.x.x", 9100);
@@ -181,7 +184,7 @@ try {
 } finally {
     $printer -> close();
 }
-````
+```
 
 While a serial printer might use:
 ```php
@@ -235,7 +238,7 @@ Parameters:
 - `PrintConnector $connector`: The PrintConnector to send data to.
 - `AbstractCapabilityProfile $profile` Supported features of this printer. If not set, the DefaultCapabilityProfile will be used, which is suitable for Epson printers.
 
-See [example/interface/]("https://github.com/mike42/escpos-php/tree/master/example/interface/) for ways to open connections for different platforms and interfaces.
+See [example/interface/](https://github.com/mike42/escpos-php/tree/master/example/interface/) for ways to open connections for different platforms and interfaces.
 
 ### barcode($content, $type)
 Print a barcode.
@@ -354,6 +357,13 @@ Parameters:
 
 - `int $height`: Height in dots. If not specified, 8 will be used.
 
+### setBarcodeWidth($width)
+Set barcode bar width.
+
+Parameters:
+
+- `int $width`: Bar width in dots. If not specified, 3 will be used. Values above 6 appear to have no effect.
+
 ### setColor($color)
 Select print color - on printers that support multiple colors.
 
@@ -421,7 +431,7 @@ Parameters:
 # Further notes
 Posts I've written up for people who are learning how to use receipt printers:
 
-* [What is ESC/POS, and how do I use it?](http://mike.bitrevision.com/blog/what-is-escpos-and-how-do-i-use-it), which documents the output of test.php.
+* [What is ESC/POS, and how do I use it?](http://mike.bitrevision.com/blog/what-is-escpos-and-how-do-i-use-it), which documents the output of `example/demo.php`.
 * [Setting up an Epson receipt printer](http://mike.bitrevision.com/blog/2014-20-26-setting-up-an-epson-receipt-printer)
 * [Getting a USB receipt printer working on Linux](http://mike.bitrevision.com/blog/2015-03-getting-a-usb-receipt-printer-working-on-linux)
 
@@ -429,11 +439,11 @@ Posts I've written up for people who are learning how to use receipt printers:
 
 This code is MIT licensed, and you are encouraged to contribute any modifications back to the project.
 
-For development, it's suggested that you load `imagick`, `gd` and `Xdebug` PHP modules, and install `composer`.
+For development, it's suggested that you load `imagick`, `gd` and `Xdebug` PHP exensions, and install `composer`.
 
 The tests are executed on [Travis CI](https://travis-ci.org/mike42/escpos-php) over PHP 5.3, 5.4, 5.5, 5.7, 7, and HHVM. Earlier versions of PHP are not supported.
 
-Fetch a copy of this code and load idependencies with composer:
+Fetch a copy of this code and load dependencies with composer:
 
     git clone https://github.com/mike42/escpos-php
     cd escpos-php/
@@ -446,6 +456,10 @@ Execute unit tests via `phpunit`:
 This project uses the PSR-2 standard, which can be checked via [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer):
 
     php vendor/bin/phpcs --standard=psr2 src/ -n
+
+The developer docs are build with [doxygen](https://github.com/doxygen/doxygen). Re-build them to check for documentation warnings:
+
+    make -C doc clean && make -C doc
 
 Pull requests and bug reports welcome.
 

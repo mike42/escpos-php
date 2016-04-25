@@ -25,115 +25,282 @@ use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
  */
 class Printer
 {
-    /* ASCII codes */
+    /**
+     * ASCII null control character
+     */
     const NUL = "\x00";
+
+    /**
+     * ASCII linefeed control character
+     */
     const LF = "\x0a";
+
+    /**
+     * ASCII escape control character
+     */
     const ESC = "\x1b";
+
+    /**
+     * ASCII form separator control character
+     */
     const FS = "\x1c";
+
+    /**
+     * ASCII form feed control character
+     */
     const FF = "\x0c";
+
+    /**
+     * ASCII group separator control character
+     */
     const GS = "\x1d";
+
+    /**
+     * ASCII data link escape control character
+     */
     const DLE = "\x10";
+
+    /**
+     * ASCII end of transmission control character
+     */
     const EOT = "\x04";
 
     /**
-     * Indicates UPC-A barcode when used with  with Printer::barcode
+     * Indicates UPC-A barcode when used with Printer::barcode
      */
     const BARCODE_UPCA = 65;
 
     /**
-     * Indicates UPC-E barcode when used with  with Printer::barcode
+     * Indicates UPC-E barcode when used with Printer::barcode
      */
     const BARCODE_UPCE = 66;
 
     /**
-     * Indicates JAN13 barcode when used with  with Printer::barcode
+     * Indicates JAN13 barcode when used with Printer::barcode
      */
     const BARCODE_JAN13 = 67;
 
     /**
-     * Indicates JAN8 barcode when used with  with Printer::barcode
+     * Indicates JAN8 barcode when used with Printer::barcode
      */
     const BARCODE_JAN8 = 68;
 
     /**
-     * Indicates CODE39 barcode when used with  with Printer::barcode
+     * Indicates CODE39 barcode when used with Printer::barcode
      */
     const BARCODE_CODE39 = 69;
 
     /**
-     * Indicates ITF barcode when used with  with Printer::barcode
+     * Indicates ITF barcode when used with Printer::barcode
      */
     const BARCODE_ITF = 70;
 
     /**
-     * Indicates CODABAR barcode when used with  with Printer::barcode
+     * Indicates CODABAR barcode when used with Printer::barcode
      */
     const BARCODE_CODABAR = 71;
 
     /**
-     * Indicates CODE93 barcode when used with  with Printer::barcode
+     * Indicates CODE93 barcode when used with Printer::barcode
      */
     const BARCODE_CODE93 = 72;
 
     /**
-     * Indicates CODE128 barcode when used with  with Printer::barcode
+     * Indicates CODE128 barcode when used with Printer::barcode
      */
     const BARCODE_CODE128 = 73;
 
-    /* Barcode HRI (human-readable interpretation) text position */
+    /**
+     * Indicates that HRI (human-readable interpretation) text should not be
+     * printed, when used with Printer::setBarcodeTextPosition
+     */
     const BARCODE_TEXT_NONE = 0;
+
+    /**
+     * Indicates that HRI (human-readable interpretation) text should be printed
+     * above a barcode, when used with Printer::setBarcodeTextPosition
+     */
     const BARCODE_TEXT_ABOVE = 1;
+
+    /**
+     * Indicates that HRI (human-readable interpretation) text should be printed
+     * below a barcode, when used with Printer::setBarcodeTextPosition
+     */
     const BARCODE_TEXT_BELOW = 2;
-    
-    /* Colors */
+
+    /**
+     * Use the first color (usually black), when used with Printer::setColor
+     */
     const COLOR_1 = 0;
+
+    /**
+     * Use the second color (usually red or blue), when used with Printer::setColor
+     */
     const COLOR_2 = 1;
-    
-    /* Cut types */
+
+    /**
+     * Make a full cut, when used with Printer::cut
+     */
     const CUT_FULL = 65;
+
+    /**
+     * Make a partial cut, when used with Printer::cut
+     */
     const CUT_PARTIAL = 66;
-    
-    /* Fonts */
+
+    /**
+     * Use Font A, when used with Printer::setFont
+     */
     const FONT_A = 0;
+
+    /**
+     * Use Font B, when used with Printer::setFont
+     */
     const FONT_B = 1;
+
+    /**
+     * Use Font C, when used with Printer::setFont
+     */
     const FONT_C = 2;
-    
-    /* Image sizing options */
+
+    /**
+     * Use default (high density) image size, when used with Printer::graphics,
+     * Printer::bitImage or Printer::bitImageColumnFormat
+     */
     const IMG_DEFAULT = 0;
+
+    /**
+     * Use lower horizontal density for image printing, when used with Printer::graphics,
+     * Printer::bitImage or Printer::bitImageColumnFormat
+     */
     const IMG_DOUBLE_WIDTH = 1;
+
+    /**
+     * Use lower vertical density for image printing, when used with Printer::graphics,
+     * Printer::bitImage or Printer::bitImageColumnFormat
+     */
     const IMG_DOUBLE_HEIGHT = 2;
-    
-    /* Justifications */
+
+    /**
+     * Align text to the left, when used with Printer::setJustification
+     */
     const JUSTIFY_LEFT = 0;
+
+    /**
+     * Center text, when used with Printer::setJustification
+     */
     const JUSTIFY_CENTER = 1;
+
+    /**
+     * Align text to the right, when used with Printer::setJustification
+     */
     const JUSTIFY_RIGHT = 2;
-    
-    /* Print mode constants */
+
+    /**
+     * Use Font A, when used with Printer::selectPrintMode
+     */
     const MODE_FONT_A = 0;
+
+    /**
+     * Use Font B, when used with Printer::selectPrintMode
+     */
     const MODE_FONT_B = 1;
+
+    /**
+     * Use text emphasis, when used with Printer::selectPrintMode
+     */
     const MODE_EMPHASIZED = 8;
+
+    /**
+     * Use double height text, when used with Printer::selectPrintMode
+     */
     const MODE_DOUBLE_HEIGHT = 16;
+
+    /**
+     * Use double width text, when used with Printer::selectPrintMode
+     */
     const MODE_DOUBLE_WIDTH = 32;
+
+    /**
+     * Underline text, when used with Printer::selectPrintMode
+     */
     const MODE_UNDERLINE = 128;
-    
-    /* QR code error correction levels */
+
+    /**
+     * Indicates error correction level L when used with Printer::qrCode
+     */
     const QR_ECLEVEL_L = 0;
+
+    /**
+     * Indicates error correction level M when used with Printer::qrCode
+     */
     const QR_ECLEVEL_M = 1;
+
+    /**
+     * Indicates error correction level Q when used with Printer::qrCode
+     */
     const QR_ECLEVEL_Q = 2;
+
+    /**
+     * Indicates error correction level H when used with Printer::qrCode
+     */
     const QR_ECLEVEL_H = 3;
-    
-    /* QR code models */
+
+    /**
+     * Indicates QR model 1 when used with Printer::qrCode
+     */
     const QR_MODEL_1 = 1;
+
+    /**
+     * Indicates QR model 2 when used with Printer::qrCode
+     */
     const QR_MODEL_2 = 2;
+
+    /**
+     * Indicates micro QR code when used with Printer::qrCode
+     */
     const QR_MICRO = 3;
-    
-    /* Printer statuses */
+
+    /**
+     * Indicates a request for printer status when used with
+     * Printer::getPrinterStatus (experimental)
+     */
     const STATUS_PRINTER = 1;
+
+    /**
+     * Indicates a request for printer offline cause when used with
+     * Printer::getPrinterStatus (experimental)
+     */
     const STATUS_OFFLINE_CAUSE = 2;
+
+    /**
+     * Indicates a request for error cause when used with Printer::getPrinterStatus
+     * (experimental)
+     */
     const STATUS_ERROR_CAUSE = 3;
+
+    /**
+     * Indicates a request for error cause when used with Printer::getPrinterStatus
+     * (experimental)
+     */
     const STATUS_PAPER_ROLL = 4;
+
+    /**
+     * Indicates a request for ink A status when used with Printer::getPrinterStatus
+     * (experimental)
+     */
     const STATUS_INK_A = 7;
+
+    /**
+     * Indicates a request for ink B status when used with Printer::getPrinterStatus
+     * (experimental)
+     */
     const STATUS_INK_B = 6;
+
+    /**
+     * Indicates a request for peeler status when used with Printer::getPrinterStatus
+     * (experimental)
+     */
     const STATUS_PEELER = 8;
 
     /**
@@ -212,7 +379,7 @@ class Printer
      * available barcode types vary between printers.
      * @throws InvalidArgumentException Where the length or characters used in $content is invalid for the requested barcode format.
      */
-    public function barcode($content, $type = self::BARCODE_CODE39)
+    public function barcode($content, $type = Printer::BARCODE_CODE39)
     {
         /* Validate input */
         self::validateInteger($type, 65, 73, __FUNCTION__, "Barcode type");
@@ -271,15 +438,18 @@ class Printer
      * if its width is not divisible by 8.
      *
      * Should only be used if your printer does not support the graphics() command.
+     * See also bitImageColumnFormat().
      *
      * @param EscposImage $img The image to print
-     * @param EscposImage $size Size modifier for the image.
+     * @param int $size Size modifier for the image. Must be either `Printer::IMG_DEFAULT`
+     *  (default), or any combination of the `Printer::IMG_DOUBLE_HEIGHT` and
+     *  `Printer::IMG_DOUBLE_WIDTH` flags.
      */
-    public function bitImage(EscposImage $img, $size = self::IMG_DEFAULT)
+    public function bitImage(EscposImage $img, $size = Printer::IMG_DEFAULT)
     {
         self::validateInteger($size, 0, 3, __FUNCTION__);
         $rasterData = $img -> toRasterFormat();
-        $header = self::dataHeader(array($img -> getWidthBytes(), $img -> getHeight()), true);
+        $header = Printer::dataHeader(array($img -> getWidthBytes(), $img -> getHeight()), true);
         $this -> connector -> write(self::GS . "v0" . chr($size) . $header);
         $this -> connector -> write($rasterData);
     }
@@ -287,20 +457,25 @@ class Printer
     /**
      * Print an image, using the older "bit image" command in column format.
      *
+     * Should only be used if your printer does not support the graphics() or
+     * bitImage() commands.
+     *
      * @param EscposImage $img The image to print
-     * @param unknown $size Size modifier for the image.
+     * @param int $size Size modifier for the image. Must be either `Printer::IMG_DEFAULT`
+     *  (default), or any combination of the `Printer::IMG_DOUBLE_HEIGHT` and
+     *  `Printer::IMG_DOUBLE_WIDTH` flags.
      */
-    public function bitImageColumnFormat(EscposImage $img, $size = self::IMG_DEFAULT)
+    public function bitImageColumnFormat(EscposImage $img, $size = Printer::IMG_DEFAULT)
     {
-        $highDensityVertical = ! (($size & self::IMG_DOUBLE_HEIGHT) == self::IMG_DOUBLE_HEIGHT);
-        $highDensityHorizontal = ! (($size & self::IMG_DOUBLE_WIDTH) == self::IMG_DOUBLE_WIDTH);
+        $highDensityVertical = ! (($size & self::IMG_DOUBLE_HEIGHT) == Printer::IMG_DOUBLE_HEIGHT);
+        $highDensityHorizontal = ! (($size & self::IMG_DOUBLE_WIDTH) == Printer::IMG_DOUBLE_WIDTH);
         // Experimental column format printing
         // This feature is not yet complete and may produce unpredictable results.
         $this -> connector -> write(self::ESC . "3" . chr(16)); // 16-dot line spacing. This is the correct value on both TM-T20 and TM-U220
         // Header and density code (0, 1, 32, 33) re-used for every line
         $densityCode = ($highDensityHorizontal ? 1 : 0) + ($highDensityVertical ? 32 : 0);
         $colFormatData = $img -> toColumnFormat($highDensityVertical);
-        $header = self::dataHeader(array($img -> getWidth()), true);
+        $header = Printer::dataHeader(array($img -> getWidth()), true);
         foreach ($colFormatData as $line) {
             // Print each line, double density etc for printing are set here also
             $this -> connector -> write(self::ESC . "*" . chr($densityCode) . $header . $line);
@@ -325,7 +500,7 @@ class Printer
      * @param int $mode Cut mode, either Printer::CUT_FULL or Printer::CUT_PARTIAL. If not specified, `Printer::CUT_FULL` will be used.
      * @param int $lines Number of lines to feed
      */
-    public function cut($mode = self::CUT_FULL, $lines = 3)
+    public function cut($mode = Printer::CUT_FULL, $lines = 3)
     {
         // TODO validation on cut() inputs
         $this -> connector -> write(self::GS . "V" . chr($mode) . chr($lines));
@@ -402,7 +577,7 @@ class Printer
      * @param int $type The type of status to request. May be any of the Printer::STATUS_* constants
      * @return stdClass Class containing requested status, or null if either no status was received, or your print connector is unable to read from the printer.
      */
-    public function getPrinterStatus($type = self::STATUS_PRINTER)
+    public function getPrinterStatus($type = Printer::STATUS_PRINTER)
     {
         self::validateIntegerMulti($type, array(array(1, 4), array(6, 8)), __FUNCTION__);
         // Determine which flags we are looking for
@@ -486,27 +661,30 @@ class Printer
      * Print an image to the printer.
      *
      * Size modifiers are:
-     * - IMG_DEFAULT (leave image at original size)
-     * - IMG_DOUBLE_WIDTH
-     * - IMG_DOUBLE_HEIGHT
+     * - Printer::IMG_DEFAULT (leave image at original size)
+     * - Printer::IMG_DOUBLE_WIDTH
+     * - Printer::IMG_DOUBLE_HEIGHT
      *
      * See the example/ folder for detailed examples.
      *
-     * The function bitImage() takes the same parameters, and can be used if
-     * your printer doesn't support the newer graphics commands.
+     * The functions bitImage() and bitImageColumnFormat() take the same
+     * parameters, and can be used if your printer doesn't support the newer
+     * graphics commands.
      *
      * @param EscposImage $img The image to print.
-     * @param int $size Output size modifier for the image.
+     * @param int $size Size modifier for the image. Must be either `Printer::IMG_DEFAULT`
+     *  (default), or any combination of the `Printer::IMG_DOUBLE_HEIGHT` and
+     *  `Printer::IMG_DOUBLE_WIDTH` flags.
      */
-    public function graphics(EscposImage $img, $size = self::IMG_DEFAULT)
+    public function graphics(EscposImage $img, $size = Printer::IMG_DEFAULT)
     {
         self::validateInteger($size, 0, 3, __FUNCTION__);
         $rasterData = $img -> toRasterFormat();
-        $imgHeader = self::dataHeader(array($img -> getWidth(), $img -> getHeight()), true);
+        $imgHeader = Printer::dataHeader(array($img -> getWidth(), $img -> getHeight()), true);
         $tone = '0';
         $colors = '1';
-        $xm = (($size & self::IMG_DOUBLE_WIDTH) == self::IMG_DOUBLE_WIDTH) ? chr(2) : chr(1);
-        $ym = (($size & self::IMG_DOUBLE_HEIGHT) == self::IMG_DOUBLE_HEIGHT) ? chr(2) : chr(1);
+        $xm = (($size & self::IMG_DOUBLE_WIDTH) == Printer::IMG_DOUBLE_WIDTH) ? chr(2) : chr(1);
+        $ym = (($size & self::IMG_DOUBLE_HEIGHT) == Printer::IMG_DOUBLE_HEIGHT) ? chr(2) : chr(1);
         $header = $tone . $xm . $ym . $colors . $imgHeader;
         $this -> wrapperSendGraphicsData('0', 'p', $header . $rasterData);
         $this -> wrapperSendGraphicsData('0', '2');
@@ -545,7 +723,7 @@ class Printer
      * @param int $size Pixel size to use. Must be 1-16 (default 3)
      * @param int $model QR code model to use. Must be one of Printer::QR_MODEL_1, Printer::QR_MODEL_2 (default) or Printer::QR_MICRO (not supported by all printers).
      */
-    public function qrCode($content, $ec = self::QR_ECLEVEL_L, $size = 3, $model = self::QR_MODEL_2)
+    public function qrCode($content, $ec = Printer::QR_ECLEVEL_L, $size = 3, $model = Printer::QR_MODEL_2)
     {
         self::validateString($content, __FUNCTION__);
         self::validateInteger($ec, 0, 3, __FUNCTION__);
@@ -596,18 +774,18 @@ class Printer
      * Select print mode(s).
      *
      * Several MODE_* constants can be OR'd together passed to this function's `$mode` argument. The valid modes are:
-     *  - MODE_FONT_A
-     *  - MODE_FONT_B
-     *  - MODE_EMPHASIZED
-     *  - MODE_DOUBLE_HEIGHT
-     *  - MODE_DOUBLE_WIDTH
-     *  - MODE_UNDERLINE
+     *  - Printer::MODE_FONT_A
+     *  - Printer::MODE_FONT_B
+     *  - Printer::MODE_EMPHASIZED
+     *  - Printer::MODE_DOUBLE_HEIGHT
+     *  - Printer::MODE_DOUBLE_WIDTH
+     *  - Printer::MODE_UNDERLINE
      *
      * @param int $mode The mode to use. Default is Printer::MODE_FONT_A, with no special formatting. This has a similar effect to running initialize().
      */
-    public function selectPrintMode($mode = self::MODE_FONT_A)
+    public function selectPrintMode($mode = Printer::MODE_FONT_A)
     {
-        $allModes = self::MODE_FONT_B | self::MODE_EMPHASIZED | self::MODE_DOUBLE_HEIGHT | self::MODE_DOUBLE_WIDTH | self::MODE_UNDERLINE;
+        $allModes = Printer::MODE_FONT_B | self::MODE_EMPHASIZED | self::MODE_DOUBLE_HEIGHT | self::MODE_DOUBLE_WIDTH | self::MODE_UNDERLINE;
         if (!is_integer($mode) || $mode < 0 || ($mode & $allModes) != $mode) {
             throw new InvalidArgumentException("Invalid mode");
         }
@@ -625,14 +803,27 @@ class Printer
         self::validateInteger($height, 1, 255, __FUNCTION__);
         $this -> connector -> write(self::GS . "h" . chr($height));
     }
-    
+
+    /**
+     * Set barcode bar width.
+     *
+     * @param int $width Bar width in dots. If not specified, 3 will be used.
+     *  Values above 6 appear to have no effect.
+     */
+    public function setBarcodeWidth($width = 3)
+    {
+        self::validateInteger($width, 1, 255, __FUNCTION__);
+        $this -> connector -> write(self::GS . "w" . chr($width));
+    }
     
     /**
      * Set the position for the Human Readable Interpretation (HRI) of barcode characters.
      *
-     * @param position $position. Use Printer::BARCODE_TEXT_NONE to hide the text (default), or any combination of Printer::BARCODE_TEXT_TOP and Printer::BARCODE_TEXT_BOTTOM flags to display the text.
+     * @param int $position. Use Printer::BARCODE_TEXT_NONE to hide the text (default),
+     *  or any combination of Printer::BARCODE_TEXT_ABOVE and Printer::BARCODE_TEXT_BELOW
+     *  flags to display the text.
      */
-    public function setBarcodeTextPosition($position = self::BARCODE_TEXT_NONE)
+    public function setBarcodeTextPosition($position = Printer::BARCODE_TEXT_NONE)
     {
         self::validateInteger($position, 0, 3, __FUNCTION__, "Barcode text position");
         $this -> connector -> write(self::GS . "H" . chr($position));
@@ -654,7 +845,7 @@ class Printer
      *
      * @param int $color Color to use. Must be either Printer::COLOR_1 (default), or Printer::COLOR_2.
      */
-    public function setColor($color = self::COLOR_1)
+    public function setColor($color = Printer::COLOR_1)
     {
         self::validateInteger($color, 0, 1, __FUNCTION__, "Color");
         $this -> connector -> write(self::ESC . "r" . chr($color));
@@ -676,7 +867,7 @@ class Printer
      *
      * @param int $font The font to use. Must be either Printer::FONT_A, Printer::FONT_B, or Printer::FONT_C.
      */
-    public function setFont($font = self::FONT_A)
+    public function setFont($font = Printer::FONT_A)
     {
         self::validateInteger($font, 0, 2, __FUNCTION__);
         $this -> connector -> write(self::ESC . "M" . chr($font));
@@ -687,7 +878,7 @@ class Printer
      *
      * @param int $justification One of Printer::JUSTIFY_LEFT, Printer::JUSTIFY_CENTER, or Printer::JUSTIFY_RIGHT.
      */
-    public function setJustification($justification = self::JUSTIFY_LEFT)
+    public function setJustification($justification = Printer::JUSTIFY_LEFT)
     {
         self::validateInteger($justification, 0, 2, __FUNCTION__);
         $this -> connector -> write(self::ESC . "a" . chr($justification));
@@ -747,13 +938,13 @@ class Printer
      *
      * @param int $underline Either true/false, or one of Printer::UNDERLINE_NONE, Printer::UNDERLINE_SINGLE or Printer::UNDERLINE_DOUBLE. Defaults to Printer::UNDERLINE_SINGLE.
      */
-    public function setUnderline($underline = self::UNDERLINE_SINGLE)
+    public function setUnderline($underline = Printer::UNDERLINE_SINGLE)
     {
         /* Map true/false to underline constants */
         if ($underline === true) {
-            $underline = self::UNDERLINE_SINGLE;
+            $underline = Printer::UNDERLINE_SINGLE;
         } elseif ($underline === false) {
-            $underline = self::UNDERLINE_NONE;
+            $underline = Printer::UNDERLINE_NONE;
         }
         /* Set the underline */
         self::validateInteger($underline, 0, 2, __FUNCTION__);
@@ -775,7 +966,7 @@ class Printer
     }
 
     /**
-     * Add Chinese text to the buffer. This is a specific workaround for the common Zijian printer- The printer will be switched to a two-byte mode and sent GBK-encoded text.
+     * Add Chinese text to the buffer. This is a specific workaround for the common Zijang printer- The printer will be switched to a two-byte mode and sent GBK-encoded text.
      *
      * Support for this will be merged into a print buffer.
      *

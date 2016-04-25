@@ -22,6 +22,9 @@ use Mike42\Escpos\CodePage;
  */
 class P822DCapabilityProfile extends DefaultCapabilityProfile
 {
+    /**
+     * Map of numbers to supported iconv code page names.
+     */
     public function getSupportedCodePages()
     {
         return array(
@@ -100,6 +103,9 @@ class P822DCapabilityProfile extends DefaultCapabilityProfile
         );
     }
     
+    /**
+     * Return true if graphics commands are supported, false if not.
+     */
     public function getSupportsGraphics()
     {
         /* Ask the driver to use bitImage wherever possible instead of graphics */

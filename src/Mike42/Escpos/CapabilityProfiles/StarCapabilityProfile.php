@@ -14,8 +14,14 @@ namespace Mike42\Escpos\CapabilityProfiles;
 
 use Mike42\Escpos\CodePage;
 
+/**
+ * Profile for Star-branded printers.
+ */
 class StarCapabilityProfile extends DefaultCapabilityProfile
 {
+    /**
+     * List of custom code pages.
+     */
     public function getCustomCodePages()
     {
         // Code table reference: http://www.starmicronics.com/support/mannualfolder/sp2000pm.pdf
@@ -39,6 +45,9 @@ class StarCapabilityProfile extends DefaultCapabilityProfile
         );
     }
 
+    /**
+     * Return map of numbers to supported code page names.
+     */
     public function getSupportedCodePages()
     {
         return array(
@@ -93,6 +102,9 @@ class StarCapabilityProfile extends DefaultCapabilityProfile
                 255 => false);
     }
 
+    /**
+     * True for Star command extensions, false if not supported.
+     */
     public function getSupportsStarCommands()
     {
         /* Allows Escpos.php to substitute emulated ESC/POS commands with native ones for this printer. */
