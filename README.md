@@ -431,9 +431,9 @@ Parameters:
 # Further notes
 Posts I've written up for people who are learning how to use receipt printers:
 
-* [What is ESC/POS, and how do I use it?](http://mike.bitrevision.com/blog/what-is-escpos-and-how-do-i-use-it), which documents the output of `example/demo.php`.
-* [Setting up an Epson receipt printer](http://mike.bitrevision.com/blog/2014-20-26-setting-up-an-epson-receipt-printer)
-* [Getting a USB receipt printer working on Linux](http://mike.bitrevision.com/blog/2015-03-getting-a-usb-receipt-printer-working-on-linux)
+* [What is ESC/POS, and how do I use it?](https://mike42.me/blog/what-is-escpos-and-how-do-i-use-it), which documents the output of `example/demo.php`.
+* [Setting up an Epson receipt printer](https://mike42.me/blog/2014-20-26-setting-up-an-epson-receipt-printer)
+* [Getting a USB receipt printer working on Linux](http:s//mike42.me/blog/2015-03-getting-a-usb-receipt-printer-working-on-linux)
 
 # Development
 
