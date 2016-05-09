@@ -87,6 +87,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Zijang NT-58H
 - Zijang ZJ-5870
 - Zijang ZJ-5890T (Marketed as POS 5890T)
+- Zijang ZJ-5890K
 
 If you use any other printer with this code, please [let us know](https://github.com/mike42/escpos-php/issues/new) so that it can be added to the list.
 
