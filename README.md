@@ -118,7 +118,7 @@ git clone https://github.com/mike42/escpos-php vendor/mike42/escpos-php
 
 ```php
 <?php
-require __DIR__ . '/vendor/mike42/escpos-php/autoload.php');
+require __DIR__ . '/vendor/mike42/escpos-php/autoload.php';
 ```
 
 ### The 'Hello World' receipt
