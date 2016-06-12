@@ -471,7 +471,7 @@ class Printer
         $highDensityHorizontal = ! (($size & self::IMG_DOUBLE_WIDTH) == Printer::IMG_DOUBLE_WIDTH);
         // Experimental column format printing
         // This feature is not yet complete and may produce unpredictable results.
-        $this -> connector -> write(self::ESC . "3" . chr(16)); // 16-dot line spacing. This is the correct value on both TM-T20 and TM-U220
+        $this -> setLineSpacing(16); // 16-dot line spacing. This is the correct value on both TM-T20 and TM-U220
         // Header and density code (0, 1, 32, 33) re-used for every line
         $densityCode = ($highDensityHorizontal ? 1 : 0) + ($highDensityVertical ? 32 : 0);
         $colFormatData = $img -> toColumnFormat($highDensityVertical);
@@ -482,7 +482,7 @@ class Printer
             $this -> feed();
             // sleep(0.1); // Reduces the amount of trouble that a TM-U220 has keeping up with large images
         }
-        $this -> connector -> write(self::ESC . "2"); // Revert to default line spacing
+        $this -> setLineSpacing();
     }
 
     /**
@@ -883,7 +883,26 @@ class Printer
         self::validateInteger($justification, 0, 2, __FUNCTION__);
         $this -> connector -> write(self::ESC . "a" . chr($justification));
     }
-    
+
+    /**
+     * Set the height of the line.
+     *
+     * Some printers will allow you to overlap lines with a smaller line feed.
+     *
+     * @param int $height The height of each line, in dots. If not set, the printer
+     *  will reset to its default line spacing.
+     */
+    public function setLineSpacing($height = null)
+    {
+        if ($height === null) {
+            // Reset to default
+            $this -> connector -> write(self::ESC . "2"); // Revert to default line spacing
+            return;
+        }
+        self::validateInteger($height, 1, 255, __FUNCTION__);
+        $this -> connector -> write(self::ESC . "3" . chr($height));
+    }
+
     /**
      * Attach a different print buffer to the printer. Buffers are responsible for handling text output to the printer.
      *

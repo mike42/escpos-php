@@ -983,6 +983,31 @@ class EscposTest extends PHPUnit_Framework_TestCase
         $this -> setExpectedException('InvalidArgumentException');
         $this -> printer -> setColor(3);
     }
+
+    /* Set line spacing */
+    public function testSetLineSpacingDefault()
+    {
+        $this -> printer -> setLineSpacing();
+        $this -> checkOutput("\x1b@\x1b2");
+    }
+
+    public function testSetLineSpacingInvalid()
+    {
+        $this -> setExpectedException('InvalidArgumentException');
+        $this -> printer -> setLineSpacing(300);
+    }
+
+    public function testSetLineSpacingSmaller()
+    {
+        $this -> printer -> setLineSpacing(16);
+        $this -> checkOutput("\x1b@\x1b3\x10");
+    }
+
+    public function testSetLineSpacingLarger()
+    {
+        $this -> printer -> setLineSpacing(32);
+        $this -> checkOutput("\x1b@\x1b3\x20");
+    }
 }
 
 /*
