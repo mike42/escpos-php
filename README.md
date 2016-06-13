@@ -63,6 +63,7 @@ This driver is known to work with the following OS/interface combinations:
 ### Printers
 Many thermal receipt printers support ESC/POS to some degree. This driver has been known to work with:
 
+- AURES ODP-333
 - Bixolon SRP-350III
 - Citizen CBM1000-II
 - EPOS TEP 220M
