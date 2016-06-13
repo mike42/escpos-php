@@ -1,3 +1,4 @@
+---
 language: php
 
 php:
@@ -13,10 +14,10 @@ matrix:
   allow_failures:
     - php: nightly
 
-script:
-  - php vendor/bin/phpcs --standard=psr2 src/ -n
-  - php vendor/bin/phpunit --configuration test/phpunit.xml --coverage-text
-
 install:
   - composer install
 
+script:
+  - php vendor/bin/phpcs --standard=psr2 src/ -n
+  - php vendor/bin/phpunit --configuration test/phpunit.xml --coverage-text
+...
