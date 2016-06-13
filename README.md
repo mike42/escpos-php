@@ -399,6 +399,22 @@ Parameters:
 
 - `int $justification`: One of `Printer::JUSTIFY_LEFT`, `Printer::JUSTIFY_CENTER`, or `Printer::JUSTIFY_RIGHT`.
 
+### setPrintLeftMargin($margin)
+
+Set print area left margin. Reset to default with `Printer::initialize()`.
+
+Parameters:
+
+- `int $margin`: The left margin to set on to the print area, in dots.
+
+### setPrintWidth($width)
+
+Set print area width. This can be used to add a right margin to the print area. Reset to default with `Printer::initialize()`.
+
+Parameters:
+
+- `int $width`: The width of the page print area, in dots.
+
 ### setReverseColors($on)
 Set black/white reverse mode on or off. In this mode, text is printed white on a black background.
 
