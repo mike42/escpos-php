@@ -63,6 +63,7 @@ This driver is known to work with the following OS/interface combinations:
 ### Printers
 Many thermal receipt printers support ESC/POS to some degree. This driver has been known to work with:
 
+- AURES ODP-333
 - Bixolon SRP-350III
 - Citizen CBM1000-II
 - EPOS TEP 220M
@@ -75,6 +76,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Epson TM-U220
 - Epson FX-890 (requires `feedForm()` to release paper).
 - Excelvan HOP-E58 (connect through powered hub)
+- Excelvan HOP-E801 (as above)
 - Okipos 80 Plus III
 - P-822D
 - P85A-401 (make unknown)
@@ -86,6 +88,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Zijang NT-58H
 - Zijang ZJ-5870
 - Zijang ZJ-5890T (Marketed as POS 5890T)
+- Zijang ZJ-5890K
 
 If you use any other printer with this code, please [let us know](https://github.com/mike42/escpos-php/issues/new) so that it can be added to the list.
 
@@ -116,7 +119,7 @@ git clone https://github.com/mike42/escpos-php vendor/mike42/escpos-php
 
 ```php
 <?php
-require __DIR__ . '/vendor/mike42/escpos-php/autoload.php');
+require __DIR__ . '/vendor/mike42/escpos-php/autoload.php';
 ```
 
 ### The 'Hello World' receipt
