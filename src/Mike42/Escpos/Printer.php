@@ -883,7 +883,30 @@ class Printer
         self::validateInteger($justification, 0, 2, __FUNCTION__);
         $this -> connector -> write(self::ESC . "a" . chr($justification));
     }
-    
+
+    /**
+     * Set print area left margin. Reset to default with Printer::initialize()
+     *
+     * @param int $margin The left margin to set on to the print area, in dots.
+     */
+    public function setPrintLeftMargin($margin = 0)
+    {
+        self::validateInteger($margin, 0, 65535, __FUNCTION__);
+        $this -> connector -> write(Printer::GS . 'L' . self::intLowHigh($margin, 2));
+    }
+
+    /**
+     * Set print area width. This can be used to add a right margin to the print area.
+     * Reset to default with Printer::initialize()
+     *
+     * @param int $width The width of the page print area, in dots.
+     */
+    public function setPrintWidth($width = 512)
+    {
+        self::validateInteger($width, 1, 65535, __FUNCTION__);
+         $this -> connector -> write(Printer::GS . 'W' . self::intLowHigh($width, 2));
+    }
+
     /**
      * Attach a different print buffer to the printer. Buffers are responsible for handling text output to the printer.
      *
