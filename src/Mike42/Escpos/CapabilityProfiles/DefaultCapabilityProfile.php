@@ -26,7 +26,24 @@ class DefaultCapabilityProfile extends AbstractCapabilityProfile
      */
     public function getCustomCodePages()
     {
-        return array();
+        return array(
+            'TCVN-3-1' => "                ".
+                          "                ".
+                          "        ăâêôơưđ ".
+                          "     àảãáạ ằẳẵắ ".
+                          "      ặầẩẫấậè ẻẽ".
+                          "éẹềểễếệìỉ   ĩíịò".
+                          " ỏõóọồổỗốộờởỡớợù".
+                          " ủũúụừửữứựỳỷỹýỵ ",
+            'TCVN-3-2' => "                ".
+                          "                ".
+                          " ĂÂ    Ð  ÊÔƠƯ  ".
+                          "     ÀẢÃÁẠ ẰẲẴẮ ".
+                          "      ẶẦẨẪẤẬÈ ẺẼ".
+                          "ÉẸỀỂỄẾỆÌỈ   ĨÍỊÒ".
+                          " ỎÕÓỌỒỔỖỐỘỜỞỠỚỢÙ".
+                          " ỦŨÚỤỪỬỮỨỰỲỶỸÝỴ "
+        );
     }
 
     /**
@@ -66,8 +83,8 @@ class DefaultCapabilityProfile extends AbstractCapabilityProfile
             24 => false, // Thai Character Code 16
             25 => false, // Thai Character Code 17
             26 => false, // Thai Character Code 18
-            30 => false, // TCVN-3: Vietnamese
-            31 => false, // TCVN-3: Vietnamese
+            30 => 'custom:TCVN-3-1', // TCVN-3: Vietnamese
+            31 => 'custom:TCVN-3-2', // TCVN-3: Vietnamese
             32 => CodePage::CP720,
             33 => CodePage::CP775,
             34 => CodePage::CP855,

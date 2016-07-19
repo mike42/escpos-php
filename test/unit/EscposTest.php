@@ -983,6 +983,45 @@ class EscposTest extends PHPUnit_Framework_TestCase
         $this -> setExpectedException('InvalidArgumentException');
         $this -> printer -> setColor(3);
     }
+
+    /* Set print width  */
+    public function testSetPrintWidthDefault()
+    {
+        $this -> printer -> setPrintWidth();
+        $this -> checkOutput("\x1b@\x1dW\x00\x02");
+    }
+
+    public function testSetPrintWidthNarrow()
+    {
+        $this -> printer -> setPrintWidth(400);
+        $this -> checkOutput("\x1b@\x1dW\x90\x01");
+    }
+
+    public function testSetPrintWidthInvalid()
+    {
+        $this -> setExpectedException('InvalidArgumentException');
+        $this -> printer -> setPrintWidth(0);
+    }
+
+    /* Set print left margin  */
+    public function testSetPrintLeftMarginDefault()
+    {
+        $this -> printer -> setPrintLeftMargin();
+        $this -> checkOutput("\x1b@\x1dL\x00\x00");
+    }
+
+    public function testSetPrintLeftMarginWide()
+    {
+        $this -> printer -> setPrintLeftMargin(32);
+        $this -> checkOutput("\x1b@\x1dL\x20\x00");
+    }
+
+    public function testPrintLeftMarginInvalid()
+    {
+        $this -> setExpectedException('InvalidArgumentException');
+        $this -> printer -> setPrintLeftMargin(70000);
+        $this -> checkOutput();
+    }
 }
 
 /*

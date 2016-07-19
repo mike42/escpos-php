@@ -174,4 +174,9 @@ class EscposPrintBufferTest extends PHPUnit_Framework_TestCase
         $this -> buffer -> writeText("דג סקרן שט בים מאוכזב ולפתע מצא לו חברה איך הקליטה" . "\n");
         $this -> checkOutput();
     }
+    
+    public function testVietnamese() {
+        $this -> buffer -> writeText("Tiếng Việt, còn gọi tiếng Việt Nam hay Việt ngữ, là ngôn ngữ của người Việt (người Kinh) và là ngôn ngữ chính thức tại Việt Nam.\n");
+        $this -> checkOutput("\x1b@Ti\x1bt\x1e\xd5ng Vi\xd6t, c\xdfn g\xe4i ti\xd5ng Vi\xd6t Nam hay Vi\xd6t ng\xf7, l\xb5 ng\xabn ng\xf7 c\xf1a ng\xad\xeai Vi\xd6t (ng\xad\xeai Kinh) v\xb5 l\xb5 ng\xabn ng\xf7 ch\xddnh th\xf8c t\xb9i Vi\xd6t Nam.\x0a");
+    }
 }
