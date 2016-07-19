@@ -13,6 +13,7 @@
 namespace Mike42\Escpos;
 
 use Exception;
+use InvalidArgumentException;
 
 /**
  * This class deals with images in raster formats, and converts them into formats
