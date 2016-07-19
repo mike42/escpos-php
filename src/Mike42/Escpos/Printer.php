@@ -748,6 +748,13 @@ class Printer
         $this -> wrapperSend2dCodeData(chr(81), $cn, '', '0');
     }
 
+    public function pdf417($content)
+    {
+        $cn = '0'; // Code type for pdf417 code
+        $this -> wrapperSend2dCodeData(chr(80), $cn, $content, '0');
+        $this -> wrapperSend2dCodeData(chr(81), $cn, '', '0');
+    }
+
     /**
      * Switch character table (code page) manually. Used in conjunction with textRaw() to
      * print special characters which can't be encoded automatically.
