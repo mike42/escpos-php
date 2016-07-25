@@ -66,6 +66,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - AURES ODP-333
 - Bixolon SRP-350III
 - Citizen CBM1000-II
+- Daruma DR800
 - EPOS TEP 220M
 - Epson TM-T88III
 - Epson TM-T88IV
