@@ -21,11 +21,34 @@ use Mike42\Escpos\CodePage;
  */
 class DefaultCapabilityProfile extends AbstractCapabilityProfile
 {
+    /**
+     * List of custom code pages
+     */
     public function getCustomCodePages()
     {
-        return array();
+        return array(
+            'TCVN-3-1' => "                ".
+                          "                ".
+                          "        ăâêôơưđ ".
+                          "     àảãáạ ằẳẵắ ".
+                          "      ặầẩẫấậè ẻẽ".
+                          "éẹềểễếệìỉ   ĩíịò".
+                          " ỏõóọồổỗốộờởỡớợù".
+                          " ủũúụừửữứựỳỷỹýỵ ",
+            'TCVN-3-2' => "                ".
+                          "                ".
+                          " ĂÂ    Ð  ÊÔƠƯ  ".
+                          "     ÀẢÃÁẠ ẰẲẴẮ ".
+                          "      ẶẦẨẪẤẬÈ ẺẼ".
+                          "ÉẸỀỂỄẾỆÌỈ   ĨÍỊÒ".
+                          " ỎÕÓỌỒỔỖỐỘỜỞỠỚỢÙ".
+                          " ỦŨÚỤỪỬỮỨỰỲỶỸÝỴ "
+        );
     }
 
+    /**
+     * Return map of numbers to code page ID's.
+     */
     public function getSupportedCodePages()
     {
         /* Character code tables which the printer understands, mapping to known encoding standards we may be able to encode to.
@@ -60,8 +83,8 @@ class DefaultCapabilityProfile extends AbstractCapabilityProfile
             24 => false, // Thai Character Code 16
             25 => false, // Thai Character Code 17
             26 => false, // Thai Character Code 18
-            30 => false, // TCVN-3: Vietnamese
-            31 => false, // TCVN-3: Vietnamese
+            30 => 'custom:TCVN-3-1', // TCVN-3: Vietnamese
+            31 => 'custom:TCVN-3-2', // TCVN-3: Vietnamese
             32 => CodePage::CP720,
             33 => CodePage::CP775,
             34 => CodePage::CP855,
@@ -99,26 +122,41 @@ class DefaultCapabilityProfile extends AbstractCapabilityProfile
             255 => false);
     }
 
+    /**
+     * Return true for Barcode function B support, false if not supported.
+     */
     public function getSupportsBarcodeB()
     {
         return true;
     }
     
+    /**
+     * Return true for bitImage support, false if not supported.
+     */
     public function getSupportsBitImage()
     {
         return true;
     }
 
+    /**
+     * Return true for graphics support, false if not supported.
+     */
     public function getSupportsGraphics()
     {
         return true;
     }
-
+    
+    /**
+     * Return true for Star command extensions, false if not supported.
+     */
     public function getSupportsStarCommands()
     {
         return false;
     }
 
+    /**
+     * Return true for native QR code support, false if not supported.
+     */
     public function getSupportsQrCode()
     {
         return true;

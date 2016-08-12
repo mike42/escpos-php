@@ -390,10 +390,41 @@ class EscposTest extends PHPUnit_Framework_TestCase
         $this -> printer -> setBarcodeHeight(256);
     }
 
-    public function tesSetBarcodeHeightNonInteger()
+    public function testSetBarcodeHeightNonInteger()
     {
         $this -> setExpectedException('InvalidArgumentException');
         $this -> printer -> setBarcodeHeight('hello');
+    }
+
+    /* Set barcode width */
+    public function testSetBarcodeWidthDefault()
+    {
+        $this -> printer -> setBarcodeWidth();
+        $this -> checkOutput("\x1b@\x1dw\x03");
+    }
+    
+    public function testBarcodeWidth1()
+    {
+        $this -> printer -> setBarcodeWidth(1);
+        $this -> checkOutput("\x1b@\x1dw\x01");
+    }
+    
+    public function testSetBarcodeWidthNegative()
+    {
+        $this -> setExpectedException('InvalidArgumentException');
+        $this -> printer -> setBarcodeWidth(-1);
+    }
+    
+    public function testSetBarcodeWidthTooLarge()
+    {
+        $this -> setExpectedException('InvalidArgumentException');
+        $this -> printer -> setBarcodeWidth(256);
+    }
+    
+    public function testSetBarcodeWidthNonInteger()
+    {
+        $this -> setExpectedException('InvalidArgumentException');
+        $this -> printer -> setBarcodeWidth('hello');
     }
 
     /* Barcode text position */
@@ -951,6 +982,45 @@ class EscposTest extends PHPUnit_Framework_TestCase
     {
         $this -> setExpectedException('InvalidArgumentException');
         $this -> printer -> setColor(3);
+    }
+
+    /* Set print width  */
+    public function testSetPrintWidthDefault()
+    {
+        $this -> printer -> setPrintWidth();
+        $this -> checkOutput("\x1b@\x1dW\x00\x02");
+    }
+
+    public function testSetPrintWidthNarrow()
+    {
+        $this -> printer -> setPrintWidth(400);
+        $this -> checkOutput("\x1b@\x1dW\x90\x01");
+    }
+
+    public function testSetPrintWidthInvalid()
+    {
+        $this -> setExpectedException('InvalidArgumentException');
+        $this -> printer -> setPrintWidth(0);
+    }
+
+    /* Set print left margin  */
+    public function testSetPrintLeftMarginDefault()
+    {
+        $this -> printer -> setPrintLeftMargin();
+        $this -> checkOutput("\x1b@\x1dL\x00\x00");
+    }
+
+    public function testSetPrintLeftMarginWide()
+    {
+        $this -> printer -> setPrintLeftMargin(32);
+        $this -> checkOutput("\x1b@\x1dL\x20\x00");
+    }
+
+    public function testPrintLeftMarginInvalid()
+    {
+        $this -> setExpectedException('InvalidArgumentException');
+        $this -> printer -> setPrintLeftMargin(70000);
+        $this -> checkOutput();
     }
 }
 

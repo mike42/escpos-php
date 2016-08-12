@@ -60,15 +60,15 @@ class EscposPrintBufferTest extends PHPUnit_Framework_TestCase
     public function testGreek()
     {
         $this -> buffer -> writeText("Ξεσκεπάζω την ψυχοφθόρα βδελυγμία");
-        $this -> checkOutput("\x1b@\x1bt\x0b\xbd\xde\xec\xe4\xde\xea\x9b\xe0\xfa \xee\xe1\xe7 \xf6\xf2\xf4\xe9\xf3\xe2\xa2\xeb\xd6 \xd7\xdd\xde\xe5\xf2\xd8\xe6\x9f\xd6");
+        $this -> checkOutput("\x1b@\x1bt\x0e\x8d\x9c\xa9\xa1\x9c\xa7\xe1\x9d\xe0 \xab\x9e\xa4 \xaf\xac\xae\xa6\xad\x9f\xe6\xa8\x98 \x99\x9b\x9c\xa2\xac\x9a\xa3\xe5\x98");
     }
-    
+
     public function testGreekWithDiacritics()
     {
         // This is a string which is known to be un-printable in ESC/POS (the grave-accented letters are not in any code page),
         // so we are checking the substitution '?' for unknown characters.
         $this -> buffer -> writeText("Γαζέες καὶ μυρτιὲς δὲν θὰ βρῶ πιὰ στὸ χρυσαφὶ ξέφωτο.\n");
-        $this -> checkOutput("\x1b@\xe2\xe0\x1bt\x0b\xe0\x9d\xde\xed \xe4\xd6? \xe6\xf2\xeb\xee\xe3?\xed \xdd?\xe7 \xe2? \xd7\xeb? \xea\xe3? \xec\xee? \xf4\xeb\xf2\xec\xd6\xf3? \xe8\x9d\xf3\xfa\xee\xe9.\x0a");
+        $this -> checkOutput("\x1b@\xe2\xe0\x1bt\x0e\x9d\xe2\x9c\xaa \xa1\x98? \xa3\xac\xa8\xab\xa0?\xaa \x9b?\xa4 \x9f? \x99\xa8? \xa7\xa0? \xa9\xab? \xae\xa8\xac\xa9\x98\xad? \xa5\xe2\xad\xe0\xab\xa6.\x0a");
     }
 
     public function testEnglish()
@@ -173,5 +173,10 @@ class EscposPrintBufferTest extends PHPUnit_Framework_TestCase
         $this -> markTestIncomplete("Right-to-left text not yet supported.");
         $this -> buffer -> writeText("דג סקרן שט בים מאוכזב ולפתע מצא לו חברה איך הקליטה" . "\n");
         $this -> checkOutput();
+    }
+    
+    public function testVietnamese() {
+        $this -> buffer -> writeText("Tiếng Việt, còn gọi tiếng Việt Nam hay Việt ngữ, là ngôn ngữ của người Việt (người Kinh) và là ngôn ngữ chính thức tại Việt Nam.\n");
+        $this -> checkOutput("\x1b@Ti\x1bt\x1e\xd5ng Vi\xd6t, c\xdfn g\xe4i ti\xd5ng Vi\xd6t Nam hay Vi\xd6t ng\xf7, l\xb5 ng\xabn ng\xf7 c\xf1a ng\xad\xeai Vi\xd6t (ng\xad\xeai Kinh) v\xb5 l\xb5 ng\xabn ng\xf7 ch\xddnh th\xf8c t\xb9i Vi\xd6t Nam.\x0a");
     }
 }

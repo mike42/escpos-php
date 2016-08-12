@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../autoload.php';
 use Mike42\Escpos\Printer;
-use Mike42\Escpos\EscposImage;
+use Mike42\Escpos\ImagickEscposImage;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 
 /*
@@ -16,7 +16,7 @@ $pdf = 'resources/document.pdf';
 $connector = new FilePrintConnector("php://stdout");
 $printer = new Printer($connector);
 try {
-    $pages = EscposImage::loadPdf($pdf);
+    $pages = ImagickEscposImage::loadPdf($pdf);
     foreach ($pages as $page) {
         $printer -> graphics($page);
     }
@@ -41,7 +41,7 @@ try {
 $connector = new FilePrintConnector("php://stdout");
 $printer = new Printer($connector);
 $pdf = 'resources/document.pdf';
-$pages = EscposImage::loadPdf($pdf, 260);
+$pages = ImagickEscposImage::loadPdf($pdf, 260);
 foreach ($pages as $page) {
     $printer -> graphics($page, Printer::IMG_DOUBLE_HEIGHT | Printer::IMG_DOUBLE_WIDTH);
 }
@@ -62,7 +62,7 @@ $printer = new Printer($connector);
 $pdf = 'resources/document.pdf';
 $ser = 'resources/document.z';
 if (!file_exists($ser)) {
-    $pages = EscposImage::loadPdf($pdf);
+    $pages = ImagickEscposImage::loadPdf($pdf);
 } else {
     $pages = unserialize(gzuncompress(file_get_contents($ser)));
 }

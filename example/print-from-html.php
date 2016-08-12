@@ -9,7 +9,7 @@ $printer = new Printer($connector);
 
 /*
  * Due to its complxity, escpos-php does not support HTML input. To print HTML,
- * either convert it to calls on the Escpos() object, or rasterise the page with
+ * either convert it to calls on the Printer() object, or rasterise the page with
  * wkhtmltopdf, an external package which is designed to handle HTML efficiently.
  *
  * This example is provided to get you started: On Debian, first run-

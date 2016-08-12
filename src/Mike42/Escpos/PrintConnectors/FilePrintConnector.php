@@ -20,7 +20,8 @@ use Exception;
 class FilePrintConnector implements PrintConnector
 {
     /**
-     * @var resource The file pointer to send data to.
+     * @var resource $fp
+     *  The file pointer to send data to.
      */
     protected $fp;
 

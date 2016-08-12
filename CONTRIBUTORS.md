@@ -1,7 +1,7 @@
 # escpos-php contributors
 
 This file contains a list of people who have made contributions of 
-code which to the public repository of escpos-php.
+code which appear in the public repository of escpos-php.
 
 Main repository: [mike42/escpos-php](https://github.com/mike42/escpos-php) ([online contributor list](https://github.com/mike42/escpos-php/graphs/contributors))
 
@@ -10,6 +10,7 @@ Main repository: [mike42/escpos-php](https://github.com/mike42/escpos-php) ([onl
 - [Mareks Sudniks](https://github.com/marech)
 - [matiasgaston](https://github.com/matiasgaston)
 - [Mike Stivala](https://github.com/brndwgn)
+- [Nicholas Long](https://github.com/longsview)
 
 Via fork: [wdoyle/EpsonESCPOS-PHP](https://github.com/wdoyle/EpsonESCPOS-PHP):
 
