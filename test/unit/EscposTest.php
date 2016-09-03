@@ -925,14 +925,6 @@ class EscposTest extends PHPUnit_Framework_TestCase
         $this -> printer -> feedForm();
         $this -> checkOutput("\x1b@\x0c");
     }
-    
-    /* Get status  */
-    public function testGetStatus()
-    {
-        $this -> markTestIncomplete("Status check test code not implemented.");
-        // TODO some unit testing here on statuses
-        // $a = $this -> printer -> getPrinterStatus(Printer::STATUS_PRINTER);
-    }
 
     /* Set text size  */
     public function testSetTextSizeNormal()
