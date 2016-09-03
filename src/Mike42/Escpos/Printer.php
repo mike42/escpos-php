@@ -471,7 +471,7 @@ class Printer
         $highDensityHorizontal = ! (($size & self::IMG_DOUBLE_WIDTH) == Printer::IMG_DOUBLE_WIDTH);
         // Experimental column format printing
         // This feature is not yet complete and may produce unpredictable results.
-        $this -> connector -> write(self::ESC . "3" . chr(16)); // 16-dot line spacing. This is the correct value on both TM-T20 and TM-U220
+        $this -> setLineSpacing(16); // 16-dot line spacing. This is the correct value on both TM-T20 and TM-U220
         // Header and density code (0, 1, 32, 33) re-used for every line
         $densityCode = ($highDensityHorizontal ? 1 : 0) + ($highDensityVertical ? 32 : 0);
         $colFormatData = $img -> toColumnFormat($highDensityVertical);
@@ -482,7 +482,7 @@ class Printer
             $this -> feed();
             // sleep(0.1); // Reduces the amount of trouble that a TM-U220 has keeping up with large images
         }
-        $this -> connector -> write(self::ESC . "2"); // Revert to default line spacing
+        $this -> setLineSpacing(); // Revert to default line spacing
     }
 
     /**
