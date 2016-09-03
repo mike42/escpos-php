@@ -404,6 +404,16 @@ Parameters:
 
 - `int $justification`: One of `Printer::JUSTIFY_LEFT`, `Printer::JUSTIFY_CENTER`, or `Printer::JUSTIFY_RIGHT`.
 
+### setLineSpacing($height)
+
+Set the height of the line.
+
+Some printers will allow you to overlap lines with a smaller line feed.
+
+Parameters:
+
+- `int	$height`:	The height of each line, in dots. If not set, the printer will reset to its default line spacing.
+
 ### setPrintLeftMargin($margin)
 
 Set print area left margin. Reset to default with `Printer::initialize()`.
