@@ -925,14 +925,6 @@ class EscposTest extends PHPUnit_Framework_TestCase
         $this -> printer -> feedForm();
         $this -> checkOutput("\x1b@\x0c");
     }
-    
-    /* Get status  */
-    public function testGetStatus()
-    {
-        $this -> markTestIncomplete("Status check test code not implemented.");
-        // TODO some unit testing here on statuses
-        // $a = $this -> printer -> getPrinterStatus(Printer::STATUS_PRINTER);
-    }
 
     /* Set text size  */
     public function testSetTextSizeNormal()
@@ -1007,6 +999,45 @@ class EscposTest extends PHPUnit_Framework_TestCase
     {
         $this -> printer -> setLineSpacing(32);
         $this -> checkOutput("\x1b@\x1b3\x20");
+    }
+
+    /* Set print width  */
+    public function testSetPrintWidthDefault()
+    {
+        $this -> printer -> setPrintWidth();
+        $this -> checkOutput("\x1b@\x1dW\x00\x02");
+    }
+
+    public function testSetPrintWidthNarrow()
+    {
+        $this -> printer -> setPrintWidth(400);
+        $this -> checkOutput("\x1b@\x1dW\x90\x01");
+    }
+
+    public function testSetPrintWidthInvalid()
+    {
+        $this -> setExpectedException('InvalidArgumentException');
+        $this -> printer -> setPrintWidth(0);
+    }
+
+    /* Set print left margin  */
+    public function testSetPrintLeftMarginDefault()
+    {
+        $this -> printer -> setPrintLeftMargin();
+        $this -> checkOutput("\x1b@\x1dL\x00\x00");
+    }
+
+    public function testSetPrintLeftMarginWide()
+    {
+        $this -> printer -> setPrintLeftMargin(32);
+        $this -> checkOutput("\x1b@\x1dL\x20\x00");
+    }
+
+    public function testPrintLeftMarginInvalid()
+    {
+        $this -> setExpectedException('InvalidArgumentException');
+        $this -> printer -> setPrintLeftMargin(70000);
+        $this -> checkOutput();
     }
 }
 

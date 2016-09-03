@@ -16,7 +16,8 @@ $inputsOk = array(
         "Polish" => "Pchnąć w tę łódź jeża lub ośm skrzyń fig.\n",
         "Russian" => "В чащах юга жил бы цитрус? Да, но фальшивый экземпляр!\n",
         "Turkish" => "Pijamalı hasta, yağız şoföre çabucak güvendi.\n",
-        "Japanese (Katakana half-width)" => implode("\n", array("ｲﾛﾊﾆﾎﾍﾄ ﾁﾘﾇﾙｦ ﾜｶﾖﾀﾚｿ ﾂﾈﾅﾗﾑ",  "ｳｲﾉｵｸﾔﾏ ｹﾌｺｴﾃ ｱｻｷﾕﾒﾐｼ ｴﾋﾓｾｽﾝ")) . "\n"
+        "Japanese (Katakana half-width)" => implode("\n", array("ｲﾛﾊﾆﾎﾍﾄ ﾁﾘﾇﾙｦ ﾜｶﾖﾀﾚｿ ﾂﾈﾅﾗﾑ",  "ｳｲﾉｵｸﾔﾏ ｹﾌｺｴﾃ ｱｻｷﾕﾒﾐｼ ｴﾋﾓｾｽﾝ")) . "\n",
+        "Vietnamese" => "Tiếng Việt, còn gọi tiếng Việt Nam hay Việt ngữ, là ngôn ngữ của người Việt (người Kinh) và là ngôn ngữ chính thức tại Việt Nam.\n"
         );
 
 /*
