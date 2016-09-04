@@ -471,7 +471,7 @@ class Printer
         $highDensityHorizontal = ! (($size & self::IMG_DOUBLE_WIDTH) == Printer::IMG_DOUBLE_WIDTH);
         // Experimental column format printing
         // This feature is not yet complete and may produce unpredictable results.
-        $this -> connector -> write(self::ESC . "3" . chr(16)); // 16-dot line spacing. This is the correct value on both TM-T20 and TM-U220
+        $this -> setLineSpacing(16); // 16-dot line spacing. This is the correct value on both TM-T20 and TM-U220
         // Header and density code (0, 1, 32, 33) re-used for every line
         $densityCode = ($highDensityHorizontal ? 1 : 0) + ($highDensityVertical ? 32 : 0);
         $colFormatData = $img -> toColumnFormat($highDensityVertical);
@@ -482,7 +482,7 @@ class Printer
             $this -> feed();
             // sleep(0.1); // Reduces the amount of trouble that a TM-U220 has keeping up with large images
         }
-        $this -> connector -> write(self::ESC . "2"); // Revert to default line spacing
+        $this -> setLineSpacing(); // Revert to default line spacing
     }
 
     /**
@@ -573,90 +573,6 @@ class Printer
         return $this -> profile;
     }
 
-    /**
-     * @param int $type The type of status to request. May be any of the Printer::STATUS_* constants
-     * @return stdClass Class containing requested status, or null if either no status was received, or your print connector is unable to read from the printer.
-     */
-    public function getPrinterStatus($type = Printer::STATUS_PRINTER)
-    {
-        self::validateIntegerMulti($type, array(array(1, 4), array(6, 8)), __FUNCTION__);
-        // Determine which flags we are looking for
-        $statusFlags = array(
-                self::STATUS_PRINTER => array(
-                    4 => "pulseHigh", // connector pin 3, see pulse().
-                    8 => "offline",
-                    32 => "waitingForOnlineRecovery",
-                    64 => "feedButtonPressed"
-                ),
-                self::STATUS_OFFLINE_CAUSE => array(
-                    4 => "coverOpen",
-                    8 => "paperManualFeed",
-                    32 => "paperEnd",
-                    64 => "errorOccurred"
-                ),
-                self::STATUS_ERROR_CAUSE => array(
-                    4 => "recoverableError",
-                    8 => "autocutterError",
-                    32 => "unrecoverableError",
-                    64 => "autorecoverableError"
-                ),
-                self::STATUS_PAPER_ROLL => array(
-                    4 => "paperNearEnd",
-                    32 => "paperNotPresent"
-                ),
-                self::STATUS_INK_A => array(
-                    4 => "inkNearEnd",
-                    8 => "inkEnd",
-                    32 => "inkNotPresent",
-                    64 => "cleaning"
-                ),
-                self::STATUS_INK_B => array(
-                    4 => "inkNearEnd",
-                    8 => "inkEnd",
-                    32 => "inkNotPresent"
-                ),
-                self::STATUS_PEELER => array(
-                    4 => "labelWaitingForRemoval",
-                    32 => "labelPaperNotDetected"
-                )
-        );
-        $flags = $statusFlags[$type];
-        // Clear any previous statuses which haven't been read yet
-        $f = $this -> connector -> read(1);
-        // Make request
-        $reqC = chr($type);
-        switch ($type) {
-            // Special cases: These are two-character requests
-            case self::STATUS_INK_A:
-                $reqC = chr(7) . chr(1);
-                break;
-            case self::STATUS_INK_B:
-                $reqC = chr(7) . chr(2);
-                break;
-            case self::STATUS_PEELER:
-                $reqC = chr(8) . chr(3);
-                break;
-        }
-        $this -> connector -> write(self::DLE . self::EOT . $reqC);
-        // Wait for single-character response
-        $f = $this -> connector -> read(1);
-        $i = 0;
-        while (($f === false || strlen($f) == 0) && $i < 50000) {
-            usleep(100);
-            $f = $this -> connector -> read(1);
-            $i++;
-        }
-        if ($f === false || strlen($f) == 0) {
-            // Timeout
-            return null;
-        }
-        $ret = new \stdClass();
-        foreach ($flags as $num => $name) {
-            $ret -> $name = (ord($f) & $num) != 0;
-        }
-        return $ret;
-    }
-    
     /**
      * Print an image to the printer.
      *
@@ -890,7 +806,49 @@ class Printer
         self::validateInteger($justification, 0, 2, __FUNCTION__);
         $this -> connector -> write(self::ESC . "a" . chr($justification));
     }
-    
+
+    /**
+     * Set the height of the line.
+     *
+     * Some printers will allow you to overlap lines with a smaller line feed.
+     *
+     * @param int $height The height of each line, in dots. If not set, the printer
+     *  will reset to its default line spacing.
+     */
+    public function setLineSpacing($height = null)
+    {
+        if ($height === null) {
+            // Reset to default
+            $this -> connector -> write(self::ESC . "2"); // Revert to default line spacing
+            return;
+        }
+        self::validateInteger($height, 1, 255, __FUNCTION__);
+        $this -> connector -> write(self::ESC . "3" . chr($height));
+    }
+
+    /**
+     * Set print area left margin. Reset to default with Printer::initialize()
+     *
+     * @param int $margin The left margin to set on to the print area, in dots.
+     */
+    public function setPrintLeftMargin($margin = 0)
+    {
+        self::validateInteger($margin, 0, 65535, __FUNCTION__);
+        $this -> connector -> write(Printer::GS . 'L' . self::intLowHigh($margin, 2));
+    }
+
+    /**
+     * Set print area width. This can be used to add a right margin to the print area.
+     * Reset to default with Printer::initialize()
+     *
+     * @param int $width The width of the page print area, in dots.
+     */
+    public function setPrintWidth($width = 512)
+    {
+        self::validateInteger($width, 1, 65535, __FUNCTION__);
+         $this -> connector -> write(Printer::GS . 'W' . self::intLowHigh($width, 2));
+    }
+
     /**
      * Attach a different print buffer to the printer. Buffers are responsible for handling text output to the printer.
      *

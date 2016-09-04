@@ -1,4 +1,4 @@
-# ESC/POS Print Driver for PHP
+# ESC/POS Print Driver for PHP [![Build Status](https://travis-ci.org/mike42/escpos-php.svg?branch=master)](https://travis-ci.org/mike42/escpos-php)
 
 This project implements a subset of Epson's ESC/POS protocol for thermal receipt printers. It allows you to generate and print receipts with basic formatting, cutting, and barcodes on a compatible printer.
 
@@ -64,8 +64,10 @@ This driver is known to work with the following OS/interface combinations:
 Many thermal receipt printers support ESC/POS to some degree. This driver has been known to work with:
 
 - AURES ODP-333
+- AURES ODP-500
 - Bixolon SRP-350III
 - Citizen CBM1000-II
+- Daruma DR800
 - EPOS TEP 220M
 - Epson TM-T88III
 - Epson TM-T88IV
@@ -401,6 +403,32 @@ Select justification.
 Parameters:
 
 - `int $justification`: One of `Printer::JUSTIFY_LEFT`, `Printer::JUSTIFY_CENTER`, or `Printer::JUSTIFY_RIGHT`.
+
+### setLineSpacing($height)
+
+Set the height of the line.
+
+Some printers will allow you to overlap lines with a smaller line feed.
+
+Parameters:
+
+- `int	$height`:	The height of each line, in dots. If not set, the printer will reset to its default line spacing.
+
+### setPrintLeftMargin($margin)
+
+Set print area left margin. Reset to default with `Printer::initialize()`.
+
+Parameters:
+
+- `int $margin`: The left margin to set on to the print area, in dots.
+
+### setPrintWidth($width)
+
+Set print area width. This can be used to add a right margin to the print area. Reset to default with `Printer::initialize()`.
+
+Parameters:
+
+- `int $width`: The width of the page print area, in dots.
 
 ### setReverseColors($on)
 Set black/white reverse mode on or off. In this mode, text is printed white on a black background.
