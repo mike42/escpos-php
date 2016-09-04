@@ -145,7 +145,15 @@ class DefaultCapabilityProfile extends AbstractCapabilityProfile
     {
         return true;
     }
-    
+
+    /**
+     * Return true for native QR code support, false if not supported.
+     */
+    public function getSupportsPdf417Code()
+    {
+        return true;
+    }
+
     /**
      * Return true for Star command extensions, false if not supported.
      */

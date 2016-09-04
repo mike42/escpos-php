@@ -114,6 +114,15 @@ class ExampleTest extends PHPUnit_Framework_TestCase
         $this -> outpTest($outp, "margins-and-spacing.bin");
     }
 
+    /**
+     * @medium
+     */
+    public function testPdf417Code()
+    {
+        $outp = $this -> runExample("pdf417-code.php");
+        $this -> outpTest($outp, "pdf417-code.bin");
+    }
+
     public function testInterfaceCups()
     {
         $outp = $this -> runSyntaxCheck("interface/cups.php");

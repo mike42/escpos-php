@@ -1,5 +1,6 @@
 <?php
 use Mike42\Escpos\Printer;
+use Mike42\Escpos\CapabilityProfiles\SimpleCapabilityProfile;
 use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
 use Mike42\Escpos\EscposImage;
 
@@ -878,6 +879,59 @@ class EscposTest extends PHPUnit_Framework_TestCase
         $img = EscposImage::load(dirname(__FILE__)."/resources/black_transparent.png");
         $this -> printer -> graphics($img);
         $this -> checkOutput("\x1b@\x1d(L\x0c\x000p0\x01\x011\x02\x00\x02\x00\xc0\x00\x1d(L\x02\x0002");
+    }
+
+    /* PDF417 code */
+    public function testPdf417CodeDefaults()
+    {
+        $this -> printer -> pdf417Code("1234");
+        $this -> checkOutput("\x1b@\x1d(k\x03\x000F\x00\x1d(k\x03\x000A\x00\x1d(k\x03\x000C\x03\x1d(k\x03\x000D\x03\x1d(k\x04\x000E1\x01\x1d(k\x07\x000P01234\x1d(k\x03\x000Q0");
+    }
+
+    public function testPdf417CodeEmpty()
+    {
+        $this -> printer -> pdf417Code('');
+        $this -> checkOutput("\x1b@"); // No commands actually sent
+    }
+
+    public function testPdf417CodeNotSupported()
+    {
+        $this -> setExpectedException('Exception');
+        $profile = SimpleCapabilityProfile::getInstance();
+        $this -> printer = new Printer($this -> outputConnector, $profile);
+        $this -> printer -> pdf417Code("1234");
+    }
+
+    public function testPdf417CodeChangeGeometry()
+    {
+        // 7-dot wide, 4-times height, 4 data columns
+        $this -> printer -> pdf417Code("1234", 7, 4, 4);
+        $this -> checkOutput("\x1b@\x1d(k\x03\x000F\x00\x1d(k\x03\x000A\x04\x1d(k\x03\x000C\x07\x1d(k\x03\x000D\x04\x1d(k\x04\x000E1\x01\x1d(k\x07\x000P01234\x1d(k\x03\x000Q0");
+    }
+
+    public function testPdf417CodeChangeErrorCorrection()
+    {
+        $this -> printer -> pdf417Code("1234", 3, 3, 0, 0.5);
+        $this -> checkOutput("\x1b@\x1d(k\x03\x000F\x00\x1d(k\x03\x000A\x00\x1d(k\x03\x000C\x03\x1d(k\x03\x000D\x03\x1d(k\x04\x000E1\x05\x1d(k\x07\x000P01234\x1d(k\x03\x000Q0");
+    }
+
+    public function testPdf417CodeChangeErrorCorrectionOutOfRange()
+    {
+        $this -> setExpectedException('InvalidArgumentException');
+        $this -> printer -> pdf417Code("1234", 3, 3, 0, 5.0);
+    }
+
+    public function testPdf417CodeChangeErrorCorrectionInvalid()
+    {
+        $this -> setExpectedException('InvalidArgumentException');
+        $this -> printer -> pdf417Code("1234", 3, 3, 0, "Foobar");
+    }
+
+    public function testPdf417CodeChangeOption()
+    {
+        // Use the alternate truncated format
+        $this -> printer -> pdf417Code("1234", 3, 3, 0, 0.1, Printer::PDF417_TRUNCATED);
+        $this -> checkOutput("\x1b@\x1d(k\x03\x000F\x01\x1d(k\x03\x000A\x00\x1d(k\x03\x000C\x03\x1d(k\x03\x000D\x03\x1d(k\x04\x000E1\x01\x1d(k\x07\x000P01234\x1d(k\x03\x000Q0");
     }
 
     /* QR code */

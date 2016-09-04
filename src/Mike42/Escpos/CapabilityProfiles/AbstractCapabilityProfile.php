@@ -64,6 +64,11 @@ abstract class AbstractCapabilityProfile
     abstract public function getSupportsQrCode();
 
     /**
+     * True if printer renders its own PDF417 codes, false to send images
+     */
+    abstract public function getSupportsPdf417Code();
+
+    /**
      * @return AbstractCapabilityProfile Instance of sub-class.
      */
     final public static function getInstance()

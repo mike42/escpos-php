@@ -227,6 +227,16 @@ class Printer
     const MODE_UNDERLINE = 128;
 
     /**
+     * Indicates standard PDF417 code
+     */
+    const PDF417_STANDARD = 0;
+
+    /**
+     * Indicates truncated PDF417 code
+     */
+    const PDF417_TRUNCATED = 1;
+
+    /**
      * Indicates error correction level L when used with Printer::qrCode
      */
     const QR_ECLEVEL_L = 0;
@@ -614,7 +624,54 @@ class Printer
         $this -> connector -> write(self::ESC . "@");
         $this -> characterTable = 0;
     }
-    
+
+    /**
+     * Print a two-dimensional data code using the PDF417 standard.
+     *
+     * @param string $content Text or numbers to store in the code
+     * @param number $width Width of a module (pixel) in the printed code.
+     *  Default is 3 dots.
+     * @param number $heightMultiplier Multiplier for height of a module.
+     *  Default is 3 times the width.
+     * @param number $dataColumnCount Number of data columns to use. 0 (default)
+     *  is to auto-calculate. Smaller numbers will result in a narrower code,
+     *  making larger pixel sizes possible. Larger numbers require smaller pixel sizes.
+     * @param real $ec Error correction ratio, from 0.01 to 4.00. Default is 0.10 (10%).
+     * @param number $options Standard code Printer::PDF417_STANDARD with
+     *  start/end bars, or truncated code Printer::PDF417_TRUNCATED with start bars only.
+     * @throws Exception If this profile indicates that PDF417 code is not supported
+     */
+    public function pdf417Code($content, $width = 3, $heightMultiplier = 3, $dataColumnCount = 0, $ec = 0.10, $options = Printer::PDF417_STANDARD)
+    {
+        self::validateString($content, __FUNCTION__, 'content');
+        self::validateInteger($width, 2, 8, __FUNCTION__, 'width');
+        self::validateInteger($heightMultiplier, 2, 8, __FUNCTION__, 'heightMultiplier');
+        self::validateInteger($dataColumnCount, 0, 30, __FUNCTION__, 'dataColumnCount');
+        self::validateFloat($ec, 0.01, 4.00, __FUNCTION__, 'ec');
+        self::validateInteger($options, 0, 1, __FUNCTION__, 'options');
+        if ($content == "") {
+            return;
+        }
+        if (!$this -> profile -> getSupportsPdf417Code()) {
+            // TODO use software rendering via a library instead
+            throw new Exception("PDF417 codes are not supported on your printer.");
+        }
+        $cn = '0'; // Code type for pdf417 code
+        // Select model: standard or truncated
+        $this -> wrapperSend2dCodeData(chr(70), $cn, chr($options));
+        // Column count
+        $this -> wrapperSend2dCodeData(chr(65), $cn, chr($dataColumnCount));
+        // Set dot sizes
+        $this -> wrapperSend2dCodeData(chr(67), $cn, chr($width));
+        $this -> wrapperSend2dCodeData(chr(68), $cn, chr($heightMultiplier));
+        // Set error correction ratio: 1% to 400%
+        $ec_int = (int)ceil(floatval($ec) * 10);
+        $this -> wrapperSend2dCodeData(chr(69), $cn, chr($ec_int), '1');
+        // Send content & print
+        $this -> wrapperSend2dCodeData(chr(80), $cn, $content, '0');
+        $this -> wrapperSend2dCodeData(chr(81), $cn, '', '0');
+    }
+
     /**
      * Generate a pulse, for opening a cash drawer if one is connected.
      * The default settings should open an Epson drawer.
@@ -630,7 +687,7 @@ class Printer
         self::validateInteger($off_ms, 1, 511, __FUNCTION__);
         $this -> connector -> write(self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
     }
-    
+
     /**
      * Print the given data as a QR code on the printer.
      *
@@ -660,13 +717,6 @@ class Printer
         // Set error correction level: L, M, Q, or H
         $this -> wrapperSend2dCodeData(chr(69), $cn, chr(48 + $ec));
         // Send content & print
-        $this -> wrapperSend2dCodeData(chr(80), $cn, $content, '0');
-        $this -> wrapperSend2dCodeData(chr(81), $cn, '', '0');
-    }
-
-    public function pdf417($content)
-    {
-        $cn = '0'; // Code type for pdf417 code
         $this -> wrapperSend2dCodeData(chr(80), $cn, $content, '0');
         $this -> wrapperSend2dCodeData(chr(81), $cn, '', '0');
     }
@@ -1047,7 +1097,26 @@ class Printer
             throw new InvalidArgumentException("Argument to $source must be a boolean");
         }
     }
-    
+
+    /**
+     * Throw an exception if the argument given is not a float within the specified range
+     *
+     * @param float $test the input to test
+     * @param float $min the minimum allowable value (inclusive)
+     * @param float $max the maximum allowable value (inclusive)
+     * @param string $source the name of the function calling this
+     * @param string $argument the name of the invalid parameter
+     */
+    protected static function validateFloat($test, $min, $max, $source, $argument = "Argument")
+    {
+        if (!is_numeric($test)) {
+            throw new InvalidArgumentException("$argument given to $source must be a float, but '$test' was given.");
+        }
+        if ($test < $min || $test > $max) {
+            throw new InvalidArgumentException("$argument given to $source must be in range $min to $max, but $test was given.");
+        }
+    }
+
     /**
      * Throw an exception if the argument given is not an integer within the specified range
      *
@@ -1096,7 +1165,7 @@ class Printer
             throw new InvalidArgumentException("$argument given to $source must be in $rangeStr, but $test was given.");
         }
     }
-    
+
     /**
      * Throw an exception if the argument given can't be cast to a string
      *
