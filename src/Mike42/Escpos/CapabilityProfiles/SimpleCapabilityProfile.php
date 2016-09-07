@@ -31,6 +31,14 @@ class SimpleCapabilityProfile extends DefaultCapabilityProfile
     }
 
     /**
+     * True for PDF417 code support, false if not support.
+     */
+    public function getSupportsPdf417Code()
+    {
+        return false;
+    }
+
+    /**
      * True for graphics support, false if not supported.
      */
     public function getSupportsGraphics()

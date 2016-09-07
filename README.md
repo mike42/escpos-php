@@ -323,6 +323,18 @@ The function [bitImage()](#bitimageescposimage-image-size) takes the same parame
 ### initialize()
 Initialize printer. This resets formatting back to the defaults.
 
+### pdf417Code($content, $width, $heightMultiplier, $dataColumnCount, $ec, $options)
+Print a two-dimensional data code using the PDF417 standard.
+
+Parameters:
+
+- `string $content`: Text or numbers to store in the code
+- `number $width`: Width of a module (pixel) in the printed code. Default is 3 dots.
+- `number $heightMultiplier`: Multiplier for height of a module. Default is 3 times the width.
+- `number $dataColumnCount`: Number of data columns to use. 0 (default) is to auto-calculate. Smaller numbers will result in a narrower code, making larger pixel sizes possible. Larger numbers require smaller pixel sizes.
+- `real $ec`: Error correction ratio, from 0.01 to 4.00. Default is 0.10 (10%).
+- `number $options`: Standard code `Printer::PDF417_STANDARD` with start/end bars, or truncated code `Printer::PDF417_TRUNCATED` with start bars only.
+
 ### pulse($pin, $on_ms, $off_ms)
 Generate a pulse, for opening a cash drawer if one is connected. The default settings (0, 120, 240) should open an Epson drawer.
 
