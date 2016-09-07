@@ -43,6 +43,7 @@ foreach ($sizes as $size => $label) {
     $printer -> feed();
 }
 
+// Change height
 title($printer, "Height multiplier\n");
 $sizes = array(
     2 => "(minimum)",
@@ -55,6 +56,7 @@ foreach ($sizes as $size => $label) {
     $printer -> feed();
 }
 
+// Chage data column count
 title($printer, "Data column count\n");
 $columnCounts = array(
     0 => "(auto, default)",
@@ -70,14 +72,7 @@ foreach ($columnCounts as $columnCount => $label) {
     $printer -> feed();
 }
 
-// Demo that alignment is the same as text
-$printer -> setJustification(Printer::JUSTIFY_CENTER);
-$printer -> pdf417Code($testStr);
-$printer -> text("Same example, centred\n");
-$printer -> setJustification();
-$printer -> feed();
-
-// Change model
+// Change options
 title($printer, "Options\n");
 $models = array(
     Printer::PDF417_STANDARD => "Standard",
