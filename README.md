@@ -83,6 +83,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Okipos 80 Plus III
 - P-822D
 - P85A-401 (make unknown)
+- Rongta RP326US
 - SEYPOS PRP-300 (Also marketed as TYSSO PRP-300)
 - Silicon SP-201 / RP80USE
 - Star TSP-650
