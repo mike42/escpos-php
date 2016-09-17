@@ -79,6 +79,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Epson FX-890 (requires `feedForm()` to release paper).
 - Excelvan HOP-E58 (connect through powered hub)
 - Excelvan HOP-E801 (as above)
+- Gainscha GP-5890x (Also marketed as EC Line 5890x)
 - Okipos 80 Plus III
 - P-822D
 - P85A-401 (make unknown)
@@ -87,10 +88,10 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Star TSP-650
 - Star TUP-592
 - Xprinter XP-Q800
-- Zijang NT-58H
-- Zijang ZJ-5870
-- Zijang ZJ-5890T (Marketed as POS 5890T)
-- Zijang ZJ-5890K
+- Zjiang NT-58H
+- Zjiang ZJ-5870
+- Zjiang ZJ-5890T (Marketed as POS 5890T)
+- Zjiang ZJ-5890K
 
 If you use any other printer with this code, please [let us know](https://github.com/mike42/escpos-php/issues/new) so that it can be added to the list.
 
