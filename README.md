@@ -89,6 +89,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Star TSP-650
 - Star TUP-592
 - Xprinter XP-Q800
+- Venus V248T
 - Zjiang NT-58H
 - Zjiang ZJ-5870
 - Zjiang ZJ-5890T (Marketed as POS 5890T)
