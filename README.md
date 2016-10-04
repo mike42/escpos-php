@@ -225,6 +225,7 @@ As another example, Star-branded printers use different commands:
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\CapabilityProfiles\StarCapabilityProfile;
 $connector = new WindowsPrintConnector("smb://computer/printer");
+$profile = StarCapabilityProfile::getInstance();
 $printer = new Printer($connector, $profile);
 ```
 
