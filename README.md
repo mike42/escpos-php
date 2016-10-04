@@ -81,6 +81,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Excelvan HOP-E58 (connect through powered hub)
 - Excelvan HOP-E801 (as above)
 - Gainscha GP-5890x (Also marketed as EC Line 5890x)
+- Gainscha GP-U80300I
 - Okipos 80 Plus III
 - P-822D
 - P85A-401 (make unknown)
