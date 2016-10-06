@@ -80,6 +80,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Epson FX-890 (requires `feedForm()` to release paper).
 - Excelvan HOP-E58 (connect through powered hub)
 - Excelvan HOP-E801 (as above)
+- Excelvan ZJ-8220
 - Gainscha GP-5890x (Also marketed as EC Line 5890x)
 - Gainscha GP-U80300I
 - Okipos 80 Plus III
