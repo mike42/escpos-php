@@ -216,6 +216,7 @@ When trying out a new brand of printer, it's a good idea to use the `SimpleCapab
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\CapabilityProfiles\SimpleCapabilityProfile;
 $connector = new WindowsPrintConnector("smb://computer/printer");
+$profile = SimpleCapabilityProfile::getInstance();
 $printer = new Printer($connector, $profile);
 ```
 
@@ -225,6 +226,7 @@ As another example, Star-branded printers use different commands:
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\CapabilityProfiles\StarCapabilityProfile;
 $connector = new WindowsPrintConnector("smb://computer/printer");
+$profile = StarCapabilityProfile::getInstance();
 $printer = new Printer($connector, $profile);
 ```
 
