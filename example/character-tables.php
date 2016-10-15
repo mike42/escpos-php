@@ -26,21 +26,21 @@ $verbose = false; // Skip tables which iconv wont convert to (ie, only print cha
 
 /* Print a series of receipts containing i18n example strings - Code below shouldn't need changing */
 $printer = new Mike42\Escpos\Printer($connector, $profile);
-$codePages = $profile -> getSupportedCodePages();
+$codePages = $profile -> getCodePages();
 $first = true; // Print larger table for first code-page.
-foreach ($codePages as $table => $name) {
+foreach ($codePages as $table => $page) {
     /* Change printer code page */
     $printer -> selectCharacterTable(255);
     $printer -> selectCharacterTable($table);
     /* Select & print a label for it */
-    $label = $name;
-    if ($name === false) {
-        $label= " (not matched to iconv table)";
+    $label = $page -> getId();
+    if (!$page -> canEncode()) {
+        $label= " (not supported)";
     }
     $printer -> setEmphasis(true);
     $printer -> textRaw("Table $table: $label\n");
     $printer -> setEmphasis(false);
-    if ($name === false && !$verbose) {
+    if (!$page -> canEncode() && !$verbose) {
         continue; // Skip non-recognised
     }
     /* Print a table of available characters (first table is larger than subsequent ones */

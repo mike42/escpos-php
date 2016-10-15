@@ -17,7 +17,7 @@ use InvalidArgumentException;
 use Mike42\Escpos\PrintBuffers\PrintBuffer;
 use Mike42\Escpos\PrintBuffers\EscposPrintBuffer;
 use Mike42\Escpos\PrintConnectors\PrintConnector;
-use Mike42\Escpos\CapabilityProfiles\AbstractCapabilityProfile;
+use Mike42\Escpos\CapabilityProfiles\CapabilityProfile;
 use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
 
 /**
@@ -341,7 +341,7 @@ class Printer
     private $connector;
 
     /**
-     * @var AbstractCapabilityProfile $profile
+     * @var CapabilityProfile $profile
      *  Profile showing supported features for this printer
      */
     private $profile;
@@ -356,10 +356,10 @@ class Printer
      * Construct a new print object
      *
      * @param PrintConnector $connector The PrintConnector to send data to. If not set, output is sent to standard output.
-     * @param AbstractCapabilityProfile $profile Supported features of this printer. If not set, the DefaultCapabilityProfile will be used, which is suitable for Epson printers.
+     * @param CapabilityProfile $profile Supported features of this printer. If not set, the DefaultCapabilityProfile will be used, which is suitable for Epson printers.
      * @throws InvalidArgumentException
      */
-    public function __construct(PrintConnector $connector, AbstractCapabilityProfile $profile = null)
+    public function __construct(PrintConnector $connector, CapabilityProfile $profile = null)
     {
         /* Set connector */
         $this -> connector = $connector;
@@ -576,7 +576,7 @@ class Printer
     }
 
     /**
-     * @return AbstractCapabilityProfile
+     * @return CapabilityProfile
      */
     public function getPrinterCapabilityProfile()
     {
@@ -730,7 +730,7 @@ class Printer
     public function selectCharacterTable($table = 0)
     {
         self::validateInteger($table, 0, 255, __FUNCTION__);
-        $supported = $this -> profile -> getSupportedCodePages();
+        $supported = $this -> profile -> getCodePages();
         if (!isset($supported[$table])) {
             throw new InvalidArgumentException("There is no code table $table allowed by this printer's capability profile.");
         }
