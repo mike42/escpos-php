@@ -174,7 +174,7 @@ class CodePage
         }
         // Join into a 128-character string and return.
         $charMapStr = implode("", $charMap);
-        assert(mb_strlen($charMapStr, self::INPUT_ENCODING) == 128, "Generated data table was incorrect size");
+        assert(mb_strlen($charMapStr, self::INPUT_ENCODING) == 128);
         return $charMapStr;
     }
 }
