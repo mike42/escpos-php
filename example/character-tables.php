@@ -34,13 +34,13 @@ foreach ($codePages as $table => $page) {
     $printer -> selectCharacterTable($table);
     /* Select & print a label for it */
     $label = $page -> getId();
-    if (!$page -> canEncode()) {
+    if (!$page -> isEncodable()) {
         $label= " (not supported)";
     }
     $printer -> setEmphasis(true);
     $printer -> textRaw("Table $table: $label\n");
     $printer -> setEmphasis(false);
-    if (!$page -> canEncode() && !$verbose) {
+    if (!$page -> isEncodable() && !$verbose) {
         continue; // Skip non-recognised
     }
     /* Print a table of available characters (first table is larger than subsequent ones */

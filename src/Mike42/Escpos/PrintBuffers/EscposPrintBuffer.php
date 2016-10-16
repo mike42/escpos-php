@@ -33,7 +33,7 @@ class EscposPrintBuffer implements PrintBuffer
     const INPUT_ENCODING = "UTF-8";
 
     /**
-     * Un-recorgnised characters will be replaced with this.
+     * Un-recognised characters will be replaced with this.
      */
     const REPLACEMENT_CHAR = "?";
 
@@ -196,10 +196,10 @@ class EscposPrintBuffer implements PrintBuffer
 
         foreach ($supportedCodePages as $num => $codePage) {
             $encode[$num] = array();
-            if (!$codePage -> canEncode()) {
+            if (!$codePage -> isEncodable()) {
                 continue;
             }
-            $map = $codePage -> getEncodingMap();
+            $map = $codePage -> getData();
             for ($char = 128; $char <= 255; $char++) {
                 $utf8 = mb_substr($map, $char - 128, 1, self::INPUT_ENCODING);
                 if ($utf8 == " ") { // Skip placeholders

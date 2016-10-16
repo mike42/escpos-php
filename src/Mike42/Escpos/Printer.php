@@ -17,8 +17,7 @@ use InvalidArgumentException;
 use Mike42\Escpos\PrintBuffers\PrintBuffer;
 use Mike42\Escpos\PrintBuffers\EscposPrintBuffer;
 use Mike42\Escpos\PrintConnectors\PrintConnector;
-use Mike42\Escpos\CapabilityProfiles\CapabilityProfile;
-use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
+use Mike42\Escpos\CapabilityProfile;
 
 /**
  * Main class for ESC/POS code generation
@@ -356,7 +355,7 @@ class Printer
      * Construct a new print object
      *
      * @param PrintConnector $connector The PrintConnector to send data to. If not set, output is sent to standard output.
-     * @param CapabilityProfile $profile Supported features of this printer. If not set, the DefaultCapabilityProfile will be used, which is suitable for Epson printers.
+     * @param CapabilityProfile $profile Supported features of this printer. If not set, the "default" CapabilityProfile will be used, which is suitable for Epson printers.
      * @throws InvalidArgumentException
      */
     public function __construct(PrintConnector $connector, CapabilityProfile $profile = null)
@@ -366,7 +365,7 @@ class Printer
         
         /* Set capability profile */
         if ($profile === null) {
-            $profile = DefaultCapabilityProfile::getInstance();
+            $profile = CapabilityProfile::load('default');
         }
         $this -> profile = $profile;
         /* Set buffer */
