@@ -1,4 +1,5 @@
-# ESC/POS Print Driver for PHP [![Build Status](https://travis-ci.org/mike42/escpos-php.svg?branch=master)](https://travis-ci.org/mike42/escpos-php)
+# ESC/POS Print Driver for PHP
+[![Build Status](https://travis-ci.org/mike42/escpos-php.svg?branch=master)](https://travis-ci.org/mike42/escpos-php)
 
 This project implements a subset of Epson's ESC/POS protocol for thermal receipt printers. It allows you to generate and print receipts with basic formatting, cutting, and barcodes on a compatible printer.
 
@@ -79,7 +80,9 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Epson FX-890 (requires `feedForm()` to release paper).
 - Excelvan HOP-E58 (connect through powered hub)
 - Excelvan HOP-E801 (as above)
+- Excelvan ZJ-8220
 - Gainscha GP-5890x (Also marketed as EC Line 5890x)
+- Gainscha GP-U80300I
 - Okipos 80 Plus III
 - P-822D
 - P85A-401 (make unknown)
@@ -215,6 +218,7 @@ use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\CapabilityProfile;
 $profile = CapabilityProfile::load("simple");
 $connector = new WindowsPrintConnector("smb://computer/printer");
+$profile = SimpleCapabilityProfile::getInstance();
 $printer = new Printer($connector, $profile);
 ```
 
@@ -225,6 +229,7 @@ use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\CapabilityProfile;
 $profile = CapabilityProfile::load("SP2000")
 $connector = new WindowsPrintConnector("smb://computer/printer");
+$profile = StarCapabilityProfile::getInstance();
 $printer = new Printer($connector, $profile);
 ```
 
