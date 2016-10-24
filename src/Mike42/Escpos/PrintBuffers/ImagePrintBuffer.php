@@ -16,6 +16,7 @@ use Exception;
 use LogicException;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;
+use Mike42\Escpos\ImagickEscposImage;
 
 /**
  * This class renders text to small images on-the-fly. It attempts to mimic the
@@ -25,12 +26,18 @@ use Mike42\Escpos\EscposImage;
 class ImagePrintBuffer implements PrintBuffer
 {
     private $printer;
-    
+
+    private $font;
+
+    private $fontSize;
+
     public function __construct()
     {
         if (!EscposImage::isImagickLoaded()) {
             throw new Exception("ImagePrintBuffer requires the imagick extension");
         }
+        $this -> font = null;
+        $this -> fontSize = 24;
     }
 
     public function flush()
@@ -64,10 +71,14 @@ class ImagePrintBuffer implements PrintBuffer
         $draw = new \ImagickDraw();
         $color = new \ImagickPixel('#000000');
         $background = new \ImagickPixel('white');
-
+            
         /* Create annotation */
-        //$draw -> setFont('Arial');// (not necessary?)
-        $draw -> setFontSize(24); // Size 21 looks good for FONT B
+        if ($this->font !== null) {
+            // Allow fallback on defaults as necessary
+            $draw->setFont($this->font);
+        }
+        /* In Arial, size 21 looks good as a substitute for FONT_B, 24 for FONT_A */
+        $draw -> setFontSize($this -> fontSize);
         $draw -> setFillColor($color);
         $draw -> setStrokeAntialias(true);
         $draw -> setTextAntialias(true);
@@ -78,10 +89,11 @@ class ImagePrintBuffer implements PrintBuffer
         $image -> newImage($metrics['textWidth'], $metrics['textHeight'], $background);
         $image -> setImageFormat('png');
         $image -> drawImage($draw);
+        // debugging if you want to view the images yourself
         //$image -> writeImage("test.png");
-        
+
         /* Save image */
-        $escposImage = new EscposImage();
+        $escposImage = new ImagickEscposImage();
         $escposImage -> readImageFromImagick($image);
         $size = Printer::IMG_DEFAULT;
         $this -> printer -> bitImage($escposImage, $size);
@@ -93,5 +105,28 @@ class ImagePrintBuffer implements PrintBuffer
             throw new LogicException("Not attached to a printer.");
         }
         $this -> printer -> getPrintConnector() -> write($data);
+    }
+
+    /**
+     * Set path on disk to TTF font that will be used to render text to image,
+     * or 'null' to use a default.
+     *
+     * ImageMagick will also accept a font name, but this will not port as well
+     * between systems.
+     *
+     * @param string $font
+     *            Font name or a filename
+     */
+    public function setFont($font)
+    {
+        $this->font = $font;
+    }
+
+    /**
+     * Numeric font size for rendering text to image
+     */
+    public function setFontSize($fontSize)
+    {
+        $this->fontSize = $fontSize;
     }
 }

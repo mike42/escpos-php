@@ -69,7 +69,7 @@ try {
 
     /* Load up the image */
     try {
-        $img = new EscposImage($dest);
+        $img = EscposImage::load($dest);
     } catch (Exception $e) {
         unlink($dest);
         throw $e;
