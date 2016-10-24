@@ -218,7 +218,6 @@ use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\CapabilityProfile;
 $profile = CapabilityProfile::load("simple");
 $connector = new WindowsPrintConnector("smb://computer/printer");
-$profile = SimpleCapabilityProfile::getInstance();
 $printer = new Printer($connector, $profile);
 ```
 
@@ -229,7 +228,6 @@ use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\CapabilityProfile;
 $profile = CapabilityProfile::load("SP2000")
 $connector = new WindowsPrintConnector("smb://computer/printer");
-$profile = StarCapabilityProfile::getInstance();
 $printer = new Printer($connector, $profile);
 ```
 
