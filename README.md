@@ -211,11 +211,12 @@ For each OS/interface combination that's supported, there are examples in the co
 
 Support for commands and code pages varies between printer vendors and models. By default, the driver will accept UTF-8, and output commands that are suitable for Epson TM-series printers.
 
-When trying out a new brand of printer, it's a good idea to use the `SimpleCapabilityProfile`, which instructs the driver to avoid the use of advanced features (generally simpler image handling, ASCII-only text).
+When trying out a new brand of printer, it's a good idea to use the "simple" `CapabilityProfile`, which instructs the driver to avoid the use of advanced features (generally simpler image handling, ASCII-only text).
 
 ```php
-use Mike42\Escpos\PrintConnectors\FilePrintConnector;
-use Mike42\Escpos\CapabilityProfiles\SimpleCapabilityProfile;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\CapabilityProfile;
+$profile = CapabilityProfile::load("simple");
 $connector = new WindowsPrintConnector("smb://computer/printer");
 $profile = SimpleCapabilityProfile::getInstance();
 $printer = new Printer($connector, $profile);
@@ -224,14 +225,15 @@ $printer = new Printer($connector, $profile);
 As another example, Star-branded printers use different commands:
 
 ```php
-use Mike42\Escpos\PrintConnectors\FilePrintConnector;
-use Mike42\Escpos\CapabilityProfiles\StarCapabilityProfile;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\CapabilityProfile;
+$profile = CapabilityProfile::load("SP2000")
 $connector = new WindowsPrintConnector("smb://computer/printer");
 $profile = StarCapabilityProfile::getInstance();
 $printer = new Printer($connector, $profile);
 ```
 
-Further developing this mechanism is a priority for future releases.
+For a list of available profiles, or to have support for your printer improved, please see the upstream [receipt-print-hq/escpos-printer-db](https://github.com/receipt-print-hq/escpos-printer-db) project.
 
 ### Tips & examples
 On Linux, your printer device file will be somewhere like `/dev/lp0` (parallel), `/dev/usb/lp1` (USB), `/dev/ttyUSB0` (USB-Serial), `/dev/ttyS0` (serial).
@@ -244,12 +246,12 @@ Other examples are located in the [example/](https://github.com/mike42/escpos-ph
 
 ## Available methods
 
-### __construct(PrintConnector $connector, AbstractCapabilityProfile $profile)
+### __construct(PrintConnector $connector, CapabilityProfile $profile)
 Construct new print object.
 
 Parameters:
 - `PrintConnector $connector`: The PrintConnector to send data to.
-- `AbstractCapabilityProfile $profile` Supported features of this printer. If not set, the DefaultCapabilityProfile will be used, which is suitable for Epson printers.
+- `CapabilityProfile $profile` Supported features of this printer. If not set, the "default" CapabilityProfile will be used, which is suitable for Epson printers.
 
 See [example/interface/](https://github.com/mike42/escpos-php/tree/master/example/interface/) for ways to open connections for different platforms and interfaces.
 
