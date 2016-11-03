@@ -128,13 +128,20 @@ class EscposPrintBuffer implements PrintBuffer
             return;
         }
         // Pass only printable characters
-        for ($i = 0; $i < strlen($text); $i++) {
+        $j = 0;
+        $l = strlen($text);
+        $outp = str_repeat(self::REPLACEMENT_CHAR, $l);
+        for ($i = 0; $i < $l; $i++) {
             $c = substr($text, $i, 1);
-            if (!self::asciiCheck($c, true)) {
-                $text[$i] = self::REPLACEMENT_CHAR;
+            if ($c == "\r") {
+                /* Skip past Windows line endings (raw usage). */
+                continue;
+            } else if (self::asciiCheck($c, true)) {
+                $outp[$j] = $c;
             }
+            $j++;
         }
-        $this -> write($text);
+        $this -> write(substr($outp, 0, $j));
     }
 
     /**
@@ -236,18 +243,23 @@ class EscposPrintBuffer implements PrintBuffer
         $encodeMap = $this -> encode[$encodingNo];
         $len = mb_strlen($text, self::INPUT_ENCODING);
         $rawText = str_repeat(self::REPLACEMENT_CHAR, $len);
+        $j = 0;
         for ($i = 0; $i < $len; $i++) {
             $char = mb_substr($text, $i, 1, self::INPUT_ENCODING);
             if (isset($encodeMap[$char])) {
-                $rawText[$i] = $encodeMap[$char];
+                $rawText[$j] = $encodeMap[$char];
             } elseif (self::asciiCheck($char)) {
-                $rawText[$i] = $char;
+                $rawText[$j] = $char;
+            } elseif ($char === "\r") {
+                /* Skip past Windows line endings (UTF-8 usage) */
+                continue;
             }
+            $j++;
         }
         if ($this -> printer -> getCharacterTable() != $encodingNo) {
             $this -> printer -> selectCharacterTable($encodingNo);
         }
-        $this -> writeTextRaw($rawText);
+        $this -> writeTextRaw(substr($rawText, 0, $j));
     }
 
     /**
