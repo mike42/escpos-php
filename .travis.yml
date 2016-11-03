@@ -17,7 +17,14 @@ matrix:
 install:
   - composer install
 
+before_script:
+  - mkdir -p build/logs/
+
 script:
   - php vendor/bin/phpcs --standard=psr2 src/ -n
-  - php vendor/bin/phpunit --configuration test/phpunit.xml --coverage-text
+  - php vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+
+after_success:
+  - wget -c -nc https://github.com/satooshi/php-coveralls/releases/download/v1.0.1/coveralls.phar
+  - php coveralls.phar -v
 ...

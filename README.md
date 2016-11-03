@@ -505,7 +505,7 @@ Fetch a copy of this code and load dependencies with composer:
 
 Execute unit tests via `phpunit`:
 
-    php vendor/bin/phpunit --configuration test/phpunit.xml --coverage-text
+    php vendor/bin/phpunit --coverage-text
 
 This project uses the PSR-2 standard, which can be checked via [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer):
 
