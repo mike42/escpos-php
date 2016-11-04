@@ -16,15 +16,6 @@ matrix:
     - php:
       - nightly
 
-addons:
-  apt:
-    packages:
-      - doxygen
-      - doxygen-doc
-      - doxygen-latex
-      - doxygen-gui
-      - graphviz
-
 install:
   - composer install
 
@@ -37,8 +28,6 @@ before_script:
 script:
   # Check code style
   - php vendor/bin/phpcs --standard=psr2 src/ -n
-  # Check code is documented
-  - make -C doc/ html
   # Run tests
   - php vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
