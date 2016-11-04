@@ -1,6 +1,4 @@
 ---
-sudo: required
-
 language: php
 
 php:
@@ -25,7 +23,6 @@ before_script:
   - mkdir -p build/logs/
 
 script:
-  - php -m
   - php vendor/bin/phpcs --standard=psr2 src/ -n
   - php vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
