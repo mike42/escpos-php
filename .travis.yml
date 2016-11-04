@@ -13,20 +13,37 @@ php:
 
 matrix:
   allow_failures:
-    - php: nightly
+    - php:
+      - nightly
+
+addons:
+  apt:
+    packages:
+      - doxygen
+      - doxygen-doc
+      - doxygen-latex
+      - doxygen-gui
+      - graphviz
 
 install:
   - composer install
 
 before_script:
+  # Install 'imagick' plugin (pecl will not install it on 5.3, hhvm does not use pecl)
   - sh -c "if [ $TRAVIS_PHP_VERSION != 'hhvm' ] && [ $TRAVIS_PHP_VERSION != '5.3' ]; then printf "\n" | pecl install imagick; fi"
+  # Directory for coverage report
   - mkdir -p build/logs/
 
 script:
+  # Check code style
   - php vendor/bin/phpcs --standard=psr2 src/ -n
+  # Check code is documented
+  - make -C doc/ html
+  # Run tests
   - php vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
 after_success:
+  # Upload coverage statistics to coveralls service after test
   - wget -c -nc https://github.com/satooshi/php-coveralls/releases/download/v1.0.1/coveralls.phar
   - php coveralls.phar -v
 ...
