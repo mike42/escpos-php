@@ -3,7 +3,7 @@ timeoutForSmallTests="1"
 timeoutForMediumTests="10"
 timeoutForLargeTests="60"
 verbose="true"
-
+strict="true"
 >
   <testsuites>
     <testsuite name="unit">
