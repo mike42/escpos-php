@@ -105,6 +105,7 @@ Here are some browser-based printing tools which you may like to consider instea
 - Use system printing with a vendor driver, and some good `@media print` CSS
 - [Chrome Raw Print](https://github.com/receipt-print-hq/chrome-raw-print) app
 - [qz](https://qz.io/)
+- [ePOS-Device SDK for JavaScript](https://reference.epson-biz.com/modules/ref_epos_device_js_en/index.php?content_id=139). Requires network interface card that supports ePOS (UB-E04/R04)
 
 Please direct queries about client-side printing products to the appropriate project.
 
