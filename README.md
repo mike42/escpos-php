@@ -93,6 +93,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Rongta RP326US
 - SEYPOS PRP-300 (Also marketed as TYSSO PRP-300)
 - Silicon SP-201 / RP80USE
+- Star TSP100 ECO
 - Star TSP-650
 - Star TUP-592
 - Xprinter XP-Q800
