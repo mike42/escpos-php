@@ -75,6 +75,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - EPOS TEP 220M
 - Epson TM-T88III
 - Epson TM-T88IV
+- Epson TM-T88V
 - Epson TM-T70
 - Epson TM-T82II
 - Epson TM-T20
