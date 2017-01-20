@@ -88,6 +88,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Gainscha GP-5890x (Also marketed as EC Line 5890x)
 - Gainscha GP-U80300I
 - Hasar HTP 250
+- Metapace T-1
 - Okipos 80 Plus III
 - P-822D
 - P85A-401 (make unknown)
