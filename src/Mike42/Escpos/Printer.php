@@ -331,25 +331,25 @@ class Printer
      * @var PrintBuffer $buffer
      *  The printer's output buffer.
      */
-    private $buffer;
+    protected $buffer;
 
     /**
      * @var PrintConnector $connector
      *  Connector showing how to print to this printer
      */
-    private $connector;
+    protected $connector;
 
     /**
      * @var CapabilityProfile $profile
      *  Profile showing supported features for this printer
      */
-    private $profile;
+    protected $profile;
 
     /**
      * @var int $characterTable
      *  Current character code table
      */
-    private $characterTable;
+    protected $characterTable;
 
     /**
      * Construct a new print object
@@ -1018,7 +1018,7 @@ class Printer
      * @param string $m Modifier/variant for function. Often '0' where used.
      * @throws InvalidArgumentException Where the input lengths are bad.
      */
-    private function wrapperSend2dCodeData($fn, $cn, $data = '', $m = '')
+    protected function wrapperSend2dCodeData($fn, $cn, $data = '', $m = '')
     {
         if (strlen($m) > 1 || strlen($cn) != 1 || strlen($fn) != 1) {
             throw new InvalidArgumentException("wrapperSend2dCodeData: cn and fn must be one character each.");
@@ -1035,7 +1035,7 @@ class Printer
      * @param string $data Data to send.
      * @throws InvalidArgumentException Where the input lengths are bad.
      */
-    private function wrapperSendGraphicsData($m, $fn, $data = '')
+    protected function wrapperSendGraphicsData($m, $fn, $data = '')
     {
         if (strlen($m) != 1 || strlen($fn) != 1) {
             throw new InvalidArgumentException("wrapperSendGraphicsData: m and fn must be one character each.");
@@ -1051,7 +1051,7 @@ class Printer
      * @param boolean $long True to use 4 bytes, false to use 2
      * @return string
      */
-    private static function dataHeader(array $inputs, $long = true)
+    protected static function dataHeader(array $inputs, $long = true)
     {
         $outp = array();
         foreach ($inputs as $input) {
@@ -1071,7 +1071,7 @@ class Printer
      * @param int $input Input number
      * @param int $length The number of bytes to output (1 - 4).
      */
-    private static function intLowHigh($input, $length)
+    protected static function intLowHigh($input, $length)
     {
         $maxInput = (256 << ($length * 8) - 1);
         self::validateInteger($length, 1, 4, __FUNCTION__);
