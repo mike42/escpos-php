@@ -13,8 +13,7 @@ php:
 
 matrix:
   allow_failures:
-    - php:
-      - nightly
+    - php: nightly
 
 install:
   - composer install
