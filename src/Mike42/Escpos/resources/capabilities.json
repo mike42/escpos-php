@@ -286,6 +286,61 @@
         }
     },
     "profiles": {
+        "OCD-300": {
+            "codePages": {
+                "0": "CP437",
+                "1": "CP932",
+                "2": "CP850",
+                "3": "CP860",
+                "4": "CP863",
+                "5": "CP865",
+                "6": "Unknown",
+                "7": "Unknown",
+                "8": "Unknown",
+                "9": "CP852",
+                "10": "CP862",
+                "11": "CP866",
+                "12": "CP1251",
+                "13": "CP1254",
+                "14": "CP1255",
+                "15": "CP1257",
+                "16": "CP1252",
+                "17": "CP1253",
+                "18": "CP1250",
+                "19": "CP858",
+                "20": "Unknown"
+            },
+            "colors": {
+                "0": "black"
+            },
+            "features": {
+                "barcodeB": false,
+                "bitImageColumn": false,
+                "bitImageRaster": false,
+                "graphics": false,
+                "highDensity": true,
+                "pdf417Code": false,
+                "pulseBel": false,
+                "pulseStandard": true,
+                "qrCode": false,
+                "starCommands": false
+            },
+            "fonts": {
+                "0": {
+                    "columns": 20,
+                    "name": "Font A"
+                }
+            },
+            "media": {
+                "width": {
+                    "mm": "Unknown",
+                    "pixels": "Unknown"
+                }
+            },
+            "name": "Aures OCP-300 Customer Display",
+            "notes": "This is a two-line, ESC/POS-aware customer display from Aures. It has some graphics support via vendor-provided tools, but is otherwise text-only.\n",
+            "vendor": "Aures"
+        },
         "P822D": {
             "codePages": {
                 "0": "CP437",
@@ -369,6 +424,7 @@
                 "bitImageRaster": true,
                 "graphics": false,
                 "highDensity": true,
+                "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
                 "qrCode": true,
@@ -393,6 +449,112 @@
             "name": "P822D",
             "notes": "",
             "vendor": "PBM"
+        },
+        "POS-5890": {
+            "codePages": {
+                "0": "CP437",
+                "1": "CP932",
+                "2": "CP850",
+                "3": "CP860",
+                "4": "CP863",
+                "5": "CP865",
+                "6": "Unknown",
+                "7": "Unknown",
+                "8": "Unknown",
+                "9": "Unknown",
+                "10": "Unknown",
+                "16": "CP1252",
+                "17": "CP866",
+                "18": "CP852",
+                "19": "CP858",
+                "20": "Unknown",
+                "21": "Unknown",
+                "22": "Unknown",
+                "23": "Unknown",
+                "24": "CP747",
+                "25": "CP1257",
+                "27": "CP1258",
+                "28": "CP864",
+                "31": "Unknown",
+                "32": "CP1255",
+                "50": "CP437",
+                "52": "CP437",
+                "53": "CP858",
+                "54": "CP852",
+                "55": "CP860",
+                "56": "CP861",
+                "57": "CP863",
+                "58": "CP865",
+                "59": "CP866",
+                "60": "CP855",
+                "61": "CP857",
+                "62": "CP862",
+                "63": "CP864",
+                "64": "CP737",
+                "65": "CP851",
+                "66": "CP869",
+                "68": "CP772",
+                "69": "CP774",
+                "71": "CP1252",
+                "72": "CP1250",
+                "73": "CP1251",
+                "74": "CP3840",
+                "76": "CP3843",
+                "77": "CP3844",
+                "78": "CP3845",
+                "79": "CP3846",
+                "80": "CP3847",
+                "81": "CP3848",
+                "83": "CP2001",
+                "84": "CP3001",
+                "85": "CP3002",
+                "86": "CP3011",
+                "87": "CP3012",
+                "88": "CP3021",
+                "89": "CP3041",
+                "90": "CP1253",
+                "91": "CP1254",
+                "92": "CP1256",
+                "93": "CP720",
+                "94": "CP1258",
+                "95": "CP775",
+                "96": "Unknown",
+                "255": "Unknown"
+            },
+            "colors": {
+                "0": "black"
+            },
+            "features": {
+                "barcodeB": false,
+                "bitImageColumn": false,
+                "bitImageRaster": true,
+                "graphics": false,
+                "highDensity": true,
+                "pdf417Code": false,
+                "pulseBel": false,
+                "pulseStandard": true,
+                "qrCode": false,
+                "starCommands": false
+            },
+            "fonts": {
+                "0": {
+                    "columns": 42,
+                    "name": "Font A"
+                },
+                "1": {
+                    "columns": 56,
+                    "name": "Font B"
+                }
+            },
+            "media": {
+                "width": {
+                    "mm": "Unknown",
+                    "pixels": "Unknown"
+                }
+            },
+            "name": "POS5890 Series",
+            "notes": "POS-5890 thermal printer series, also marketed under various other names.\n",
+            "vendor": "Zjiang"
         },
         "SP2000": {
             "codePages": {
@@ -455,6 +617,7 @@
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
                 "qrCode": true,
@@ -554,6 +717,7 @@
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
                 "qrCode": true,
@@ -653,6 +817,7 @@
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
                 "qrCode": true,
@@ -756,6 +921,7 @@
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
                 "qrCode": true,
@@ -805,6 +971,7 @@
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
                 "qrCode": true,
@@ -853,6 +1020,7 @@
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
                 "qrCode": true,
@@ -892,6 +1060,7 @@
                 "bitImageRaster": false,
                 "graphics": false,
                 "highDensity": false,
+                "pdf417Code": false,
                 "pulseBel": false,
                 "pulseStandard": true,
                 "qrCode": false,
@@ -978,6 +1147,7 @@
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
                 "qrCode": true,
@@ -1064,6 +1234,7 @@
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
                 "qrCode": true,
@@ -1163,6 +1334,7 @@
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
                 "qrCode": true,
@@ -1201,6 +1373,7 @@
                 "bitImageRaster": true,
                 "graphics": false,
                 "highDensity": true,
+                "pdf417Code": false,
                 "pulseBel": false,
                 "pulseStandard": true,
                 "qrCode": false,
