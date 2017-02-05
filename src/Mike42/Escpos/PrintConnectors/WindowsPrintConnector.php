@@ -376,12 +376,12 @@ class WindowsPrintConnector implements PrintConnector
      * Write data to a file. Separated out so that nothing is actually printed during test runs.
      *
      * @param string $data Data to print
-     * @param string $to Destination file
+     * @param string $filename Destination file
          * @return boolean True if write was successful, false otherwise
      */
-    protected function runWrite($data, $to)
+    protected function runWrite($data, $filename)
     {
-        return file_put_contents($data, $to) !== false;
+        return file_put_contents($filename, $data) !== false;
     }
 
     public function write($data)
