@@ -6,15 +6,21 @@ If you are trying to generate XPS, PDF or DOCX or HTML files from PHP, then you 
 
 The purpose of this driver it to generate binary ESC/POS code, which is understood by many embedded thermal receipt and impact printers.
 
+## I have Printer X. Can I use this driver?
+
+If the printer understands ESC/POS, and you know how to get raw binary data to it, then yes. Otherwise, no.
+
+The [list of printers that are known to work](https://github.com/mike42/escpos-php/blob/development/README.md#printers) is crowd-sourced. We appreciate it when developers try out the driver, then [file information on the bug tracker](https://github.com/mike42/escpos-php/issues/new) with some information about which features worked on their model of printer.
+
+To see how well your printer works, first check that it supports ESC/POS, then begin by attempting to send the text "Hello World" to your printer on the command-line, from the computer that will run PHP.
+
+Once you solve this, [try to do the same from PHP](https://github.com/mike42/escpos-php/blob/development/README.md#basic-usage) using the default profile. Further details are in the [README](https://github.com/mike42/escpos-php/blob/development/README.md) file.
+
 ## Can you add support for Printer X?
 
-The list of printers that are known to work is made from trial and error. To see if your printer works, just check that it supports ESC/POS, and try it out with the default profile.
+Features vary between printers, so we collaborate on an ESC/POS printer compatibility database to collect known differences: [receipt-print-hq/escpos-printer-db](https://github.com/receipt-print-hq/escpos-printer-db).
 
-We appreciate it when developers [file information on the bug tracker](https://github.com/mike42/escpos-php/issues/new) with some information about what worked on their model of printer.
-
-As features vary between printers, we collaborate on an ESC/POS printer compatibility database to collect known differences: [receipt-print-hq/escpos-printer-db](https://github.com/receipt-print-hq/escpos-printer-db).
-
-If you encounter garbage output when you try to print images or special characters, then please consider submitting a test page and a link to vendor documentation to that project.
+If you encounter garbage output when you try to print images or special characters, then please submit a test page and a link to vendor documentation to the `escpos-printer-db` project, so that support can be improved for future versions.
 
 ## I have a printer that does not understand ESC/POS. Can I use this driver?
 
@@ -32,7 +38,7 @@ Generally, initial setup problems seem to have one of these causes:
 2. The printer has not been set up to accept printing the way you expect. This means permissions on Linux, network printers being configured, and shared printers having user accounts and firewalls set up correctly on the print server.
 3. Your printer actually doesn't work (rare but possible).
 
-To be clear, these are not escpos-php issues: No amount of PHP code can set up your printer for you. Instead, the driver relies on developers determinging how their setup is going to work before using a connector to transport data to their printer.
+To be clear, these are not escpos-php issues: No amount of PHP code can set up your printer for you. Instead, the driver relies on developers determining how their setup is going to work before using a connector to transport data to their printer.
 
 Once you have a working command to send text to your printer (from the PHP server), you are ready to use escpos-php. You can try to use a PrintConnector now, based on your operating system and printer interface. A table is located in the README to help you select the right one.
 
@@ -88,7 +94,7 @@ Because of this, there are no cut-and-paste recipes available, but here are two 
 
 ### Option 1: Allow the server to print
 
-Server-side priting is viable if the server can get to the printer. Here are some ways it could work:
+Server-side printing is viable if the server can get to the printer. Here are some ways it could work:
 
 - Run your server on the LAN instead, and read the section above about printing over the network
 - Set up a VPN so that your cloud-hosted server can also access the LAN
@@ -105,6 +111,7 @@ Here are some browser-based printing tools which you may like to consider instea
 - Use system printing with a vendor driver, and some good `@media print` CSS
 - [Chrome Raw Print](https://github.com/receipt-print-hq/chrome-raw-print) app
 - [qz](https://qz.io/)
+- [ePOS-Device SDK for JavaScript](https://reference.epson-biz.com/modules/ref_epos_device_js_en/index.php?content_id=139). Requires network interface card that supports ePOS (UB-E04/R04)
 
 Please direct queries about client-side printing products to the appropriate project.
 

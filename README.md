@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/mike42/escpos-php.svg?branch=master)](https://travis-ci.org/mike42/escpos-php) [![Latest Stable Version](https://poser.pugx.org/mike42/escpos-php/v/stable)](https://packagist.org/packages/mike42/escpos-php)
 [![Total Downloads](https://poser.pugx.org/mike42/escpos-php/downloads)](https://packagist.org/packages/mike42/escpos-php)
 [![License](https://poser.pugx.org/mike42/escpos-php/license)](https://packagist.org/packages/mike42/escpos-php)
+[![Coverage Status](https://coveralls.io/repos/github/mike42/escpos-php/badge.svg?branch=development)](https://coveralls.io/github/mike42/escpos-php?branch=development)
 
 This project implements a subset of Epson's ESC/POS protocol for thermal receipt printers. It allows you to generate and print receipts with basic formatting, cutting, and barcodes on a compatible printer.
 
@@ -74,24 +75,28 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - EPOS TEP 220M
 - Epson TM-T88III
 - Epson TM-T88IV
+- Epson TM-T88V
 - Epson TM-T70
 - Epson TM-T82II
 - Epson TM-T20
 - Epson TM-T70II
 - Epson TM-U220
 - Epson FX-890 (requires `feedForm()` to release paper).
-- Excelvan HOP-E58 (connect through powered hub)
-- Excelvan HOP-E801 (as above)
+- Excelvan HOP-E58
+- Excelvan HOP-E200 
+- Excelvan HOP-E801
 - Excelvan ZJ-8220
 - Gainscha GP-5890x (Also marketed as EC Line 5890x)
 - Gainscha GP-U80300I
 - Hasar HTP 250
+- Metapace T-1
 - Okipos 80 Plus III
 - P-822D
 - P85A-401 (make unknown)
 - Rongta RP326US
 - SEYPOS PRP-300 (Also marketed as TYSSO PRP-300)
 - Silicon SP-201 / RP80USE
+- Star TSP100 ECO
 - Star TSP-650
 - Star TUP-592
 - Xprinter XP-Q800
@@ -487,7 +492,7 @@ Posts I've written up for people who are learning how to use receipt printers:
 
 * [What is ESC/POS, and how do I use it?](https://mike42.me/blog/what-is-escpos-and-how-do-i-use-it), which documents the output of `example/demo.php`.
 * [Setting up an Epson receipt printer](https://mike42.me/blog/2014-20-26-setting-up-an-epson-receipt-printer)
-* [Getting a USB receipt printer working on Linux](http:s//mike42.me/blog/2015-03-getting-a-usb-receipt-printer-working-on-linux)
+* [Getting a USB receipt printer working on Linux](https://mike42.me/blog/2015-03-getting-a-usb-receipt-printer-working-on-linux)
 
 # Development
 
@@ -505,7 +510,7 @@ Fetch a copy of this code and load dependencies with composer:
 
 Execute unit tests via `phpunit`:
 
-    php vendor/bin/phpunit --configuration test/phpunit.xml --coverage-text
+    php vendor/bin/phpunit --coverage-text
 
 This project uses the PSR-2 standard, which can be checked via [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer):
 

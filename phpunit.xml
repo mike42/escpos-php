@@ -1,21 +1,21 @@
-<phpunit bootstrap="bootstrap.php"
+<phpunit bootstrap="test/bootstrap.php"
 timeoutForSmallTests="1"
 timeoutForMediumTests="10"
 timeoutForLargeTests="60"
 verbose="true"
-strict="true"
+
 >
   <testsuites>
     <testsuite name="unit">
-      <directory>unit</directory>
+      <directory>test/unit</directory>
     </testsuite>
     <testsuite name="integration">
-      <directory>integration</directory>
+      <directory>test/integration</directory>
     </testsuite>
   </testsuites>
   <filter>
     <whitelist processUncoveredFilesFromWhitelist="true">
-      <directory suffix=".php">../src</directory>
+      <directory suffix=".php">src</directory>
     </whitelist>
   </filter>
 </phpunit>
