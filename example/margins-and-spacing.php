@@ -42,6 +42,9 @@ foreach(array(512, 256, 128, 64) as $width) {
     $printer -> text("page width $width\n");
 }
 
+/* Reset margin */
+$printer -> setPrintWidth(512);
+
 /* Printer shutdown */
 $printer -> cut();
 $printer -> close();
