@@ -95,7 +95,7 @@ class ImagickEscposImage extends EscposImage
             return parent::loadImageData($filename);
         }
     
-        $im = $im = $this -> getImageFromFile($filename);
+        $im = $this -> getImageFromFile($filename);
         $this -> readImageFromImagick($im);
     }
 
