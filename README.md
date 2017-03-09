@@ -87,7 +87,8 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Excelvan HOP-E801
 - Excelvan ZJ-8220
 - Gainscha GP-5890x (Also marketed as EC Line 5890x)
-- Gainscha GP-U80300I
+- Gainscha GP-U80300I (Also marketed as gprinter GP-U80300I)
+- gprinter GP-U80160I
 - Hasar HTP 250
 - Metapace T-1
 - Okipos 80 Plus III
@@ -99,6 +100,8 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Star TSP100 ECO
 - Star TSP-650
 - Star TUP-592
+- SPRT SP-POS88V
+- Xprinter F-900
 - Xprinter XP-Q800
 - Venus V248T
 - Zjiang NT-58H
