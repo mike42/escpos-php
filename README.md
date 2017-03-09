@@ -141,6 +141,20 @@ git clone https://github.com/mike42/escpos-php vendor/mike42/escpos-php
 require __DIR__ . '/vendor/mike42/escpos-php/autoload.php';
 ```
 
+#### Requirements
+
+To maintain compatibility with as many systems as possible, this driver has few
+hard dependencies:
+
+- PHP 5.3 or above
+- `mbstring` extension, since the driver accepts UTF-8 encoding.
+
+It is also suggested that you install either `imagick` or `gd`, so that you can
+print images.
+
+A number of optional packages can be added to enable more specific features. These
+are described in the "suggest" section of [composer.json](https://github.com/mike42/escpos-php/tree/master/composer.json).
+
 ### The 'Hello World' receipt
 
 To make use of this driver, your server (where PHP is installed) must be able to communicate with your printer. Start by generating a simple receipt and sending it to your printer using the command-line.

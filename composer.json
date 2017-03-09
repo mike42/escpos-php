@@ -21,7 +21,9 @@
         "ext-mbstring": "*"
     },
     "suggest": {
-        "guzzlehttp/guzzle": "Allows the use of the ApiConnector to send print jobs over HTTP."
+        "guzzlehttp/guzzle": "Allows the use of the ApiConnector to send print jobs over HTTP.",
+        "ext-imagick": "Will be used for image printing if present. Required for PDF printing or use of custom fonts.",
+        "ext-gd": "Used for image printing if present."
     },
     "require-dev": {
         "phpunit/phpunit": "4.8.*",
