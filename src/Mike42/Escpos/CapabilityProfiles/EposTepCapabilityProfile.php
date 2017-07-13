@@ -9,10 +9,14 @@
  * This software is distributed under the terms of the MIT license. See LICENSE.md
  * for details.
  */
-
 namespace Mike42\Escpos\CapabilityProfiles;
 
-class EposTepCapabilityProfile extends DefaultCapabilityProfile
+use Mike42\Escpos\CapabilityProfile;
+
+class EposTepCapabilityProfile
 {
-    // TODO override list of code pages
+    public static function getInstance()
+    {
+        return CapabilityProfile::load('TEP-200M');
+    }
 }

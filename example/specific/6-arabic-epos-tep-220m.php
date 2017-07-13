@@ -10,18 +10,30 @@
  * Requirements are:
  *  - imagick extension (For the ImagePrintBuffer, which does not
  *      support gd at the time of writing)
- *  - Ar-PHP library, available from sourceforge, for the first
- *      part of this example. Drop it in the folder listed below:
+ *  - ArPHP 4.0 (release date: Jan 8, 2016), available from SourceForge, for
+ *      handling the layout for this example.
  */
 require __DIR__ . '/../../autoload.php';
 use Mike42\Escpos\Printer;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\PrintBuffers\ImagePrintBuffer;
 use Mike42\Escpos\CapabilityProfiles\EposTepCapabilityProfile;
 
+/*
+ * Drop Ar-php into the folder listed below:
+ */
 require_once(dirname(__FILE__) . "/../../I18N/Arabic.php");
+$fontPath = dirname(__FILE__) . "/../../I18N/Arabic/Examples/GD/ae_AlHor.ttf";
 
 /*
- * First, convert the text into LTR byte order with joined letters,
+ * Inputs are some text, line wrapping options, and a font size. 
+ */
+$textUtf8 = "صِف خَلقَ خَودِ كَمِثلِ الشَمسِ إِذ بَزَغَت — يَحظى الضَجيعُ بِها نَجلاءَ مِعطارِ";
+$maxChars = 50;
+$fontSize = 28;
+
+/*
+ * First, convert the text into LTR byte order with line wrapping,
  * Using the Ar-PHP library.
  * 
  * The Ar-PHP library uses the default internal encoding, and can print
@@ -33,19 +45,30 @@ require_once(dirname(__FILE__) . "/../../I18N/Arabic.php");
  */
 mb_internal_encoding("UTF-8");
 $Arabic = new I18N_Arabic('Glyphs');
-$text = "صِف خَلقَ خَودِ كَمِثلِ الشَمسِ إِذ بَزَغَت — يَحظى الضَجيعُ بِها نَجلاءَ مِعطارِ";
-$text = $Arabic -> utf8Glyphs($text);
+$textLtr = $Arabic -> utf8Glyphs($textUtf8, $maxChars);
+$textLine = explode("\n", $textLtr);
 
 /*
- * Set up and use the printer
+ * Set up and use an image print buffer with a suitable font
  */
 $buffer = new ImagePrintBuffer();
+$buffer -> setFont($fontPath);
+$buffer -> setFontSize($fontSize);
+
 $profile = EposTepCapabilityProfile::getInstance();
 $connector = new FilePrintConnector("php://output");
-        // = WindowsPrintConnector("LPT2");
+        // = new WindowsPrintConnector("LPT2");
         // Windows LPT2 was used in the bug tracker
 
 $printer = new Printer($connector, $profile);
 $printer -> setPrintBuffer($buffer);
-$printer -> text($text . "\n");
+
+$printer -> setJustification(Printer::JUSTIFY_RIGHT);
+foreach($textLine as $text) {
+    // Print each line separately. We need to do this since Imagick thinks
+    // text is left-to-right
+    $printer -> text($text . "\n");
+}
+
+$printer -> cut();
 $printer -> close();

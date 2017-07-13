@@ -17,8 +17,7 @@ use InvalidArgumentException;
 use Mike42\Escpos\PrintBuffers\PrintBuffer;
 use Mike42\Escpos\PrintBuffers\EscposPrintBuffer;
 use Mike42\Escpos\PrintConnectors\PrintConnector;
-use Mike42\Escpos\CapabilityProfiles\AbstractCapabilityProfile;
-use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
+use Mike42\Escpos\CapabilityProfile;
 
 /**
  * Main class for ESC/POS code generation
@@ -227,6 +226,16 @@ class Printer
     const MODE_UNDERLINE = 128;
 
     /**
+     * Indicates standard PDF417 code
+     */
+    const PDF417_STANDARD = 0;
+
+    /**
+     * Indicates truncated PDF417 code
+     */
+    const PDF417_TRUNCATED = 1;
+
+    /**
      * Indicates error correction level L when used with Printer::qrCode
      */
     const QR_ECLEVEL_L = 0;
@@ -322,41 +331,41 @@ class Printer
      * @var PrintBuffer $buffer
      *  The printer's output buffer.
      */
-    private $buffer;
+    protected $buffer;
 
     /**
      * @var PrintConnector $connector
      *  Connector showing how to print to this printer
      */
-    private $connector;
+    protected $connector;
 
     /**
-     * @var AbstractCapabilityProfile $profile
+     * @var CapabilityProfile $profile
      *  Profile showing supported features for this printer
      */
-    private $profile;
+    protected $profile;
 
     /**
      * @var int $characterTable
      *  Current character code table
      */
-    private $characterTable;
+    protected $characterTable;
 
     /**
      * Construct a new print object
      *
      * @param PrintConnector $connector The PrintConnector to send data to. If not set, output is sent to standard output.
-     * @param AbstractCapabilityProfile $profile Supported features of this printer. If not set, the DefaultCapabilityProfile will be used, which is suitable for Epson printers.
+     * @param CapabilityProfile $profile Supported features of this printer. If not set, the "default" CapabilityProfile will be used, which is suitable for Epson printers.
      * @throws InvalidArgumentException
      */
-    public function __construct(PrintConnector $connector, AbstractCapabilityProfile $profile = null)
+    public function __construct(PrintConnector $connector, CapabilityProfile $profile = null)
     {
         /* Set connector */
         $this -> connector = $connector;
         
         /* Set capability profile */
         if ($profile === null) {
-            $profile = DefaultCapabilityProfile::getInstance();
+            $profile = CapabilityProfile::load('default');
         }
         $this -> profile = $profile;
         /* Set buffer */
@@ -471,7 +480,7 @@ class Printer
         $highDensityHorizontal = ! (($size & self::IMG_DOUBLE_WIDTH) == Printer::IMG_DOUBLE_WIDTH);
         // Experimental column format printing
         // This feature is not yet complete and may produce unpredictable results.
-        $this -> connector -> write(self::ESC . "3" . chr(16)); // 16-dot line spacing. This is the correct value on both TM-T20 and TM-U220
+        $this -> setLineSpacing(16); // 16-dot line spacing. This is the correct value on both TM-T20 and TM-U220
         // Header and density code (0, 1, 32, 33) re-used for every line
         $densityCode = ($highDensityHorizontal ? 1 : 0) + ($highDensityVertical ? 32 : 0);
         $colFormatData = $img -> toColumnFormat($highDensityVertical);
@@ -482,7 +491,7 @@ class Printer
             $this -> feed();
             // sleep(0.1); // Reduces the amount of trouble that a TM-U220 has keeping up with large images
         }
-        $this -> connector -> write(self::ESC . "2"); // Revert to default line spacing
+        $this -> setLineSpacing(); // Revert to default line spacing
     }
 
     /**
@@ -566,97 +575,13 @@ class Printer
     }
 
     /**
-     * @return AbstractCapabilityProfile
+     * @return CapabilityProfile
      */
     public function getPrinterCapabilityProfile()
     {
         return $this -> profile;
     }
 
-    /**
-     * @param int $type The type of status to request. May be any of the Printer::STATUS_* constants
-     * @return stdClass Class containing requested status, or null if either no status was received, or your print connector is unable to read from the printer.
-     */
-    public function getPrinterStatus($type = Printer::STATUS_PRINTER)
-    {
-        self::validateIntegerMulti($type, array(array(1, 4), array(6, 8)), __FUNCTION__);
-        // Determine which flags we are looking for
-        $statusFlags = array(
-                self::STATUS_PRINTER => array(
-                    4 => "pulseHigh", // connector pin 3, see pulse().
-                    8 => "offline",
-                    32 => "waitingForOnlineRecovery",
-                    64 => "feedButtonPressed"
-                ),
-                self::STATUS_OFFLINE_CAUSE => array(
-                    4 => "coverOpen",
-                    8 => "paperManualFeed",
-                    32 => "paperEnd",
-                    64 => "errorOccurred"
-                ),
-                self::STATUS_ERROR_CAUSE => array(
-                    4 => "recoverableError",
-                    8 => "autocutterError",
-                    32 => "unrecoverableError",
-                    64 => "autorecoverableError"
-                ),
-                self::STATUS_PAPER_ROLL => array(
-                    4 => "paperNearEnd",
-                    32 => "paperNotPresent"
-                ),
-                self::STATUS_INK_A => array(
-                    4 => "inkNearEnd",
-                    8 => "inkEnd",
-                    32 => "inkNotPresent",
-                    64 => "cleaning"
-                ),
-                self::STATUS_INK_B => array(
-                    4 => "inkNearEnd",
-                    8 => "inkEnd",
-                    32 => "inkNotPresent"
-                ),
-                self::STATUS_PEELER => array(
-                    4 => "labelWaitingForRemoval",
-                    32 => "labelPaperNotDetected"
-                )
-        );
-        $flags = $statusFlags[$type];
-        // Clear any previous statuses which haven't been read yet
-        $f = $this -> connector -> read(1);
-        // Make request
-        $reqC = chr($type);
-        switch ($type) {
-            // Special cases: These are two-character requests
-            case self::STATUS_INK_A:
-                $reqC = chr(7) . chr(1);
-                break;
-            case self::STATUS_INK_B:
-                $reqC = chr(7) . chr(2);
-                break;
-            case self::STATUS_PEELER:
-                $reqC = chr(8) . chr(3);
-                break;
-        }
-        $this -> connector -> write(self::DLE . self::EOT . $reqC);
-        // Wait for single-character response
-        $f = $this -> connector -> read(1);
-        $i = 0;
-        while (($f === false || strlen($f) == 0) && $i < 50000) {
-            usleep(100);
-            $f = $this -> connector -> read(1);
-            $i++;
-        }
-        if ($f === false || strlen($f) == 0) {
-            // Timeout
-            return null;
-        }
-        $ret = new \stdClass();
-        foreach ($flags as $num => $name) {
-            $ret -> $name = (ord($f) & $num) != 0;
-        }
-        return $ret;
-    }
-    
     /**
      * Print an image to the printer.
      *
@@ -698,7 +623,54 @@ class Printer
         $this -> connector -> write(self::ESC . "@");
         $this -> characterTable = 0;
     }
-    
+
+    /**
+     * Print a two-dimensional data code using the PDF417 standard.
+     *
+     * @param string $content Text or numbers to store in the code
+     * @param number $width Width of a module (pixel) in the printed code.
+     *  Default is 3 dots.
+     * @param number $heightMultiplier Multiplier for height of a module.
+     *  Default is 3 times the width.
+     * @param number $dataColumnCount Number of data columns to use. 0 (default)
+     *  is to auto-calculate. Smaller numbers will result in a narrower code,
+     *  making larger pixel sizes possible. Larger numbers require smaller pixel sizes.
+     * @param real $ec Error correction ratio, from 0.01 to 4.00. Default is 0.10 (10%).
+     * @param number $options Standard code Printer::PDF417_STANDARD with
+     *  start/end bars, or truncated code Printer::PDF417_TRUNCATED with start bars only.
+     * @throws Exception If this profile indicates that PDF417 code is not supported
+     */
+    public function pdf417Code($content, $width = 3, $heightMultiplier = 3, $dataColumnCount = 0, $ec = 0.10, $options = Printer::PDF417_STANDARD)
+    {
+        self::validateString($content, __FUNCTION__, 'content');
+        self::validateInteger($width, 2, 8, __FUNCTION__, 'width');
+        self::validateInteger($heightMultiplier, 2, 8, __FUNCTION__, 'heightMultiplier');
+        self::validateInteger($dataColumnCount, 0, 30, __FUNCTION__, 'dataColumnCount');
+        self::validateFloat($ec, 0.01, 4.00, __FUNCTION__, 'ec');
+        self::validateInteger($options, 0, 1, __FUNCTION__, 'options');
+        if ($content == "") {
+            return;
+        }
+        if (!$this -> profile -> getSupportsPdf417Code()) {
+            // TODO use software rendering via a library instead
+            throw new Exception("PDF417 codes are not supported on your printer.");
+        }
+        $cn = '0'; // Code type for pdf417 code
+        // Select model: standard or truncated
+        $this -> wrapperSend2dCodeData(chr(70), $cn, chr($options));
+        // Column count
+        $this -> wrapperSend2dCodeData(chr(65), $cn, chr($dataColumnCount));
+        // Set dot sizes
+        $this -> wrapperSend2dCodeData(chr(67), $cn, chr($width));
+        $this -> wrapperSend2dCodeData(chr(68), $cn, chr($heightMultiplier));
+        // Set error correction ratio: 1% to 400%
+        $ec_int = (int)ceil(floatval($ec) * 10);
+        $this -> wrapperSend2dCodeData(chr(69), $cn, chr($ec_int), '1');
+        // Send content & print
+        $this -> wrapperSend2dCodeData(chr(80), $cn, $content, '0');
+        $this -> wrapperSend2dCodeData(chr(81), $cn, '', '0');
+    }
+
     /**
      * Generate a pulse, for opening a cash drawer if one is connected.
      * The default settings should open an Epson drawer.
@@ -714,7 +686,7 @@ class Printer
         self::validateInteger($off_ms, 1, 511, __FUNCTION__);
         $this -> connector -> write(self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
     }
-    
+
     /**
      * Print the given data as a QR code on the printer.
      *
@@ -757,7 +729,7 @@ class Printer
     public function selectCharacterTable($table = 0)
     {
         self::validateInteger($table, 0, 255, __FUNCTION__);
-        $supported = $this -> profile -> getSupportedCodePages();
+        $supported = $this -> profile -> getCodePages();
         if (!isset($supported[$table])) {
             throw new InvalidArgumentException("There is no code table $table allowed by this printer's capability profile.");
         }
@@ -882,6 +854,25 @@ class Printer
     {
         self::validateInteger($justification, 0, 2, __FUNCTION__);
         $this -> connector -> write(self::ESC . "a" . chr($justification));
+    }
+
+    /**
+     * Set the height of the line.
+     *
+     * Some printers will allow you to overlap lines with a smaller line feed.
+     *
+     * @param int $height The height of each line, in dots. If not set, the printer
+     *  will reset to its default line spacing.
+     */
+    public function setLineSpacing($height = null)
+    {
+        if ($height === null) {
+            // Reset to default
+            $this -> connector -> write(self::ESC . "2"); // Revert to default line spacing
+            return;
+        }
+        self::validateInteger($height, 1, 255, __FUNCTION__);
+        $this -> connector -> write(self::ESC . "3" . chr($height));
     }
 
     /**
@@ -1027,7 +1018,7 @@ class Printer
      * @param string $m Modifier/variant for function. Often '0' where used.
      * @throws InvalidArgumentException Where the input lengths are bad.
      */
-    private function wrapperSend2dCodeData($fn, $cn, $data = '', $m = '')
+    protected function wrapperSend2dCodeData($fn, $cn, $data = '', $m = '')
     {
         if (strlen($m) > 1 || strlen($cn) != 1 || strlen($fn) != 1) {
             throw new InvalidArgumentException("wrapperSend2dCodeData: cn and fn must be one character each.");
@@ -1044,7 +1035,7 @@ class Printer
      * @param string $data Data to send.
      * @throws InvalidArgumentException Where the input lengths are bad.
      */
-    private function wrapperSendGraphicsData($m, $fn, $data = '')
+    protected function wrapperSendGraphicsData($m, $fn, $data = '')
     {
         if (strlen($m) != 1 || strlen($fn) != 1) {
             throw new InvalidArgumentException("wrapperSendGraphicsData: m and fn must be one character each.");
@@ -1060,7 +1051,7 @@ class Printer
      * @param boolean $long True to use 4 bytes, false to use 2
      * @return string
      */
-    private static function dataHeader(array $inputs, $long = true)
+    protected static function dataHeader(array $inputs, $long = true)
     {
         $outp = array();
         foreach ($inputs as $input) {
@@ -1080,7 +1071,7 @@ class Printer
      * @param int $input Input number
      * @param int $length The number of bytes to output (1 - 4).
      */
-    private static function intLowHigh($input, $length)
+    protected static function intLowHigh($input, $length)
     {
         $maxInput = (256 << ($length * 8) - 1);
         self::validateInteger($length, 1, 4, __FUNCTION__);
@@ -1105,7 +1096,26 @@ class Printer
             throw new InvalidArgumentException("Argument to $source must be a boolean");
         }
     }
-    
+
+    /**
+     * Throw an exception if the argument given is not a float within the specified range
+     *
+     * @param float $test the input to test
+     * @param float $min the minimum allowable value (inclusive)
+     * @param float $max the maximum allowable value (inclusive)
+     * @param string $source the name of the function calling this
+     * @param string $argument the name of the invalid parameter
+     */
+    protected static function validateFloat($test, $min, $max, $source, $argument = "Argument")
+    {
+        if (!is_numeric($test)) {
+            throw new InvalidArgumentException("$argument given to $source must be a float, but '$test' was given.");
+        }
+        if ($test < $min || $test > $max) {
+            throw new InvalidArgumentException("$argument given to $source must be in range $min to $max, but $test was given.");
+        }
+    }
+
     /**
      * Throw an exception if the argument given is not an integer within the specified range
      *
@@ -1154,7 +1164,7 @@ class Printer
             throw new InvalidArgumentException("$argument given to $source must be in $rangeStr, but $test was given.");
         }
     }
-    
+
     /**
      * Throw an exception if the argument given can't be cast to a string
      *

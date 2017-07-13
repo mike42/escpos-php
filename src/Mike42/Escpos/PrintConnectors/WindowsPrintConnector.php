@@ -228,7 +228,7 @@ class WindowsPrintConnector implements PrintConnector
         $retval = $this -> runCommand($command, $outputStr, $errorStr, $data);
         if ($retval != 0) {
             throw new Exception("Failed to print. Command \"$redactedCommand\" " .
-                "failed with exit code $retval: " . trim($outputStr));
+                "failed with exit code $retval: " . trim($errorStr) . trim($outputStr));
         }
     }
 
@@ -376,12 +376,12 @@ class WindowsPrintConnector implements PrintConnector
      * Write data to a file. Separated out so that nothing is actually printed during test runs.
      *
      * @param string $data Data to print
-     * @param string $to Destination file
+     * @param string $filename Destination file
          * @return boolean True if write was successful, false otherwise
      */
-    protected function runWrite($data, $to)
+    protected function runWrite($data, $filename)
     {
-        return file_put_contents($data, $to) !== false;
+        return file_put_contents($filename, $data) !== false;
     }
 
     public function write($data)
