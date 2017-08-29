@@ -81,6 +81,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Epson TM-T20
 - Epson TM-T70II
 - Epson TM-U220
+- Epson TM-U295 (requires `release()` to release slip).
 - Epson FX-890 (requires `feedForm()` to release paper).
 - Excelvan HOP-E58
 - Excelvan HOP-E200 
@@ -319,6 +320,9 @@ Parameters:
 
 ### feedForm()
 Some printers require a form feed to release the paper. On most printers, this command is only useful in page mode, which is not implemented in this driver.
+
+### release()
+Some slip printers require release command to release the paper.
 
 ### feedReverse($lines)
 Print and reverse feed n lines.
