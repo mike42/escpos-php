@@ -73,6 +73,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Citizen CBM1000-II
 - Daruma DR800
 - EPOS TEP 220M
+- Epson TM-T88II
 - Epson TM-T88III
 - Epson TM-T88IV
 - Epson TM-T88V
