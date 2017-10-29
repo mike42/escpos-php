@@ -25,7 +25,7 @@ install:
 
 before_script:
   # Install 'imagick' plugin
-  - pecl install imagick
+  - printf "\n" | pecl install imagick
   # Directory for coverage report
   - mkdir -p build/logs/
 
