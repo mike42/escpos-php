@@ -16,12 +16,16 @@ matrix:
   allow_failures:
     - php: nightly
 
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y imagemagick
+
 install:
   - composer install
 
 before_script:
-  # Install 'imagick' plugin (pecl will not install it on 5.3, hhvm does not use pecl)
-  - sh -c "if [ $TRAVIS_PHP_VERSION != 'hhvm' ] && [ $TRAVIS_PHP_VERSION != '5.3' ]; then printf "\n" | pecl install imagick; fi"
+  # Install 'imagick' plugin
+  - pecl install imagick
   # Directory for coverage report
   - mkdir -p build/logs/
 
