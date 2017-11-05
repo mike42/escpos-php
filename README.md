@@ -74,6 +74,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Citizen CT-S310II
 - Daruma DR800
 - EPOS TEP 220M
+- Epson TM-T88II
 - Epson TM-T88III
 - Epson TM-T88IV
 - Epson TM-T88V
@@ -84,6 +85,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Epson TM-T70II
 - Epson TM-T81
 - Epson TM-U220
+- Epson TM-U295 (requires `release()` to release slip).
 - Epson TM-U590 and TM-U590P
 - Epson FX-890 (requires `feedForm()` to release paper).
 - Equal (EQ-IT-001) POS-58
