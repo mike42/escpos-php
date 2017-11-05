@@ -980,6 +980,13 @@ class EscposTest extends PHPUnit_Framework_TestCase
         $this -> checkOutput("\x1b@\x0c");
     }
 
+    /* Release */
+    public function testRelease()
+    {
+        $this -> printer -> release();
+        $this -> checkOutput("\x1b@\x1b\x71");
+    }
+
     /* Set text size  */
     public function testSetTextSizeNormal()
     {

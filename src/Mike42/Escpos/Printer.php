@@ -540,6 +540,14 @@ class Printer
     }
 
     /**
+     * Some slip printers require `ESC q` sequence to release the paper.
+     */
+    public function release()
+    {
+        $this -> connector -> write(self::ESC . chr(113));
+    }
+
+    /**
      * Print and reverse feed n lines.
      *
      * @param int $lines number of lines to feed. If not specified, 1 line will be fed.
