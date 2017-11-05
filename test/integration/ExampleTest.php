@@ -16,6 +16,7 @@ class ExampleTest extends PHPUnit_Framework_TestCase
      */
     public function testBitImage()
     {
+        $this->markTestSkipped('Not repeatable on Travis CI.');
         $this -> requireGraphicsLibrary();
         $outp = $this -> runExample("bit-image.php");
         $this -> outpTest($outp, "bit-image.bin");
@@ -53,6 +54,7 @@ class ExampleTest extends PHPUnit_Framework_TestCase
      */
     public function testDemo()
     {
+        $this->markTestSkipped('Not repeatable on Travis CI.');
         $this -> requireGraphicsLibrary();
         $outp = $this -> runExample("demo.php");
         $this -> outpTest($outp, "demo.bin");
@@ -63,6 +65,7 @@ class ExampleTest extends PHPUnit_Framework_TestCase
      */
     public function testGraphics()
     {
+        $this->markTestSkipped('Not repeatable on Travis CI.');
         $this -> requireGraphicsLibrary();
         $outp = $this -> runExample("graphics.php");
         $this -> outpTest($outp, "graphics.bin");
@@ -73,6 +76,7 @@ class ExampleTest extends PHPUnit_Framework_TestCase
      */
     public function testReceiptWithLogo()
     {
+        $this->markTestSkipped('Not repeatable on Travis CI.');
         $this -> requireGraphicsLibrary();
         $outp = $this -> runExample("receipt-with-logo.php");
         $this -> outpTest($outp, "receipt-with-logo.bin");
