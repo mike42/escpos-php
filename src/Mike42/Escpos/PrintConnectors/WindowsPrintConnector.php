@@ -100,7 +100,7 @@ class WindowsPrintConnector implements PrintConnector
     /**
      * Valid smb:// URI containing hostname & printer with optional user & optional password only.
      */
-    const REGEX_SMB = "/^smb:\/\/([\s\d\w-]+(:[\s\d\w-]+)?@)?([\d\w-]+\.)*[\d\w-]+\/([\d\w-]+\/)?[\d\w-]+(\s[\d\w-]+)*$/";
+    const REGEX_SMB = "/^smb:\/\/([\s\d\w-]+(:[\s\d\w-+]+)?@)?([\d\w-]+\.)*[\d\w-]+\/([\d\w-]+\/)?[\d\w-]+(\s[\d\w-]+)*$/";
 
     /**
      * @param string $dest

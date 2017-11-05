@@ -71,17 +71,24 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - AURES ODP-500
 - Bixolon SRP-350III
 - Citizen CBM1000-II
+- Citizen CT-S310II
 - Daruma DR800
 - EPOS TEP 220M
+- Epson TM-T88II
 - Epson TM-T88III
 - Epson TM-T88IV
 - Epson TM-T88V
 - Epson TM-T70
 - Epson TM-T82II
 - Epson TM-T20
+- Epson TM-T20II
 - Epson TM-T70II
+- Epson TM-T81
 - Epson TM-U220
+- Epson TM-U295 (requires `release()` to release slip).
+- Epson TM-U590 and TM-U590P
 - Epson FX-890 (requires `feedForm()` to release paper).
+- Equal (EQ-IT-001) POS-58
 - Excelvan HOP-E58
 - Excelvan HOP-E200 
 - Excelvan HOP-E801
@@ -91,7 +98,10 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - gprinter GP-U80160I
 - Hasar HTP 250
 - Metapace T-1
+- Metapace T-25
+- Nexa PX700
 - Okipos 80 Plus III
+- Orient BTP-R580
 - P-822D
 - P85A-401 (make unknown)
 - Rongta RP326US
@@ -99,11 +109,14 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - SEYPOS PRP-300 (Also marketed as TYSSO PRP-300)
 - Silicon SP-201 / RP80USE
 - Star TSP100 ECO
+- Star TSP100III FuturePRNT
 - Star TSP-650
 - Star TUP-592
 - SPRT SP-POS88V
 - Xprinter F-900
+- XPrinter XP-Q20011
 - Xprinter XP-Q800
+- Xprinter XP-80C
 - Venus V248T
 - Zjiang NT-58H
 - Zjiang ZJ-5870
