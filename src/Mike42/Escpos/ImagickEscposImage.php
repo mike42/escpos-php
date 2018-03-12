@@ -217,9 +217,9 @@ class ImagickEscposImage extends EscposImage
             throw new Exception(__FUNCTION__ . " requires imagick extension.");
         }
         /*
-    	 * Load first page at very low density (resolution), to figure out what
-    	 * density to use to achieve $pageWidth
-    	 */
+         * Load first page at very low density (resolution), to figure out what
+         * density to use to achieve $pageWidth
+         */
         try {
             $image = new \Imagick();
             $testRes = 2; // Test resolution

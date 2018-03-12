@@ -314,8 +314,8 @@ class WindowsPrintConnector implements PrintConnector
     }
     
     /* (non-PHPdoc)
-	 * @see PrintConnector::read()
-	 */
+     * @see PrintConnector::read()
+     */
     public function read($len)
     {
         /* Two-way communication is not supported */
