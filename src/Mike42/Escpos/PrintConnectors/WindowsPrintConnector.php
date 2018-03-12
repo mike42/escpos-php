@@ -155,7 +155,7 @@ class WindowsPrintConnector implements PrintConnector
             throw new BadMethodCallException("Printer '" . $dest . "' is not a valid " .
                 "printer name. Use local port (LPT1, COM1, etc) or smb://computer/printer notation.");
         }
-        $this -> buffer = array();
+        $this -> buffer = [];
     }
 
     public function __destruct()
@@ -314,8 +314,8 @@ class WindowsPrintConnector implements PrintConnector
     }
 
     /* (non-PHPdoc)
-	 * @see PrintConnector::read()
-	 */
+     * @see PrintConnector::read()
+     */
     public function read($len)
     {
         /* Two-way communication is not supported */
@@ -333,11 +333,11 @@ class WindowsPrintConnector implements PrintConnector
      */
     protected function runCommand($command, &$outputStr, &$errorStr, $inputStr = null)
     {
-        $descriptors = array(
-                0 => array("pipe", "r"),
-                1 => array("pipe", "w"),
-                2 => array("pipe", "w"),
-        );
+        $descriptors = [
+                0 => ["pipe", "r"],
+                1 => ["pipe", "w"],
+                2 => ["pipe", "w"],
+        ];
         $process = proc_open($command, $descriptors, $fd);
         if (is_resource($process)) {
             /* Write to input */
