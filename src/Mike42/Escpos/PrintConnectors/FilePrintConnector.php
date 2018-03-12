@@ -55,8 +55,8 @@ class FilePrintConnector implements PrintConnector
     }
     
     /* (non-PHPdoc)
-	 * @see PrintConnector::read()
-	 */
+     * @see PrintConnector::read()
+     */
     public function read($len)
     {
         return fread($this -> fp, $len);

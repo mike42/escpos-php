@@ -160,7 +160,7 @@ require __DIR__ . '/vendor/mike42/escpos-php/autoload.php';
 To maintain compatibility with as many systems as possible, this driver has few
 hard dependencies:
 
-- PHP 5.3 or above
+- PHP 5.4 or above.
 - `mbstring` extension, since the driver accepts UTF-8 encoding.
 
 It is also suggested that you install either `imagick` or `gd`, so that you can
@@ -531,7 +531,7 @@ This code is MIT licensed, and you are encouraged to contribute any modification
 
 For development, it's suggested that you load `imagick`, `gd` and `Xdebug` PHP exensions, and install `composer`.
 
-The tests are executed on [Travis CI](https://travis-ci.org/mike42/escpos-php) over PHP 5.3, 5.4, 5.5, 5.7, 7, and HHVM. Earlier versions of PHP are not supported.
+The tests are executed on [Travis CI](https://travis-ci.org/mike42/escpos-php) over PHP 5.4, 5.5, 5.6, 7.0, 7.2 and 7.2. Earlier versions of PHP are not supported in current releases.
 
 Fetch a copy of this code and load dependencies with composer:
 
@@ -552,20 +552,3 @@ The developer docs are build with [doxygen](https://github.com/doxygen/doxygen).
     make -C doc clean && make -C doc
 
 Pull requests and bug reports welcome.
-
-<!-- ## Other versions
-TODO: Some notes about related OSS projects will go here.
-Some forks of this project have been developed by others for specific use cases. Improvements from the following projects have been incorporated into escpos-php:
-
-- [wdoyle/EpsonESCPOS-PHP](https://github.com/wdoyle/EpsonESCPOS-PHP)
-- [ronisaha/php-esc-pos](https://github.com/ronisaha/php-esc-pos)-->
-
-<!--
-TODO: A table of printer models vs programming guides available via the web would be good, but should go outside this README
-## Vendor documentation
-Epson notes that not all of its printers support all ESC/POS features, and includes a table in their documentation:
-
-* [FAQ about ESC/POS from Epson](http://content.epson.de/fileadmin/content/files/RSD/downloads/escpos.pdf)
-
-Note that many printers produced by other vendors use the same standard, and are compatible by varying degrees.
--->
