@@ -59,7 +59,7 @@ abstract class EscposImage
      * @var string $imgColumnData
      *  Cached column-format data to avoid re-computation
      */
-    private $imgColumnData = array();
+    private $imgColumnData = [];
     
     /**
      * @var array:string $imgRasterData
@@ -313,7 +313,7 @@ abstract class EscposImage
      */
     private function getColumnFormat($highDensity)
     {
-        $out = array();
+        $out = [];
         $i = 0;
         while (($line = $this -> getColumnFormatLine($i, $highDensity)) !== null) {
             $out[] = $line;
@@ -422,7 +422,7 @@ abstract class EscposImage
     public static function load(
         $filename,
         $allow_optimisations = true,
-        array $preferred = array('imagick', 'gd', 'native')
+        array $preferred = ['imagick', 'gd', 'native']
     ) {
         /* Fail early if file is not readble */
         if (!file_exists($filename) || !is_readable($filename)) {
@@ -444,7 +444,7 @@ abstract class EscposImage
                 }
                 return new \Mike42\Escpos\GdEscposImage($filename, $allow_optimisations);
             } elseif ($implemetnation === 'native') {
-                if (!in_array($ext, array('wbmp', 'pbm', 'bmp'))) {
+                if (!in_array($ext, ['wbmp', 'pbm', 'bmp'])) {
                     // Pure PHP is fastest way to generate raster output from wbmp and pbm formats.
                     continue;
                 }

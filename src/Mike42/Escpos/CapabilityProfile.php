@@ -126,7 +126,7 @@ class CapabilityProfile
         $this->fonts = $profileData['fonts'];
         $this->media = $profileData['media'];
         // More complex fields that are loaded into custom objects
-        $this->codePages = array();
+        $this->codePages = [];
         $this->codePageCacheKey = md5(json_encode($profileData['codePages']));
         foreach ($profileData['codePages'] as $k => $v) {
             $this->codePages[$k] = new CodePage($v, self::$encodings[$v]);
@@ -334,10 +334,10 @@ class CapabilityProfile
     protected static function suggestProfileName($profileName)
     {
         $suggestions = self::suggestNearest($profileName, array_keys(self::$profiles), 3);
-        $alwaysSuggest = array(
+        $alwaysSuggest = [
             'simple',
             'default'
-        );
+        ];
         foreach ($alwaysSuggest as $item) {
             if (array_search($item, $suggestions) === false) {
                 array_push($suggestions, $item);
