@@ -37,7 +37,8 @@ final class DummyPrintConnector implements PrintConnector
         $this -> buffer = [];
     }
 
-    public function clear() {
+    public function clear()
+    {
         $this -> buffer = [];
     }
     
