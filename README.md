@@ -542,7 +542,7 @@ This code is MIT licensed, and you are encouraged to contribute any modification
 
 For development, it's suggested that you load `imagick`, `gd` and `Xdebug` PHP exensions, and install `composer`.
 
-The tests are executed on [Travis CI](https://travis-ci.org/mike42/escpos-php) over PHP 5.4, 5.5, 5.6, 7.0, 7.2 and 7.2. Earlier versions of PHP are not supported in current releases.
+The tests are executed on [Travis CI](https://travis-ci.org/mike42/escpos-php) over PHP 5.4, 5.5, 5.6, 7.0, 7.1 and 7.2, plus the latest LTS version of HHVM, 3.21. Older versions of PHP are not supported in current releases.
 
 Fetch a copy of this code and load dependencies with composer:
 
