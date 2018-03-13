@@ -11,6 +11,7 @@ Main repository: [mike42/escpos-php](https://github.com/mike42/escpos-php) ([onl
 - [matiasgaston](https://github.com/matiasgaston)
 - [Mike Stivala](https://github.com/brndwgn)
 - [Nicholas Long](https://github.com/longsview)
+- [Evandro Araújo](https://github.com/evsar3)
 
 Via fork: [wdoyle/EpsonESCPOS-PHP](https://github.com/wdoyle/EpsonESCPOS-PHP):
 
