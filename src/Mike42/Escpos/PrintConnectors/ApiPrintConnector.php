@@ -36,7 +36,7 @@ class ApiPrintConnector implements PrintConnector
     */
     public function __construct($host, $printerId, $apiToken)
     {
-        $this->httpClient = new Client(array('base_uri' => $host));
+        $this->httpClient = new Client(['base_uri' => $host]);
         $this->printerId = $printerId;
         $this->apiToken = $apiToken;
 

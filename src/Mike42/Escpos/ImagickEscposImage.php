@@ -113,7 +113,7 @@ class ImagickEscposImage extends EscposImage
         $imgWidth = $im->getimagewidth();
         if ($imgWidth == $lineHeight) {
             // Return glob of this panel
-            return array($this -> getRasterBlobFromImage($im));
+            return [$this -> getRasterBlobFromImage($im)];
         } elseif ($imgWidth > $lineHeight) {
             // Calculations
             $slicesLeft = ceil($imgWidth / $lineHeight / 2);
@@ -133,7 +133,7 @@ class ImagickEscposImage extends EscposImage
         } else {
             /* Image is smaller than full width */
             $im -> extentimage($lineHeight, $im -> getimageheight(), 0, 0);
-            return array($this -> getRasterBlobFromImage($im));
+            return [$this -> getRasterBlobFromImage($im)];
         }
     }
 
@@ -217,9 +217,9 @@ class ImagickEscposImage extends EscposImage
             throw new Exception(__FUNCTION__ . " requires imagick extension.");
         }
         /*
-    	 * Load first page at very low density (resolution), to figure out what
-    	 * density to use to achieve $pageWidth
-    	 */
+         * Load first page at very low density (resolution), to figure out what
+         * density to use to achieve $pageWidth
+         */
         try {
             $image = new \Imagick();
             $testRes = 2; // Test resolution
@@ -235,7 +235,7 @@ class ImagickEscposImage extends EscposImage
             $image -> readImage($pdfFile);
             $pages = $image -> getNumberImages();
             /* Convert images to Escpos objects */
-            $ret = array();
+            $ret = [];
             for ($i = 0; $i < $pages; $i++) {
                 $image -> setIteratorIndex($i);
                 $ep = new ImagickEscposImage();

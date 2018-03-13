@@ -67,30 +67,35 @@ This driver is known to work with the following OS/interface combinations:
 ### Printers
 Many thermal receipt printers support ESC/POS to some degree. This driver has been known to work with:
 
+- 3nStrat POS-08
 - AURES ODP-333
 - AURES ODP-500
+- Bematech-4200-TH
 - Bixolon SRP-350III
+- Black Copper BC-85AC
 - Citizen CBM1000-II
 - Citizen CT-S310II
+- Dapper-Geyi Q583P 
 - Daruma DR800
 - EPOS TEP 220M
+- Epson EU-T332C
+- Epson FX-890 (requires `feedForm()` to release paper).
+- Epson TM-T20
+- Epson TM-T20II
+- Epson TM-T70
+- Epson TM-T70II
+- Epson TM-T81
+- Epson TM-T82II
 - Epson TM-T88II
 - Epson TM-T88III
 - Epson TM-T88IV
 - Epson TM-T88V
-- Epson TM-T70
-- Epson TM-T82II
-- Epson TM-T20
-- Epson TM-T20II
-- Epson TM-T70II
-- Epson TM-T81
 - Epson TM-U220
 - Epson TM-U295 (requires `release()` to release slip).
 - Epson TM-U590 and TM-U590P
-- Epson FX-890 (requires `feedForm()` to release paper).
 - Equal (EQ-IT-001) POS-58
-- Excelvan HOP-E58
 - Excelvan HOP-E200 
+- Excelvan HOP-E58
 - Excelvan HOP-E801
 - Excelvan ZJ-8220
 - Gainscha GP-5890x (Also marketed as EC Line 5890x)
@@ -100,28 +105,34 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Metapace T-1
 - Metapace T-25
 - Nexa PX700
+- Nyear NP100
 - Okipos 80 Plus III
 - Orient BTP-R580
 - P-822D
 - P85A-401 (make unknown)
 - Rongta RP326US
 - Rongta RP58-U
+- Senor TP-100
 - SEYPOS PRP-300 (Also marketed as TYSSO PRP-300)
+- Sicar POS-80
 - Silicon SP-201 / RP80USE
+- SPRT SP-POS88V
+- Star BSC10
 - Star TSP100 ECO
 - Star TSP100III FuturePRNT
 - Star TSP-650
 - Star TUP-592
-- SPRT SP-POS88V
+- Venus V248T
 - Xprinter F-900
+- Xprinter XP-58 Series
+- Xprinter XP-80C
+- Xprinter XP-90
 - XPrinter XP-Q20011
 - Xprinter XP-Q800
-- Xprinter XP-80C
-- Venus V248T
 - Zjiang NT-58H
 - Zjiang ZJ-5870
-- Zjiang ZJ-5890T (Marketed as POS 5890T)
 - Zjiang ZJ-5890K
+- Zjiang ZJ-5890T (Marketed as POS 5890T)
 
 If you use any other printer with this code, please [let us know](https://github.com/mike42/escpos-php/issues/new) so that it can be added to the list.
 
@@ -160,7 +171,7 @@ require __DIR__ . '/vendor/mike42/escpos-php/autoload.php';
 To maintain compatibility with as many systems as possible, this driver has few
 hard dependencies:
 
-- PHP 5.3 or above
+- PHP 5.4 or above.
 - `mbstring` extension, since the driver accepts UTF-8 encoding.
 
 It is also suggested that you install either `imagick` or `gd`, so that you can
@@ -531,7 +542,7 @@ This code is MIT licensed, and you are encouraged to contribute any modification
 
 For development, it's suggested that you load `imagick`, `gd` and `Xdebug` PHP exensions, and install `composer`.
 
-The tests are executed on [Travis CI](https://travis-ci.org/mike42/escpos-php) over PHP 5.3, 5.4, 5.5, 5.7, 7, and HHVM. Earlier versions of PHP are not supported.
+The tests are executed on [Travis CI](https://travis-ci.org/mike42/escpos-php) over PHP 5.4, 5.5, 5.6, 7.0, 7.1 and 7.2, plus the latest LTS version of HHVM, 3.21. Older versions of PHP are not supported in current releases.
 
 Fetch a copy of this code and load dependencies with composer:
 
@@ -552,20 +563,3 @@ The developer docs are build with [doxygen](https://github.com/doxygen/doxygen).
     make -C doc clean && make -C doc
 
 Pull requests and bug reports welcome.
-
-<!-- ## Other versions
-TODO: Some notes about related OSS projects will go here.
-Some forks of this project have been developed by others for specific use cases. Improvements from the following projects have been incorporated into escpos-php:
-
-- [wdoyle/EpsonESCPOS-PHP](https://github.com/wdoyle/EpsonESCPOS-PHP)
-- [ronisaha/php-esc-pos](https://github.com/ronisaha/php-esc-pos)-->
-
-<!--
-TODO: A table of printer models vs programming guides available via the web would be good, but should go outside this README
-## Vendor documentation
-Epson notes that not all of its printers support all ESC/POS features, and includes a table in their documentation:
-
-* [FAQ about ESC/POS from Epson](http://content.epson.de/fileadmin/content/files/RSD/downloads/escpos.pdf)
-
-Note that many printers produced by other vendors use the same standard, and are compatible by varying degrees.
--->

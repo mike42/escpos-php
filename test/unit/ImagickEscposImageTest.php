@@ -52,7 +52,17 @@ class ImagickEscposImageTest extends PHPUnit_Framework_TestCase
             $this -> loadAndCheckImg('black_white.' . $format, 2, 2, "\xc0\x00", array("\x80\x80"));
         }
     }
-    
+
+    /**
+     * @medium
+     */
+    public function testImagickBlackWhiteTall()
+    {
+        // We're very interested in correct column format chopping here at 8 pixels
+        $this -> loadAndCheckImg('black_white_tall.png', 2, 16,
+            "\xc0\xc0\xc0\xc0\xc0\xc0\xc0\xc0\x00\x00\x00\x00\x00\x00\x00\x00", array("\xff\xff", "\x00\x00"));
+    }
+
     /**
      * @medium
      */

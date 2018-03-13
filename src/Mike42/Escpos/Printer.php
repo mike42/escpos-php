@@ -399,7 +399,7 @@ class Printer
                 self::validateStringRegex($content, __FUNCTION__, "/^[0-9]{11,12}$/", "UPCA barcode content");
                 break;
             case self::BARCODE_UPCE:
-                self::validateIntegerMulti($len, array(array(6, 8), array(11, 12)), __FUNCTION__, "UPCE barcode content length");
+                self::validateIntegerMulti($len, [[6, 8], [11, 12]], __FUNCTION__, "UPCE barcode content length");
                 self::validateStringRegex($content, __FUNCTION__, "/^([0-9]{6,8}|[0-9]{11,12})$/", "UPCE barcode content");
                 break;
             case self::BARCODE_JAN13:
@@ -458,7 +458,7 @@ class Printer
     {
         self::validateInteger($size, 0, 3, __FUNCTION__);
         $rasterData = $img -> toRasterFormat();
-        $header = Printer::dataHeader(array($img -> getWidthBytes(), $img -> getHeight()), true);
+        $header = Printer::dataHeader([$img -> getWidthBytes(), $img -> getHeight()], true);
         $this -> connector -> write(self::GS . "v0" . chr($size) . $header);
         $this -> connector -> write($rasterData);
     }
@@ -484,7 +484,7 @@ class Printer
         // Header and density code (0, 1, 32, 33) re-used for every line
         $densityCode = ($highDensityHorizontal ? 1 : 0) + ($highDensityVertical ? 32 : 0);
         $colFormatData = $img -> toColumnFormat($highDensityVertical);
-        $header = Printer::dataHeader(array($img -> getWidth()), true);
+        $header = Printer::dataHeader([$img -> getWidth()], true);
         foreach ($colFormatData as $line) {
             // Print each line, double density etc for printing are set here also
             $this -> connector -> write(self::ESC . "*" . chr($densityCode) . $header . $line);
@@ -613,7 +613,7 @@ class Printer
     {
         self::validateInteger($size, 0, 3, __FUNCTION__);
         $rasterData = $img -> toRasterFormat();
-        $imgHeader = Printer::dataHeader(array($img -> getWidth(), $img -> getHeight()), true);
+        $imgHeader = Printer::dataHeader([$img -> getWidth(), $img -> getHeight()], true);
         $tone = '0';
         $colors = '1';
         $xm = (($size & self::IMG_DOUBLE_WIDTH) == Printer::IMG_DOUBLE_WIDTH) ? chr(2) : chr(1);
@@ -1061,7 +1061,7 @@ class Printer
      */
     protected static function dataHeader(array $inputs, $long = true)
     {
-        $outp = array();
+        $outp = [];
         foreach ($inputs as $input) {
             if ($long) {
                 $outp[] = Printer::intLowHigh($input, 2);
@@ -1135,7 +1135,7 @@ class Printer
      */
     protected static function validateInteger($test, $min, $max, $source, $argument = "Argument")
     {
-        self::validateIntegerMulti($test, array(array($min, $max)), $source, $argument);
+        self::validateIntegerMulti($test, [[$min, $max]], $source, $argument);
     }
     
     /**

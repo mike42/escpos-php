@@ -198,11 +198,11 @@ class EscposPrintBuffer implements PrintBuffer
         }
 
         /* Generate conversion tables */
-        $encode = array();
-        $available = array();
+        $encode = [];
+        $available = [];
 
         foreach ($supportedCodePages as $num => $codePage) {
-            $encode[$num] = array();
+            $encode[$num] = [];
             if (!$codePage -> isEncodable()) {
                 continue;
             }
@@ -213,7 +213,7 @@ class EscposPrintBuffer implements PrintBuffer
                     continue;
                 }
                 if (!isset($available[$utf8])) {
-                    $available[$utf8] = array();
+                    $available[$utf8] = [];
                 }
                 $available[$utf8][$num] = true;
                 $encode[$num][$utf8] = chr($char);
@@ -221,7 +221,7 @@ class EscposPrintBuffer implements PrintBuffer
         }
         
         /* Use generated data */
-        $dataArray = array("available" => $available, "encode" => $encode, "key" => $cacheKey);
+        $dataArray = ["available" => $available, "encode" => $encode, "key" => $cacheKey];
         $this -> available = $dataArray["available"];
         $this -> encode = $dataArray["encode"];
         $cacheData = serialize($dataArray);
