@@ -42,7 +42,7 @@ This project uses the [PSR-2 standard](https://github.com/php-fig/fig-standards/
 
 ## Testing and CI
 
-The tests are executed on [Travis CI](https://travis-ci.org/mike42/escpos-php) over PHP 5.3, 5.4, 5.5, 5.7, 7, and HHVM. Earlier versions of PHP are not supported.
+The tests are executed on [Travis CI](https://travis-ci.org/mike42/escpos-php) over PHP 5.4, 5.5, 5.6, 7.0, 7.1 and 7.2, plus the latest LTS version of HHVM, 3.21. Older versions of PHP are not supported in current releases.
 
 For development, it's suggested that you load `imagick`, `gd` and `Xdebug` PHP exensions, and install `composer`.
 
