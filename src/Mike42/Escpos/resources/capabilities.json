@@ -286,6 +286,115 @@
         }
     },
     "profiles": {
+        "NT-5890K": {
+            "codePages": {
+                "0": "CP437",
+                "1": "CP932",
+                "2": "CP850",
+                "3": "CP860",
+                "4": "CP863",
+                "5": "CP865",
+                "6": "Unknown",
+                "7": "Unknown",
+                "8": "Unknown",
+                "9": "Unknown",
+                "10": "Unknown",
+                "16": "CP1252",
+                "17": "CP866",
+                "18": "CP852",
+                "19": "CP858",
+                "20": "Unknown",
+                "21": "Unknown",
+                "22": "Unknown",
+                "23": "Unknown",
+                "24": "CP747",
+                "25": "CP1257",
+                "27": "CP1258",
+                "28": "CP864",
+                "31": "Unknown",
+                "32": "CP1255",
+                "50": "CP437",
+                "52": "CP437",
+                "53": "CP858",
+                "54": "CP852",
+                "55": "CP860",
+                "56": "CP861",
+                "57": "CP863",
+                "58": "CP865",
+                "59": "CP866",
+                "60": "CP855",
+                "61": "CP857",
+                "62": "CP862",
+                "63": "CP864",
+                "64": "CP737",
+                "65": "CP851",
+                "66": "CP869",
+                "68": "CP772",
+                "69": "CP774",
+                "71": "CP1252",
+                "72": "CP1250",
+                "73": "CP1251",
+                "74": "CP3840",
+                "76": "CP3843",
+                "77": "CP3844",
+                "78": "CP3845",
+                "79": "CP3846",
+                "80": "CP3847",
+                "81": "CP3848",
+                "83": "CP2001",
+                "84": "CP3001",
+                "85": "CP3002",
+                "86": "CP3011",
+                "87": "CP3012",
+                "88": "CP3021",
+                "89": "CP3041",
+                "90": "CP1253",
+                "91": "CP1254",
+                "92": "CP1256",
+                "93": "CP720",
+                "94": "CP1258",
+                "95": "CP775",
+                "96": "Unknown",
+                "255": "Unknown"
+            },
+            "colors": {
+                "0": "black"
+            },
+            "features": {
+                "barcodeA": false,
+                "barcodeB": false,
+                "bitImageColumn": true,
+                "bitImageRaster": true,
+                "graphics": false,
+                "highDensity": true,
+                "paperFullCut": false,
+                "paperPartCut": false,
+                "pdf417Code": false,
+                "pulseBel": false,
+                "pulseStandard": true,
+                "qrCode": false,
+                "starCommands": false
+            },
+            "fonts": {
+                "0": {
+                    "columns": 32,
+                    "name": "Font A"
+                },
+                "1": {
+                    "columns": 42,
+                    "name": "Font B"
+                }
+            },
+            "media": {
+                "width": {
+                    "mm": 57.5,
+                    "pixels": 384
+                }
+            },
+            "name": "NT-5890K",
+            "notes": "",
+            "vendor": "Netum"
+        },
         "OCD-300": {
             "codePages": {
                 "0": "CP437",
@@ -314,11 +423,14 @@
                 "0": "black"
             },
             "features": {
+                "barcodeA": false,
                 "barcodeB": false,
                 "bitImageColumn": false,
                 "bitImageRaster": false,
                 "graphics": false,
                 "highDensity": true,
+                "paperFullCut": false,
+                "paperPartCut": false,
                 "pdf417Code": false,
                 "pulseBel": false,
                 "pulseStandard": true,
@@ -419,11 +531,14 @@
                 "0": "black"
             },
             "features": {
+                "barcodeA": true,
                 "barcodeB": true,
                 "bitImageColumn": true,
                 "bitImageRaster": true,
                 "graphics": false,
                 "highDensity": true,
+                "paperFullCut": true,
+                "paperPartCut": true,
                 "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
@@ -525,11 +640,14 @@
                 "0": "black"
             },
             "features": {
+                "barcodeA": false,
                 "barcodeB": false,
                 "bitImageColumn": false,
                 "bitImageRaster": true,
                 "graphics": false,
                 "highDensity": true,
+                "paperFullCut": false,
+                "paperPartCut": false,
                 "pdf417Code": false,
                 "pulseBel": false,
                 "pulseStandard": true,
@@ -538,18 +656,18 @@
             },
             "fonts": {
                 "0": {
-                    "columns": 42,
+                    "columns": 32,
                     "name": "Font A"
                 },
                 "1": {
-                    "columns": 56,
+                    "columns": 42,
                     "name": "Font B"
                 }
             },
             "media": {
                 "width": {
-                    "mm": "Unknown",
-                    "pixels": "Unknown"
+                    "mm": 57.5,
+                    "pixels": 384
                 }
             },
             "name": "POS5890 Series",
@@ -612,11 +730,14 @@
                 "0": "black"
             },
             "features": {
+                "barcodeA": true,
                 "barcodeB": true,
                 "bitImageColumn": true,
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "paperFullCut": true,
+                "paperPartCut": true,
                 "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
@@ -712,11 +833,14 @@
                 "0": "black"
             },
             "features": {
+                "barcodeA": true,
                 "barcodeB": true,
                 "bitImageColumn": true,
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "paperFullCut": true,
+                "paperPartCut": true,
                 "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
@@ -812,11 +936,14 @@
                 "0": "black"
             },
             "features": {
+                "barcodeA": true,
                 "barcodeB": true,
                 "bitImageColumn": true,
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "paperFullCut": true,
+                "paperPartCut": true,
                 "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
@@ -916,11 +1043,14 @@
                 "0": "black"
             },
             "features": {
+                "barcodeA": true,
                 "barcodeB": true,
                 "bitImageColumn": true,
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "paperFullCut": true,
+                "paperPartCut": true,
                 "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
@@ -966,11 +1096,14 @@
                 "0": "black"
             },
             "features": {
+                "barcodeA": true,
                 "barcodeB": true,
                 "bitImageColumn": true,
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "paperFullCut": true,
+                "paperPartCut": true,
                 "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
@@ -1015,11 +1148,14 @@
                 "0": "black"
             },
             "features": {
+                "barcodeA": true,
                 "barcodeB": true,
                 "bitImageColumn": true,
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "paperFullCut": true,
+                "paperPartCut": true,
                 "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
@@ -1055,11 +1191,14 @@
                 "1": "alternate"
             },
             "features": {
+                "barcodeA": false,
                 "barcodeB": false,
                 "bitImageColumn": true,
                 "bitImageRaster": false,
                 "graphics": false,
                 "highDensity": false,
+                "paperFullCut": false,
+                "paperPartCut": false,
                 "pdf417Code": false,
                 "pulseBel": false,
                 "pulseStandard": true,
@@ -1142,11 +1281,14 @@
                 "0": "black"
             },
             "features": {
+                "barcodeA": true,
                 "barcodeB": true,
                 "bitImageColumn": true,
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "paperFullCut": true,
+                "paperPartCut": true,
                 "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
@@ -1229,11 +1371,14 @@
                 "0": "black"
             },
             "features": {
+                "barcodeA": true,
                 "barcodeB": true,
                 "bitImageColumn": true,
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "paperFullCut": true,
+                "paperPartCut": true,
                 "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
@@ -1329,11 +1474,14 @@
                 "0": "black"
             },
             "features": {
+                "barcodeA": true,
                 "barcodeB": true,
                 "bitImageColumn": true,
                 "bitImageRaster": true,
                 "graphics": true,
                 "highDensity": true,
+                "paperFullCut": true,
+                "paperPartCut": true,
                 "pdf417Code": true,
                 "pulseBel": false,
                 "pulseStandard": true,
@@ -1368,11 +1516,14 @@
                 "0": "black"
             },
             "features": {
+                "barcodeA": false,
                 "barcodeB": false,
                 "bitImageColumn": false,
                 "bitImageRaster": true,
                 "graphics": false,
                 "highDensity": true,
+                "paperFullCut": false,
+                "paperPartCut": false,
                 "pdf417Code": false,
                 "pulseBel": false,
                 "pulseStandard": true,
