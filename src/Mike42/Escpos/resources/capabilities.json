@@ -1182,6 +1182,105 @@
             "notes": "Epson TM-T88III profile. This printer has similar feature support to the TM-T88II. The code page mapping is documented in the \"TM-T88II/T88III Technical Reference Guide\".\n",
             "vendor": "Epson"
         },
+        "TM-T88IV": {
+            "codePages": {
+                "0": "CP437",
+                "1": "CP932",
+                "2": "CP850",
+                "3": "CP860",
+                "4": "CP863",
+                "5": "CP865",
+                "16": "CP1252",
+                "17": "CP866",
+                "18": "CP852",
+                "19": "CP858",
+                "255": "Unknown"
+            },
+            "colors": {
+                "0": "black"
+            },
+            "features": {
+                "barcodeA": true,
+                "barcodeB": true,
+                "bitImageColumn": true,
+                "bitImageRaster": true,
+                "graphics": true,
+                "highDensity": true,
+                "paperFullCut": true,
+                "paperPartCut": true,
+                "pdf417Code": true,
+                "pulseBel": false,
+                "pulseStandard": true,
+                "qrCode": true,
+                "starCommands": false
+            },
+            "fonts": {
+                "0": {
+                    "columns": 42,
+                    "name": "Font A"
+                },
+                "1": {
+                    "columns": 56,
+                    "name": "Font B"
+                }
+            },
+            "media": {
+                "width": {
+                    "mm": "Unknown",
+                    "pixels": "Unknown"
+                }
+            },
+            "name": "TM-T88IV",
+            "notes": "Epson TM-T88IV profile\n",
+            "vendor": "Epson"
+        },
+        "TM-T88IV-SA": {
+            "codePages": {
+                "0": "CP437",
+                "20": "Unknown",
+                "21": "CP874",
+                "26": "Unknown",
+                "30": "TCVN-3-1",
+                "31": "TCVN-3-2"
+            },
+            "colors": {
+                "0": "black"
+            },
+            "features": {
+                "barcodeA": true,
+                "barcodeB": true,
+                "bitImageColumn": true,
+                "bitImageRaster": true,
+                "graphics": true,
+                "highDensity": true,
+                "paperFullCut": true,
+                "paperPartCut": true,
+                "pdf417Code": true,
+                "pulseBel": false,
+                "pulseStandard": true,
+                "qrCode": true,
+                "starCommands": false
+            },
+            "fonts": {
+                "0": {
+                    "columns": 42,
+                    "name": "Font A"
+                },
+                "1": {
+                    "columns": 56,
+                    "name": "Font B"
+                }
+            },
+            "media": {
+                "width": {
+                    "mm": "Unknown",
+                    "pixels": "Unknown"
+                }
+            },
+            "name": "TM-T88IV South Asia",
+            "notes": "Epson TM-T88IV profile (South Asia models)\n",
+            "vendor": "Epson"
+        },
         "TM-U220": {
             "codePages": {
                 "0": "CP437"
