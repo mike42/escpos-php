@@ -18,12 +18,9 @@ class FilePrintConnectorTest extends PHPUnit_Framework_TestCase
         // Should attempt to send data to the local printer by writing to it
         $this -> setExpectedException('Exception');
         $tmpfname = tempnam("/tmp", "php");
-        try {
-            $connector = new FilePrintConnector($tmpfname);
-            $connector -> finalize();
-            $connector -> write("Test");
-        } finally {
-            unlink($tmpfname);
-        }
+        $connector = new FilePrintConnector($tmpfname);
+        $connector -> finalize();
+        $connector -> write("Test");
+        unlink($tmpfname);
     }
 }
