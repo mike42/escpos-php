@@ -52,12 +52,6 @@ class EscposTest extends PHPUnit\Framework\TestCase
         $this -> checkOutput("\x1b@The quick brown fox jumps over the lazy dog\n");
     }
 
-    public function testTextDefault()
-    {
-        $this -> printer -> text();
-        $this -> checkOutput("\x1b@");
-    }
-    
     public function testTextChinese()
     {
         // Switch to chinese print mode, GBK output, switch back to alphanumeric.
@@ -77,17 +71,8 @@ class EscposTest extends PHPUnit\Framework\TestCase
     {
         $this -> printer -> text("String");
         $this -> printer -> text(123);
-        $this -> printer -> text();
-        $this -> printer -> text(null);
         $this -> printer -> text(1.2);
-        $this -> printer -> text(new FooBar("FooBar"));
-        $this -> checkOutput("\x1b@String1231.2FooBar");
-    }
-
-    public function testTextObject()
-    {
-        $this -> expectException(InvalidArgumentException::class);
-        $this -> printer -> text(new DateTime());
+        $this -> checkOutput("\x1b@String1231.2");
     }
 
     public function testFeedDefault()
@@ -106,12 +91,6 @@ class EscposTest extends PHPUnit\Framework\TestCase
     {
         $this -> expectException(InvalidArgumentException::class);
         $this -> printer -> feed(0);
-    }
-
-    public function testFeedNonInteger()
-    {
-        $this -> expectException(InvalidArgumentException::class);
-        $this -> printer -> feed("ab");
     }
 
     public function testFeedTooLarge()
@@ -193,12 +172,6 @@ class EscposTest extends PHPUnit\Framework\TestCase
         $this -> printer -> setUnderline(-1);
     }
 
-    public function testSetUnderlineNonInteger()
-    {
-        $this -> expectException(InvalidArgumentException::class);
-        $this -> printer -> setUnderline("Hello");
-    }
-
     /* Emphasis */
     public function testSetEmphasisDefault()
     {
@@ -218,12 +191,6 @@ class EscposTest extends PHPUnit\Framework\TestCase
         $this -> checkOutput("\x1b@\x1bE\x00");
     }
 
-    public function testSetEmphasisNonBoolean()
-    {
-        $this -> expectException(InvalidArgumentException::class);
-        $this -> printer -> setEmphasis(7);
-    }
-
     /* Double strike */
     public function testSetDoubleStrikeDefault()
     {
@@ -241,12 +208,6 @@ class EscposTest extends PHPUnit\Framework\TestCase
     {
         $this -> printer -> setDoubleStrike(false);
         $this -> checkOutput("\x1b@\x1bG\x00");
-    }
-
-    public function testSetDoubleStrikeNonBoolean()
-    {
-        $this -> expectException(InvalidArgumentException::class);
-        $this -> printer -> setDoubleStrike(4);
     }
 
     /* Font */
@@ -275,12 +236,6 @@ class EscposTest extends PHPUnit\Framework\TestCase
     {
         $this -> expectException(InvalidArgumentException::class);
         $this -> printer -> setFont(3);
-    }
-
-    public function testSetFontNonInteger()
-    {
-        $this -> expectException(InvalidArgumentException::class);
-        $this -> printer -> setFont('hello');
     }
 
     /* Justification */
@@ -321,12 +276,6 @@ class EscposTest extends PHPUnit\Framework\TestCase
         $this -> printer -> setFont(3);
     }
 
-    public function testSetJustificationNonInteger()
-    {
-        $this -> expectException(InvalidArgumentException::class);
-        $this -> printer -> setJustification('hello');
-    }
-
     /* Reverse feed */
     public function testFeedReverseDefault()
     {
@@ -350,12 +299,6 @@ class EscposTest extends PHPUnit\Framework\TestCase
     {
         $this -> expectException(InvalidArgumentException::class);
         $this -> printer -> feedReverse(256);
-    }
-
-    public function testFeedReverseNonInteger()
-    {
-        $this -> expectException(InvalidArgumentException::class);
-        $this -> printer -> feedReverse('hello');
     }
 
     /* Cut */
@@ -392,12 +335,6 @@ class EscposTest extends PHPUnit\Framework\TestCase
         $this -> printer -> setBarcodeHeight(256);
     }
 
-    public function testSetBarcodeHeightNonInteger()
-    {
-        $this -> expectException(InvalidArgumentException::class);
-        $this -> printer -> setBarcodeHeight('hello');
-    }
-
     /* Set barcode width */
     public function testSetBarcodeWidthDefault()
     {
@@ -421,12 +358,6 @@ class EscposTest extends PHPUnit\Framework\TestCase
     {
         $this -> expectException(InvalidArgumentException::class);
         $this -> printer -> setBarcodeWidth(256);
-    }
-    
-    public function testSetBarcodeWidthNonInteger()
-    {
-        $this -> expectException(InvalidArgumentException::class);
-        $this -> printer -> setBarcodeWidth('hello');
     }
 
     /* Barcode text position */
@@ -751,13 +682,7 @@ class EscposTest extends PHPUnit\Framework\TestCase
         $this -> expectException(InvalidArgumentException::class);
         $this -> printer -> pulse(0, 0, 2);
     }
-    
-    function testPulseNotANumber()
-    {
-        $this -> expectException(InvalidArgumentException::class);
-        $this -> printer -> pulse("fish");
-    }
-    
+
     /* Set reverse */
     public function testSetReverseColorsDefault()
     {
@@ -775,12 +700,6 @@ class EscposTest extends PHPUnit\Framework\TestCase
     {
         $this -> printer -> setReverseColors(false);
         $this -> checkOutput("\x1b@\x1dB\x00");
-    }
-
-    public function testSetReverseColorsNonBoolean()
-    {
-        $this -> expectException(InvalidArgumentException::class);
-        $this -> printer -> setReverseColors(7);
     }
 
     /* Bit image print */
@@ -920,12 +839,6 @@ class EscposTest extends PHPUnit\Framework\TestCase
     {
         $this -> expectException(InvalidArgumentException::class);
         $this -> printer -> pdf417Code("1234", 3, 3, 0, 5.0);
-    }
-
-    public function testPdf417CodeChangeErrorCorrectionInvalid()
-    {
-        $this -> expectException(InvalidArgumentException::class);
-        $this -> printer -> pdf417Code("1234", 3, 3, 0, "Foobar");
     }
 
     public function testPdf417CodeChangeOption()
@@ -1100,22 +1013,5 @@ class EscposTest extends PHPUnit\Framework\TestCase
         $this -> expectException(InvalidArgumentException::class);
         $this -> printer -> setPrintLeftMargin(70000);
         $this -> checkOutput();
-    }
-}
-
-/*
- * For testing that string-castable objects are handled
- */
-class FooBar
-{
-    private $foo;
-    public function __construct($foo)
-    {
-        $this -> foo = $foo;
-    }
-    
-    public function __toString()
-    {
-        return $this -> foo;
     }
 }
