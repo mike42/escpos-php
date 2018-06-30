@@ -50,8 +50,10 @@ class FilePrintConnector implements PrintConnector
      */
     public function finalize()
     {
-        fclose($this -> fp);
-        $this -> fp = false;
+        if ($this -> fp !== false) {
+            fclose($this -> fp);
+            $this -> fp = false;
+        }
     }
     
     /* (non-PHPdoc)
@@ -59,6 +61,9 @@ class FilePrintConnector implements PrintConnector
      */
     public function read($len)
     {
+        if ($this -> fp === false) {
+            throw new Exception("PrintConnector has been closed, cannot read input.");
+        }
         return fread($this -> fp, $len);
     }
     
@@ -69,6 +74,9 @@ class FilePrintConnector implements PrintConnector
      */
     public function write($data)
     {
+        if ($this -> fp === false) {
+            throw new Exception("PrintConnector has been closed, cannot send output.");
+        }
         fwrite($this -> fp, $data);
     }
 }
