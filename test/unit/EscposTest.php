@@ -3,6 +3,7 @@ use Mike42\Escpos\Printer;
 use Mike42\Escpos\CapabilityProfiles\SimpleCapabilityProfile;
 use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
 use Mike42\Escpos\EscposImage;
+use Mike42\Escpos\CapabilityProfile;
 
 class EscposTest extends PHPUnit\Framework\TestCase
 {
@@ -897,7 +898,7 @@ class EscposTest extends PHPUnit\Framework\TestCase
     public function testPdf417CodeNotSupported()
     {
         $this -> expectException(Exception::class);
-        $profile = SimpleCapabilityProfile::getInstance();
+        $profile = CapabilityProfile::load("simple");
         $this -> printer = new Printer($this -> outputConnector, $profile);
         $this -> printer -> pdf417Code("1234");
     }

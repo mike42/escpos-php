@@ -3,7 +3,7 @@
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
  *
- * Copyright (c) 2014-16 Michael Billington < michael.billington@gmail.com >,
+ * Copyright (c) 2014-18 Michael Billington < michael.billington@gmail.com >,
  * incorporating modifications by others. See CONTRIBUTORS.md for a full list.
  *
  * This software is distributed under the terms of the MIT license. See LICENSE.md
@@ -17,7 +17,6 @@ use InvalidArgumentException;
 use Mike42\Escpos\PrintBuffers\PrintBuffer;
 use Mike42\Escpos\PrintBuffers\EscposPrintBuffer;
 use Mike42\Escpos\PrintConnectors\PrintConnector;
-use Mike42\Escpos\CapabilityProfile;
 
 /**
  * Main class for ESC/POS code generation
@@ -643,7 +642,7 @@ class Printer
      * @param number $dataColumnCount Number of data columns to use. 0 (default)
      *  is to auto-calculate. Smaller numbers will result in a narrower code,
      *  making larger pixel sizes possible. Larger numbers require smaller pixel sizes.
-     * @param real $ec Error correction ratio, from 0.01 to 4.00. Default is 0.10 (10%).
+     * @param number $ec Error correction ratio, from 0.01 to 4.00. Default is 0.10 (10%).
      * @param number $options Standard code Printer::PDF417_STANDARD with
      *  start/end bars, or truncated code Printer::PDF417_TRUNCATED with start bars only.
      * @throws Exception If this profile indicates that PDF417 code is not supported

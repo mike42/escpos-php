@@ -12,7 +12,6 @@
 
 namespace Mike42\Escpos;
 
-use Mike42\Escpos\EscposImage;
 use Exception;
 
 /**

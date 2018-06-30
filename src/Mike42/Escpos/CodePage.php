@@ -9,6 +9,7 @@
  * This software is distributed under the terms of the MIT license. See LICENSE.md
  * for details.
  */
+
 namespace Mike42\Escpos;
 
 use \InvalidArgumentException;
