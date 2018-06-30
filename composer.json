@@ -16,6 +16,11 @@
 			"email" : "michael.billington@gmail.com"
 		}
 	],
+	"config": {
+		"platform": {
+			"php": "7.0.0"
+		}
+	},
 	"require" : {
 		"php" : ">=7.0.0",
 		"ext-mbstring" : "*"
