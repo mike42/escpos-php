@@ -6,7 +6,7 @@ use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
 use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
 use Mike42\Escpos\Printer;
 
-class LegacyCapabilityProfileTest extends PHPUnit_Framework_TestCase
+class LegacyCapabilityProfileTest extends PHPUnit\Framework\TestCase
 {
     private $profiles;
     private $checklist;

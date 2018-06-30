@@ -2,7 +2,7 @@
 use Mike42\Escpos\GdEscposImage;
 use Mike42\Escpos\EscposImage;
 
-class GdEscposImageTest extends PHPUnit_Framework_TestCase
+class GdEscposImageTest extends PHPUnit\Framework\TestCase
 {
 
     /**
@@ -11,7 +11,7 @@ class GdEscposImageTest extends PHPUnit_Framework_TestCase
      */
     public function testGdBadFilename()
     {
-        $this -> setExpectedException('Exception');
+        $this -> expectException(Exception::class);
         $this -> loadAndCheckImg('not a real file.png', 1, 1, null, null);
     }
     

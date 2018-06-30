@@ -1,7 +1,7 @@
 <?php
 use Mike42\Escpos\EscposImage;
 
-class ExampleTest extends PHPUnit_Framework_TestCase
+class ExampleTest extends PHPUnit\Framework\TestCase
 {
     /* Verify that the examples don't fizzle out with fatal errors */
     private $exampleDir;

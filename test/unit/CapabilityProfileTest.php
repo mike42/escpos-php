@@ -1,7 +1,7 @@
 <?php
 use Mike42\Escpos\CapabilityProfile;
 
-class CapabilityProfileTest extends PHPUnit_Framework_TestCase
+class CapabilityProfileTest extends PHPUnit\Framework\TestCase
 {
 
     public function testNames()
@@ -37,13 +37,13 @@ class CapabilityProfileTest extends PHPUnit_Framework_TestCase
 
     public function testBadProfileNameSuggestion()
     {
-        $this->setExpectedException('\InvalidArgumentException', 'simple');
+        $this->expectException(InvalidArgumentException::class);
         $profile = CapabilityProfile::load('simpel');
     }
 
     public function testBadFeatureNameSuggestion()
     {
-        $this->setExpectedException('\InvalidArgumentException', 'graphics');
+        $this->expectException(InvalidArgumentException::class);
         $profile = CapabilityProfile::load('default');
         $profile->getFeature('graphicx');
     }

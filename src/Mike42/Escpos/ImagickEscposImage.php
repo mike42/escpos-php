@@ -150,7 +150,7 @@ class ImagickEscposImage extends EscposImage
         try {
             $im->setResourceLimit(6, 1); // Prevent libgomp1 segfaults, grumble grumble.
             $im -> readimage($filename);
-        } catch (ImagickException $e) {
+        } catch (\ImagickException $e) {
             /* Re-throw as normal exception */
             throw new Exception($e);
         }
