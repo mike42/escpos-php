@@ -71,12 +71,14 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - AURES ODP-333
 - AURES ODP-500
 - Bematech-4200-TH
+- Bematech LR2000E
 - Bixolon SRP-350III
 - Black Copper BC-85AC
 - Citizen CBM1000-II
 - Citizen CT-S310II
 - Dapper-Geyi Q583P 
 - Daruma DR800
+- DR-MP200 (manufacturer unknown)
 - EPOS TEP 220M
 - Epson EU-T332C
 - Epson FX-890 (requires `feedForm()` to release paper).
@@ -108,6 +110,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Nyear NP100
 - Okipos 80 Plus III
 - Orient BTP-R580
+- Partner Tech RP320
 - P-822D
 - P85A-401 (make unknown)
 - Rongta RP326US
@@ -124,6 +127,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Star TUP-592
 - Venus V248T
 - Xprinter F-900
+- Xprinter XP-365B
 - Xprinter XP-58 Series
 - Xprinter XP-80C
 - Xprinter XP-90
@@ -133,6 +137,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Zjiang ZJ-5870
 - Zjiang ZJ-5890K
 - Zjiang ZJ-5890T (Marketed as POS 5890T)
+- Zjiang ZJ-8220
 
 If you use any other printer with this code, please [let us know](https://github.com/mike42/escpos-php/issues/new) so that it can be added to the list.
 

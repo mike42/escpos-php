@@ -1142,7 +1142,7 @@ class Printer
      * Throw an exception if the argument given is not an integer within one of the specified ranges
      *
      * @param int $test the input to test
-     * @param arrray $ranges array of two-item min/max ranges.
+     * @param array $ranges array of two-item min/max ranges.
      * @param string $source the name of the function calling this
      * @param string $source the name of the function calling this
      * @param string $argument the name of the invalid parameter
