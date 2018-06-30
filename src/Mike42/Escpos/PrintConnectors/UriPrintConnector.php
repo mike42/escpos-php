@@ -1,6 +1,4 @@
 <?php
-namespace Mike42\Escpos\PrintConnectors;
-
 /**
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
@@ -11,6 +9,8 @@ namespace Mike42\Escpos\PrintConnectors;
  * This software is distributed under the terms of the MIT license. See LICENSE.md
  * for details.
  */
+
+namespace Mike42\Escpos\PrintConnectors;
 
 class UriPrintConnector
 {
