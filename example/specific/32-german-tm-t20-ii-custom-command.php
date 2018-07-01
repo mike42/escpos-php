@@ -22,7 +22,7 @@ use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 
 /* Set up profile & connector */
 $connector = new FilePrintConnector("php://output");
-$profile = CapabilityProfile::load(); // Works for Epson printers
+$profile = CapabilityProfile::load("default"); // Works for Epson printers
 
 $printer = new Printer($connector, $profile);
 $cmd = Printer::ESC . "V" . chr(1); // Try out 90-degree rotation.
