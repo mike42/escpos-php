@@ -84,11 +84,11 @@ class ImagickEscposImage extends EscposImage
     /**
      * Load an image from disk, into memory, using Imagick.
      *
-     * @param string $filename The filename to load from
+     * @param string|null $filename The filename to load from
      * @throws Exception if the image format is not supported,
      *  or the file cannot be opened.
      */
-    protected function loadImageData($filename = null)
+    protected function loadImageData(string $filename = null)
     {
         if ($filename === null) {
             /* Set to blank image */
@@ -108,7 +108,7 @@ class ImagickEscposImage extends EscposImage
      *          Height of printed line in dots. 8 or 24.
      * @return string[]
      */
-    private function getColumnFormatFromImage(Imagick $im, $lineHeight)
+    private function getColumnFormatFromImage(Imagick $im, int $lineHeight)
     {
         $imgWidth = $im->getimagewidth();
         if ($imgWidth == $lineHeight) {
@@ -204,14 +204,14 @@ class ImagickEscposImage extends EscposImage
      *
      * @param string $pdfFile
      *  The file to load
-     * @param string $pageWidth
+     * @param int $pageWidth
      *  The width, in pixels, of the printer's output. The first page of the
      *  PDF will be scaled to approximately fit in this area.
      * @throws Exception Where Imagick is not loaded, or where a missing file
      *  or invalid page number is requested.
-     * @return multitype:EscposImage Array of images, retrieved from the PDF file.
+     * @return array Array of images, retrieved from the PDF file.
      */
-    public static function loadPdf($pdfFile, $pageWidth = 550)
+    public static function loadPdf($pdfFile, int $pageWidth = 550)
     {
         if (!EscposImage::isImagickLoaded()) {
             throw new Exception(__FUNCTION__ . " requires imagick extension.");

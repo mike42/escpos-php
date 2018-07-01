@@ -22,11 +22,11 @@ class GdEscposImage extends EscposImage
     /**
      * Load an image from disk, into memory, using GD.
      *
-     * @param string $filename The filename to load from
+     * @param string|null $filename The filename to load from
      * @throws Exception if the image format is not supported,
      *  or the file cannot be opened.
      */
-    protected function loadImageData($filename = null)
+    protected function loadImageData(string $filename = null)
     {
         if ($filename === null) {
             /* Set to blank image */

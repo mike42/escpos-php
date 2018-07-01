@@ -27,7 +27,7 @@ install:
 before_script:
   # Install 'imagick' plugin
   - bash -c 'if [[ $TRAVIS_PHP_VERSION != hhvm* ]]; then printf "\n" | pecl install imagick; fi'
-  - bash -c 'if [[ $TRAVIS_PHP_VERSION == hhvm* ]]; then cat /etc/hhvm/php.ini; echo "hhvm.php7.all = 1" | sudo tee -a /etc/hhvm/php.ini; fi'
+  - bash -c 'if [[ $TRAVIS_PHP_VERSION == hhvm* ]]; then echo "hhvm.php7.all = 1" | sudo tee -a /etc/hhvm/php.ini; fi'
   # Directory for coverage report
   - mkdir -p build/logs/
 

@@ -1,6 +1,5 @@
 <?php
 use Mike42\Escpos\Printer;
-use Mike42\Escpos\CapabilityProfiles\SimpleCapabilityProfile;
 use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
 use Mike42\Escpos\EscposImage;
 use Mike42\Escpos\CapabilityProfile;
