@@ -12,9 +12,9 @@
  * object into some sort of cache if you will re-use the output.
  */
 require __DIR__ . '/../../autoload.php';
+use Mike42\Escpos\CapabilityProfile;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;
-use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 
 // Paths to images to combine
@@ -38,11 +38,11 @@ try {
         // Detect and handle command failure
         throw new Exception("Command \"$cmd\" returned $retval." . implode("\n", $outp));
     }
-    $img = new EscposImage($imgCombined_path);
+    $img = EscposImage::load($imgCombined_path);
 
     // Setup the printer
     $connector = new FilePrintConnector("php://stdout");
-    $profile = DefaultCapabilityProfile::getInstance();
+    $profile = CapabilityProfile::load("default");
 
     // Run the actual print
     $printer = new Printer($connector, $profile);

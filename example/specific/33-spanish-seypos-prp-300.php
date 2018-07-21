@@ -7,12 +7,12 @@
  * Use the hardware switch to activate "Two-byte Character Code"
  */
 require __DIR__ . '/../../autoload.php';
+use Mike42\Escpos\CapabilityProfile;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
-use Mike42\Escpos\CapabilityProfiles\SimpleCapabilityProfile;
 
 $connector = new FilePrintConnector("php://output");
-$profile = SimpleCapabilityProfile::getInstance();
+$profile = CapabilityProfile::load("simple"); // Works for Epson printers
 $printer = new Printer($connector);
 $printer -> text("El pingüino Wenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro.\n");
 $printer -> cut();

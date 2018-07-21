@@ -7,12 +7,12 @@
  * can be properly detected and printed alongside other encodings.
  */
 require __DIR__ . '/../../autoload.php';
+use Mike42\Escpos\CapabilityProfile;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
-use Mike42\Escpos\CapabilityProfiles\SimpleCapabilityProfile;
 
 $connector = new FilePrintConnector("/dev/usb/lp1");
-$profile = SimpleCapabilityProfile::getInstance();
+$profile = CapabilityProfile::load("default");
 
 $printer = new Printer($connector);
 

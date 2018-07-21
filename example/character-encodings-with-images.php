@@ -3,9 +3,9 @@
 require __DIR__ . '/../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
-use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
 use Mike42\Escpos\PrintBuffers\EscposPrintBuffer;
 use Mike42\Escpos\PrintBuffers\ImagePrintBuffer;
+use Mike42\Escpos\CapabilityProfile;
 
 /**
  * This example builds on character-encodings.php, also providing an image-based rendering.
@@ -21,7 +21,7 @@ include(dirname(__FILE__) . '/resources/character-encoding-test-strings.inc');
 try {
     // Enter connector and capability profile
     $connector = new FilePrintConnector("php://stdout");
-    $profile = DefaultCapabilityProfile::getInstance();
+    $profile = CapabilityProfile::load('default');
     $buffers = array(new EscposPrintBuffer(), new ImagePrintBuffer());
 
     /* Print a series of receipts containing i18n example strings */
