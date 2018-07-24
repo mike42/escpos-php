@@ -67,7 +67,7 @@ This driver is known to work with the following OS/interface combinations:
 ### Printers
 Many thermal receipt printers support ESC/POS to some degree. This driver has been known to work with:
 
-- 3nStrat POS-08
+- 3nStar RPT-008
 - AURES ODP-333
 - AURES ODP-500
 - Bematech-4200-TH
@@ -113,6 +113,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Partner Tech RP320
 - P-822D
 - P85A-401 (make unknown)
+- POSLIGNE ODP200H-III-G
 - Rongta RP326US
 - Rongta RP58-U
 - Senor TP-100
