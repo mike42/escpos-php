@@ -14,10 +14,10 @@
  *      handling the layout for this example.
  */
 require __DIR__ . '/../../autoload.php';
+use Mike42\Escpos\CapabilityProfile;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\PrintBuffers\ImagePrintBuffer;
-use Mike42\Escpos\CapabilityProfiles\EposTepCapabilityProfile;
 
 /*
  * Drop Ar-php into the folder listed below:
@@ -55,7 +55,7 @@ $buffer = new ImagePrintBuffer();
 $buffer -> setFont($fontPath);
 $buffer -> setFontSize($fontSize);
 
-$profile = EposTepCapabilityProfile::getInstance();
+$profile = CapabilityProfile::load("TEP-200M");
 $connector = new FilePrintConnector("php://output");
         // = new WindowsPrintConnector("LPT2");
         // Windows LPT2 was used in the bug tracker

@@ -3,7 +3,7 @@
 require __DIR__ . '/../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
-use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
+use Mike42\Escpos\CapabilityProfile;
 
 /**
  * This demonstrates available character encodings. Escpos-php accepts UTF-8,
@@ -27,7 +27,7 @@ include(dirname(__FILE__) . '/resources/character-encoding-test-strings.inc');
 try {
     // Enter connector and capability profile (to match your printer)
     $connector = new FilePrintConnector("php://stdout");
-    $profile = DefaultCapabilityProfile::getInstance();
+    $profile = CapabilityProfile::load("default");
     
     /* Print a series of receipts containing i18n example strings */
     $printer = new Printer($connector, $profile);
