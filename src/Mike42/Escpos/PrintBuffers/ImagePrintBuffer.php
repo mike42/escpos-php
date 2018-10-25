@@ -27,6 +27,9 @@ class ImagePrintBuffer implements PrintBuffer
 {
     private $printer;
 
+    /**
+     * @var string|null font to use
+     */
     private $font;
 
     private $fontSize;
@@ -104,7 +107,7 @@ class ImagePrintBuffer implements PrintBuffer
         if ($this -> printer == null) {
             throw new LogicException("Not attached to a printer.");
         }
-        $this -> printer -> getPrintConnector() -> write($data);
+        $this -> printer -> getPrintConnector() -> write($text);
     }
 
     /**

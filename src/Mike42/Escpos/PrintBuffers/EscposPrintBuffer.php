@@ -50,7 +50,7 @@ class EscposPrintBuffer implements PrintBuffer
     private $encode = null;
 
     /**
-     * @var Printer $printer
+     * @var Printer|null $printer
      *  Printer for output
      */
     private $printer;
