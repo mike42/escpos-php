@@ -972,7 +972,18 @@ class Printer
         self::validateInteger($underline, 0, 2, __FUNCTION__);
         $this -> connector -> write(self::ESC . "-" . chr($underline));
     }
-    
+
+    /**
+     * Print each line upside-down (180 degrees rotated).
+     *
+     * @param boolean $on True to enable, false to disable.
+     */
+    public function setUpsideDown($on = true)
+    {
+        self::validateBoolean($on, __FUNCTION__);
+        $this -> connector -> write(self::ESC . "{" . ($on ? chr(1) : chr(0)));
+    }
+
     /**
      * Add text to the buffer.
      *
