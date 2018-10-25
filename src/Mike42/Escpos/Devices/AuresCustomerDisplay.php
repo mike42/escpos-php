@@ -48,11 +48,12 @@ class AuresCustomerDisplay extends Printer
     public function initialize()
     {
         // Select ESC/POS mode first
-        $this->selectEscposMode();
+        //$this->selectEscposMode();
         parent::initialize();
         // ESC @ does not reset character table on this printer
         $this->selectCharacterTable(0);
         // Default to horizontal scroll mode. Behaves most like a printer.
+        // TODO different startup based on type of printer.
         $this->selectTextScrollMode(AuresCustomerDisplay::TEXT_VERTICAL_SCROLL);
     }
 
@@ -85,6 +86,7 @@ class AuresCustomerDisplay extends Printer
      */
     public function clear()
     {
+        // TODO different based on type of printer.
         $this->connector->write("\x0c");
     }
 
@@ -93,6 +95,7 @@ class AuresCustomerDisplay extends Printer
      */
     public function showFirmwareVersion()
     {
+        // TODO make sure this works
         $this->connector->write("\x02\x05\x56\x01\x03");
     }
 
@@ -144,7 +147,10 @@ class AuresCustomerDisplay extends Printer
     {
         self::validateInteger($lines, 1, 255, __FUNCTION__);
         for ($i = 0; $i < $lines; $i ++) {
-            $this->connector->write("\r\n");
+            // OCD-300: \r\n
+            // OCD-100: \r
+            // AF-240: ? must disable horiz. scroll mode in any case.
+            $this->connector->write("\r");
         }
     }
 }
