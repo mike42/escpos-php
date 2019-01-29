@@ -250,6 +250,19 @@
             "name": "ISO_8859-7",
             "python_encode": "iso8859_7"
         },
+        "OXHOO-EUROPEAN": {
+            "data": [
+                "\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5",
+                "\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f1\u00d1\u00aa\u00ba\u00bf",
+                "\u00e1\u00ed\u00f3\u00fa\u00a2\u00a3\u00a5\u20a7\u0192\u00a1\u00c3\u00e3\u00d5\u00f5\u00d8\u00f8",
+                "\u00b7\u00a8\u00b0`\u00b4\u00bd\u00bc\u00d7\u00f7\u2264\u2265\u00ab\u00bb\u2260\u221a\u00af",
+                "\u2320\u2321\u221e\u25e4\u21b5\u2191\u2193\u2192\u2190\u250c\u2510\u2514\u2518\u2022\u00ae\u00a9",
+                "\u2122\u2020\u00a7\u00b6\u0393\u25e2\u0398         ",
+                "\u00df   \u03b5           ",
+                "\u03c4               "
+            ],
+            "name": "Oxhoo-specific European"
+        },
         "RK1048": {
             "iconv": "RK1048",
             "name": "RK1048"
@@ -286,6 +299,44 @@
         }
     },
     "profiles": {
+        "AF-240": {
+            "codePages": {
+                "0": "OXHOO-EUROPEAN"
+            },
+            "colors": {
+                "0": "black"
+            },
+            "features": {
+                "barcodeA": false,
+                "barcodeB": false,
+                "bitImageColumn": false,
+                "bitImageRaster": false,
+                "graphics": false,
+                "highDensity": false,
+                "paperFullCut": false,
+                "paperPartCut": false,
+                "pdf417Code": false,
+                "pulseBel": false,
+                "pulseStandard": false,
+                "qrCode": false,
+                "starCommands": false
+            },
+            "fonts": {
+                "0": {
+                    "columns": 20,
+                    "name": "Font A"
+                }
+            },
+            "media": {
+                "width": {
+                    "mm": 120,
+                    "pixels": 100
+                }
+            },
+            "name": "AF-240 Customer Display",
+            "notes": "This is a two-line, ESC/POS-aware customer display from Oxhoo. The ESC/POS command mode can be activated persistently by sending:\n\n    echo -ne \"\\n\\x02\\x05\\x43\\x31\\x03\" > /dev/ttyUSB0\n",
+            "vendor": "Oxhoo"
+        },
         "NT-5890K": {
             "codePages": {
                 "0": "CP437",
@@ -395,6 +446,62 @@
             "notes": "",
             "vendor": "Netum"
         },
+        "OCD-100": {
+            "codePages": {
+                "0": "CP437",
+                "1": "CP932",
+                "2": "CP850",
+                "3": "CP860",
+                "4": "CP863",
+                "5": "CP865",
+                "6": "Unknown",
+                "7": "Unknown",
+                "8": "Unknown",
+                "9": "CP852",
+                "10": "CP862",
+                "11": "CP866",
+                "12": "CP1251",
+                "13": "CP1254",
+                "14": "CP1255",
+                "15": "CP1257",
+                "16": "CP1252",
+                "17": "CP1253",
+                "19": "CP858"
+            },
+            "colors": {
+                "0": "black"
+            },
+            "features": {
+                "barcodeA": false,
+                "barcodeB": false,
+                "bitImageColumn": false,
+                "bitImageRaster": false,
+                "graphics": false,
+                "highDensity": false,
+                "paperFullCut": false,
+                "paperPartCut": false,
+                "pdf417Code": false,
+                "pulseBel": false,
+                "pulseStandard": false,
+                "qrCode": false,
+                "starCommands": false
+            },
+            "fonts": {
+                "0": {
+                    "columns": 20,
+                    "name": "Font A"
+                }
+            },
+            "media": {
+                "width": {
+                    "mm": 180,
+                    "pixels": 100
+                }
+            },
+            "name": "OCD-100 Customer Display",
+            "notes": "This is a two-line, ESC/POS-aware customer display from Aures. It has some graphics support via custom fonts, but is otherwise text-only. This profile is also suitable for the OCD-150 pole-mounted display.\n",
+            "vendor": "Aures"
+        },
         "OCD-300": {
             "codePages": {
                 "0": "CP437",
@@ -428,12 +535,12 @@
                 "bitImageColumn": false,
                 "bitImageRaster": false,
                 "graphics": false,
-                "highDensity": true,
+                "highDensity": false,
                 "paperFullCut": false,
                 "paperPartCut": false,
                 "pdf417Code": false,
                 "pulseBel": false,
-                "pulseStandard": true,
+                "pulseStandard": false,
                 "qrCode": false,
                 "starCommands": false
             },
@@ -445,11 +552,11 @@
             },
             "media": {
                 "width": {
-                    "mm": "Unknown",
-                    "pixels": "Unknown"
+                    "mm": 130.2,
+                    "pixels": 240
                 }
             },
-            "name": "Aures OCP-300 Customer Display",
+            "name": "OCD-300 Customer Display",
             "notes": "This is a two-line, ESC/POS-aware customer display from Aures. It has some graphics support via vendor-provided tools, but is otherwise text-only.\n",
             "vendor": "Aures"
         },
