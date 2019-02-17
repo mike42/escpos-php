@@ -67,11 +67,13 @@ This driver is known to work with the following OS/interface combinations:
 ### Printers
 Many thermal receipt printers support ESC/POS to some degree. This driver has been known to work with:
 
-- 3nStrat POS-08
+- 3nStar RPT-008
+- Approx APPPOS80AM
 - AURES ODP-333
 - AURES ODP-500
 - Bematech-4200-TH
 - Bematech LR2000E
+- Birch PRP-085III
 - Bixolon SRP-350III
 - Black Copper BC-85AC
 - Citizen CBM1000-II
@@ -99,23 +101,29 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Excelvan HOP-E200 
 - Excelvan HOP-E58
 - Excelvan HOP-E801
-- Excelvan ZJ-8220
 - Gainscha GP-5890x (Also marketed as EC Line 5890x)
 - Gainscha GP-U80300I (Also marketed as gprinter GP-U80300I)
 - gprinter GP-U80160I
+- HOIN HOP-H58
+- Ithaca iTherm 28
 - Hasar HTP 250
 - Metapace T-1
 - Metapace T-25
 - Nexa PX700
 - Nyear NP100
-- Okipos 80 Plus III
+- OKI RT322
+- OKI 80 Plus III
 - Orient BTP-R580
-- Partner Tech RP320
 - P-822D
 - P85A-401 (make unknown)
+- Partner Tech RP320
+- POSLIGNE ODP200H-III-G
+- QPOS Q58M
 - Rongta RP326US
 - Rongta RP58-U
+- Rongta RP80USE
 - Senor TP-100
+- Sewoo SLK-TS400
 - SEYPOS PRP-300 (Also marketed as TYSSO PRP-300)
 - Sicar POS-80
 - Silicon SP-201 / RP80USE
@@ -126,6 +134,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Star TSP-650
 - Star TUP-592
 - Venus V248T
+- Xeumior SM-8330
 - Xprinter F-900
 - Xprinter XP-365B
 - Xprinter XP-58 Series
@@ -135,9 +144,8 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Xprinter XP-Q800
 - Zjiang NT-58H
 - Zjiang ZJ-5870
-- Zjiang ZJ-5890K
-- Zjiang ZJ-5890T (Marketed as POS 5890T)
-- Zjiang ZJ-8220
+- Zjiang ZJ-5890 (Also sold as POS-5890 by many vendors; ZJ-5890K, ZJ-5890T also work).
+- Zjiang ZJ-8220 (Also marketed as Excelvan ZJ-8220)
 
 If you use any other printer with this code, please [let us know](https://github.com/mike42/escpos-php/issues/new) so that it can be added to the list.
 

@@ -1,8 +1,8 @@
 <?php
 require __DIR__ . '/../../autoload.php';
+use Mike42\Escpos\CapabilityProfile;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
-use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
 
 /*
  * This example shows how tok send a custom command to the printer-
@@ -22,7 +22,7 @@ use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
 
 /* Set up profile & connector */
 $connector = new FilePrintConnector("php://output");
-$profile = DefaultCapabilityProfile::getInstance(); // Works for Epson printers
+$profile = CapabilityProfile::load("default"); // Works for Epson printers
 
 $printer = new Printer($connector, $profile);
 $cmd = Printer::ESC . "V" . chr(1); // Try out 90-degree rotation.

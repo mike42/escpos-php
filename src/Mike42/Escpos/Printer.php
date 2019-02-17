@@ -3,7 +3,7 @@
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
  *
- * Copyright (c) 2014-16 Michael Billington < michael.billington@gmail.com >,
+ * Copyright (c) 2014-18 Michael Billington < michael.billington@gmail.com >,
  * incorporating modifications by others. See CONTRIBUTORS.md for a full list.
  *
  * This software is distributed under the terms of the MIT license. See LICENSE.md
@@ -328,7 +328,7 @@ class Printer
     const UNDERLINE_DOUBLE = 2;
 
     /**
-     * @var PrintBuffer $buffer
+     * @var PrintBuffer|null $buffer
      *  The printer's output buffer.
      */
     protected $buffer;
@@ -355,7 +355,7 @@ class Printer
      * Construct a new print object
      *
      * @param PrintConnector $connector The PrintConnector to send data to. If not set, output is sent to standard output.
-     * @param CapabilityProfile $profile Supported features of this printer. If not set, the "default" CapabilityProfile will be used, which is suitable for Epson printers.
+     * @param CapabilityProfile|null $profile Supported features of this printer. If not set, the "default" CapabilityProfile will be used, which is suitable for Epson printers.
      * @throws InvalidArgumentException
      */
     public function __construct(PrintConnector $connector, CapabilityProfile $profile = null)
@@ -636,15 +636,15 @@ class Printer
      * Print a two-dimensional data code using the PDF417 standard.
      *
      * @param string $content Text or numbers to store in the code
-     * @param number $width Width of a module (pixel) in the printed code.
+     * @param int $width Width of a module (pixel) in the printed code.
      *  Default is 3 dots.
-     * @param number $heightMultiplier Multiplier for height of a module.
+     * @param int $heightMultiplier Multiplier for height of a module.
      *  Default is 3 times the width.
-     * @param number $dataColumnCount Number of data columns to use. 0 (default)
+     * @param int $dataColumnCount Number of data columns to use. 0 (default)
      *  is to auto-calculate. Smaller numbers will result in a narrower code,
      *  making larger pixel sizes possible. Larger numbers require smaller pixel sizes.
-     * @param real $ec Error correction ratio, from 0.01 to 4.00. Default is 0.10 (10%).
-     * @param number $options Standard code Printer::PDF417_STANDARD with
+     * @param float $ec Error correction ratio, from 0.01 to 4.00. Default is 0.10 (10%).
+     * @param int $options Standard code Printer::PDF417_STANDARD with
      *  start/end bars, or truncated code Printer::PDF417_TRUNCATED with start bars only.
      * @throws Exception If this profile indicates that PDF417 code is not supported
      */
@@ -869,7 +869,7 @@ class Printer
      *
      * Some printers will allow you to overlap lines with a smaller line feed.
      *
-     * @param int $height The height of each line, in dots. If not set, the printer
+     * @param int|null $height The height of each line, in dots. If not set, the printer
      *  will reset to its default line spacing.
      */
     public function setLineSpacing($height = null)
@@ -972,7 +972,18 @@ class Printer
         self::validateInteger($underline, 0, 2, __FUNCTION__);
         $this -> connector -> write(self::ESC . "-" . chr($underline));
     }
-    
+
+    /**
+     * Print each line upside-down (180 degrees rotated).
+     *
+     * @param boolean $on True to enable, false to disable.
+     */
+    public function setUpsideDown($on = true)
+    {
+        self::validateBoolean($on, __FUNCTION__);
+        $this -> connector -> write(self::ESC . "{" . ($on ? chr(1) : chr(0)));
+    }
+
     /**
      * Add text to the buffer.
      *
