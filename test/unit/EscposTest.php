@@ -1013,4 +1013,11 @@ class EscposTest extends PHPUnit\Framework\TestCase
         $this -> printer -> setPrintLeftMargin(70000);
         $this -> checkOutput();
     }
+
+    /* Upside-down print */
+    public function testSetUpsideDown()
+    {
+        $this -> printer -> setUpsideDown(true);
+        $this -> checkOutput("\x1b@\x1b{\x01");
+    }
 }
