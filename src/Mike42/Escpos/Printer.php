@@ -966,9 +966,8 @@ class Printer
      *
      * @param boolean $on True to enable, false to disable.
      */
-    public function setUpsideDown($on = true)
+    public function setUpsideDown(bool $on = true)
     {
-        self::validateBoolean($on, __FUNCTION__);
         $this -> connector -> write(self::ESC . "{" . ($on ? chr(1) : chr(0)));
     }
 
