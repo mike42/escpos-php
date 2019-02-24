@@ -14,6 +14,9 @@ namespace Mike42\Escpos;
 
 use Exception;
 use InvalidArgumentException;
+use Mike42\Escpos\GdEscposImage;
+use Mike42\Escpos\ImagickEscposImage;
+use Mike42\Escpos\NativeEscposImage;
 
 /**
  * This class deals with images in raster formats, and converts them into formats
@@ -431,28 +434,28 @@ abstract class EscposImage
         }
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
         /* Choose the first implementation which can handle this format */
-        foreach ($preferred as $implemetnation) {
-            if ($implemetnation === 'imagick') {
+        foreach ($preferred as $implementation) {
+            if ($implementation === 'imagick') {
                 if (!self::isImagickLoaded()) {
                     // Skip option if Imagick is not loaded
                     continue;
                 }
-                return new \Mike42\Escpos\ImagickEscposImage($filename, $allowOptimisations);
-            } elseif ($implemetnation === 'gd') {
+                return new ImagickEscposImage($filename, $allowOptimisations);
+            } elseif ($implementation === 'gd') {
                 if (!self::isGdLoaded()) {
                     // Skip option if GD not loaded
                     continue;
                 }
-                return new \Mike42\Escpos\GdEscposImage($filename, $allowOptimisations);
-            } elseif ($implemetnation === 'native') {
-                if (!in_array($ext, ['wbmp', 'pbm', 'bmp'])) {
-                    // Pure PHP is fastest way to generate raster output from wbmp and pbm formats.
+                return new GdEscposImage($filename, $allowOptimisations);
+            } elseif ($implementation === 'native') {
+                if (!in_array($ext, ['gif', 'pbm', 'png', 'ppm', 'pgm'])) {
+                    // Pure PHP may also be fastest way to generate raster output from wbmp and pbm formats.
                     continue;
                 }
-                return new \Mike42\Escpos\NativeEscposImage($filename, $allowOptimisations);
+                return new NativeEscposImage($filename, $allowOptimisations);
             } else {
                 // Something else on the 'preferred' list.
-                throw new InvalidArgumentException("'$implemetnation' is not a known EscposImage implementation");
+                throw new InvalidArgumentException("'$implementation' is not a known EscposImage implementation");
             }
         }
         throw new InvalidArgumentException("No suitable EscposImage implementation found for '$filename'.");

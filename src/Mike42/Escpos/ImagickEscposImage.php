@@ -25,12 +25,12 @@ class ImagickEscposImage extends EscposImage
      *
      * @param Imagick $im Image to load from
      */
-    public function readImageFromImagick(\Imagick $im)
+    public function readImageFromImagick(Imagick $im)
     {
         /* Strip transparency */
         $im = self::alphaRemove($im);
         /* Threshold */
-        $im -> setImageType(\Imagick::IMGTYPE_TRUECOLOR); // Remove transparency (good for PDF's)
+        $im -> setImageType(Imagick::IMGTYPE_TRUECOLOR); // Remove transparency (good for PDF's)
         $max = $im->getQuantumRange();
         $max = $max["quantumRangeLong"];
         $im -> thresholdImage(0.5 * $max);
@@ -221,7 +221,7 @@ class ImagickEscposImage extends EscposImage
          * density to use to achieve $pageWidth
          */
         try {
-            $image = new \Imagick();
+            $image = new Imagick();
             $testRes = 2; // Test resolution
             $image -> setresolution($testRes, $testRes);
             /* Load document just to measure geometry */
@@ -264,9 +264,9 @@ class ImagickEscposImage extends EscposImage
      */
     private static function alphaRemove(Imagick $im)
     {
-        $flat = new \Imagick();
+        $flat = new Imagick();
         $flat -> newImage($im -> getimagewidth(), $im -> getimageheight(), "white", $im -> getimageformat());
-        $flat -> compositeimage($im, \Imagick::COMPOSITE_OVER, 0, 0);
+        $flat -> compositeimage($im, Imagick::COMPOSITE_OVER, 0, 0);
         return $flat;
     }
 }
