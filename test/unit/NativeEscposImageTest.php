@@ -19,7 +19,7 @@ class NativeEscposImageTest extends PHPUnit\Framework\TestCase
      */
     public function testBlack()
     {
-        foreach (array('gif', 'png') as $format) {
+        foreach (array('bmp', 'gif', 'png') as $format) {
             $this -> loadAndCheckImg('canvas_black.' . $format, 1, 1, "\x80", array("\x80"));
         }
     }
@@ -39,7 +39,7 @@ class NativeEscposImageTest extends PHPUnit\Framework\TestCase
      */
     public function testBlackWhite()
     {
-        foreach (array('png', 'gif') as $format) {
+        foreach (array('bmp', 'png', 'gif') as $format) {
             $this -> loadAndCheckImg('black_white.' . $format, 2, 2, "\xc0\x00", array("\x80\x80"));
         }
     }
@@ -59,7 +59,7 @@ class NativeEscposImageTest extends PHPUnit\Framework\TestCase
      */
     public function testWhite()
     {
-        foreach (array('png', 'gif') as $format) {
+        foreach (array('bmp', 'png', 'gif') as $format) {
             $this -> loadAndCheckImg('canvas_white.' . $format, 1, 1, "\x00", array("\x00"));
         }
     }

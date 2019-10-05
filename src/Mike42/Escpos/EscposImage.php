@@ -448,7 +448,7 @@ abstract class EscposImage
                 }
                 return new GdEscposImage($filename, $allowOptimisations);
             } elseif ($implementation === 'native') {
-                if (!in_array($ext, ['gif', 'pbm', 'png', 'ppm', 'pgm'])) {
+                if (!in_array($ext, ['bmp', 'gif', 'pbm', 'png', 'ppm', 'pgm', 'wbmp'])) {
                     // Pure PHP may also be fastest way to generate raster output from wbmp and pbm formats.
                     continue;
                 }

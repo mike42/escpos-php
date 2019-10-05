@@ -24,7 +24,7 @@
 	"require" : {
 		"php" : ">=7.0.0",
 		"ext-mbstring" : "*",
-		"mike42/gfx-php" : "^0.4"
+		"mike42/gfx-php" : "^0.6"
 	},
 	"suggest" : {
 		"ext-imagick" : "Will be used for image printing if present. Required for PDF printing or use of custom fonts.",
