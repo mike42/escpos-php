@@ -1,6 +1,6 @@
 <?php
 /* Example print-outs using the older bit image print command */
-require __DIR__ . '/../autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;

@@ -1,12 +1,12 @@
 <?php
-require __DIR__ . '/../../autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
+use Mike42\Escpos\CapabilityProfile;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
-use Mike42\Escpos\CapabilityProfiles\StarCapabilityProfile;
 use Mike42\Escpos\PrintBuffers\ImagePrintBuffer;
 
 /* This example shows the printing of Latvian text on the Star TUP 592 printer */
-$profile = StarCapabilityProfile::getInstance();
+$profile = CapabilityProfile::load("SP2000");
 
 /* Option 1: Native character encoding */
 $connector = new FilePrintConnector("php://stdout");

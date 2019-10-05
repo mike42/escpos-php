@@ -14,7 +14,7 @@
  * best to map UTF-8 text into these code pages for you, allowing you to accept
  * arbitrary input from a database, without worrying about encoding it for the printer.
  */
-require __DIR__ . '/../autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\CapabilityProfile;

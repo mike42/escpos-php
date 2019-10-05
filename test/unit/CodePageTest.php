@@ -1,7 +1,7 @@
 <?php
 use Mike42\Escpos\CodePage;
 
-class CodePageTest extends PHPUnit_Framework_TestCase
+class CodePageTest extends PHPUnit\Framework\TestCase
 {
 
     protected function requiresIconv()
@@ -53,7 +53,7 @@ class CodePageTest extends PHPUnit_Framework_TestCase
 
     public function testDataCannotEncode()
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException(InvalidArgumentException::class);
         $cp = new CodePage("foo", array(
             "name" => "foo"
         ));

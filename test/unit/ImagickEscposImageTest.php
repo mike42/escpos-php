@@ -2,7 +2,7 @@
 use Mike42\Escpos\ImagickEscposImage;
 use Mike42\Escpos\EscposImage;
 
-class ImagickEscposImageTest extends PHPUnit_Framework_TestCase
+class ImagickEscposImageTest extends PHPUnit\Framework\TestCase
 {
 
     /**
@@ -11,7 +11,7 @@ class ImagickEscposImageTest extends PHPUnit_Framework_TestCase
      */
     public function testImagickBadFilename()
     {
-        $this -> setExpectedException('Exception');
+        $this -> expectException(Exception::class);
         $this -> loadAndCheckImg('not a real file.png', 1, 1, null, null);
     }
     
@@ -85,7 +85,7 @@ class ImagickEscposImageTest extends PHPUnit_Framework_TestCase
     
     public function testPdfBadFilename()
     {
-        $this -> setExpectedException('Exception');
+        $this -> expectException(Exception::class);
         $this -> loadAndCheckPdf('not a real file', 1, 1, array(), array());
     }
     

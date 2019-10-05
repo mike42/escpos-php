@@ -1,7 +1,7 @@
 <?php
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 
-class FilePrintConnectorTest extends PHPUnit_Framework_TestCase
+class FilePrintConnectorTest extends PHPUnit\Framework\TestCase
 {
     public function testTmpfile()
     {
@@ -16,7 +16,7 @@ class FilePrintConnectorTest extends PHPUnit_Framework_TestCase
     public function testReadAfterClose()
     {
         // Should attempt to send data to the local printer by writing to it
-        $this -> setExpectedException('Exception');
+        $this -> expectException(Exception::class);
         $tmpfname = tempnam("/tmp", "php");
         $connector = new FilePrintConnector($tmpfname);
         $connector -> finalize();
