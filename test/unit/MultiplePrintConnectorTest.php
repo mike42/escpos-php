@@ -4,7 +4,7 @@ use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
 use Mike42\Escpos\PrintConnectors\MultiplePrintConnector;
 use Mike42\Escpos\Printer;
 
-class MultiplePrintConnectorTest extends PHPUnit_Framework_TestCase
+class MultiplePrintConnectorTest extends PHPUnit\Framework\TestCase
 {
     public function testOnePrinter()
     {
