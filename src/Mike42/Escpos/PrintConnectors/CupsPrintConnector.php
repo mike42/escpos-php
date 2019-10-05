@@ -134,7 +134,7 @@ class CupsPrintConnector implements PrintConnector
      * Read data from the printer.
      *
      * @param string $len Length of data to read.
-     * @return Data read from the printer, or false where reading is not possible.
+     * @return string Data read from the printer, or false where reading is not possible.
      */
     public function read($len)
     {

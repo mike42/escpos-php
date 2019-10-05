@@ -1,44 +1,35 @@
 <?php
-use Mike42\Escpos\GdEscposImage;
+use Mike42\Escpos\NativeEscposImage;
 use Mike42\Escpos\EscposImage;
 
-class GdEscposImageTest extends PHPUnit\Framework\TestCase
+class NativeEscposImageTest extends PHPUnit\Framework\TestCase
 {
-
     /**
-     * Gd tests - Load tiny images and check how they are printed
-     * These are skipped if you don't have imagick
+     * Native tests - Load tiny images and check how they are printed
+     * These are skipped if you don't have Native
      */
-    public function testGdBadFilename()
+    public function testBadFilename()
     {
         $this -> expectException(Exception::class);
         $this -> loadAndCheckImg('not a real file.png', 1, 1, null, null);
     }
-    
+
     /**
      * @medium
      */
-    public function testGdEmpty()
+    public function testBlack()
     {
-        $this -> loadAndCheckImg(null, 0, 0, "", array());
-    }
-    
-    /**
-     * @medium
-     */
-    public function testGdBlack()
-    {
-        foreach (array('png', 'jpg', 'gif') as $format) {
+        foreach (array('gif', 'png') as $format) {
             $this -> loadAndCheckImg('canvas_black.' . $format, 1, 1, "\x80", array("\x80"));
         }
     }
-    
+
     /**
      * @medium
      */
-    public function testGdBlackTransparent()
+    public function testBlackTransparent()
     {
-        foreach (array('png', 'gif') as $format) {
+        foreach (array('gif', 'png') as $format) {
             $this -> loadAndCheckImg('black_transparent.' . $format, 2, 2, "\xc0\x00", array("\x80\x80"));
         }
     }
@@ -46,40 +37,47 @@ class GdEscposImageTest extends PHPUnit\Framework\TestCase
     /**
      * @medium
      */
-    public function testGdBlackWhite()
+    public function testBlackWhite()
     {
-        foreach (array('png', 'jpg', 'gif') as $format) {
+        foreach (array('png', 'gif') as $format) {
             $this -> loadAndCheckImg('black_white.' . $format, 2, 2, "\xc0\x00", array("\x80\x80"));
         }
     }
-    
+
     /**
      * @medium
      */
-    public function testGdWhite()
+    public function testBlackWhiteTall()
     {
-        foreach (array('png', 'jpg', 'gif') as $format) {
+        // We're very interested in correct column format chopping here at 8 pixels
+        $this -> loadAndCheckImg('black_white_tall.png', 2, 16,
+            "\xc0\xc0\xc0\xc0\xc0\xc0\xc0\xc0\x00\x00\x00\x00\x00\x00\x00\x00", array("\xff\xff", "\x00\x00"));
+    }
+
+    /**
+     * @medium
+     */
+    public function testWhite()
+    {
+        foreach (array('png', 'gif') as $format) {
             $this -> loadAndCheckImg('canvas_white.' . $format, 1, 1, "\x00", array("\x00"));
         }
     }
 
     /**
-     * Load an EscposImage with (optionally) certain libraries disabled and run a check.
+     * Load an EscposImage and run a check.
      */
     private function loadAndCheckImg($fn, $width, $height, $rasterFormat = null, $columnFormat = null)
     {
-        if (!EscposImage::isGdLoaded()) {
-            $this -> markTestSkipped("imagick plugin is required for this test");
-        }
         $onDisk = ($fn === null ? null : (dirname(__FILE__) . "/resources/$fn"));
         // With optimisations
-        $imgOptimised = new GdEscposImage($onDisk, true);
+        $imgOptimised = new NativeEscposImage($onDisk, true);
         $this -> checkImg($imgOptimised, $width, $height, $rasterFormat, $columnFormat);
         // ... and without
-        $imgUnoptimised = new GdEscposImage($onDisk, false);
+        $imgUnoptimised = new NativeEscposImage($onDisk, false);
         $this -> checkImg($imgUnoptimised, $width, $height, $rasterFormat, $columnFormat);
     }
-    
+
     /**
      * Check image against known width, height, output.
      */
@@ -93,9 +91,9 @@ class GdEscposImageTest extends PHPUnit\Framework\TestCase
         if ($columnFormatExpected === null) {
             echo "\nImage was: " . $img -> getWidth() . "x" . $img -> getHeight() . ", column data \"" . friendlyBinary($columnFormatActual) . "\"";
         }
-        $this -> assertTrue($img -> getHeight() == $height);
-        $this -> assertTrue($img -> getWidth() == $width);
-        $this -> assertTrue($rasterFormatExpected === $rasterFormatActual);
-        $this -> assertTrue($columnFormatExpected === $columnFormatActual);
+        $this -> assertEquals($height , $img -> getHeight());
+        $this -> assertEquals($width, $img -> getWidth());
+        $this -> assertEquals($rasterFormatExpected, $rasterFormatActual, "Raster format did not match expected");
+        $this -> assertEquals($columnFormatExpected, $columnFormatActual, "Column format did not match expected");
     }
 }

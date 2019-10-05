@@ -12,7 +12,7 @@
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
 
-class EscposPrintBufferTest extends PHPUnit_Framework_TestCase
+class EscposPrintBufferTest extends PHPUnit\Framework\TestCase
 {
     protected $buffer;
     protected $outputConnector;

@@ -7,7 +7,7 @@
  */
 
 // Adjust these to your environment
-require __DIR__ . '/../../autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
 use Mike42\Escpos\CapabilityProfile;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
