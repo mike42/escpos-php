@@ -78,6 +78,9 @@ class CupsPrintConnector implements PrintConnector
         
         // Build command to work on data
         $tmpfname = tempnam(sys_get_temp_dir(), 'print-');
+        if ($tmpfname === false) {
+            throw new Exception("Failed to create temp file for printing.");
+        }
         file_put_contents($tmpfname, $data);
         $cmd = sprintf(
             "lp -d %s %s",
