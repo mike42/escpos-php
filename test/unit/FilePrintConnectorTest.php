@@ -10,6 +10,7 @@ class FilePrintConnectorTest extends PHPUnit\Framework\TestCase
         $connector = new FilePrintConnector($tmpfname);
         $connector -> finalize();
         $connector -> finalize(); // Silently do nothing if printer already closed
+        $this -> assertEquals("", file_get_contents($tmpfname));
         unlink($tmpfname);
     }
     

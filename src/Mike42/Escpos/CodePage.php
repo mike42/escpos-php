@@ -13,6 +13,7 @@
 namespace Mike42\Escpos;
 
 use \InvalidArgumentException;
+use Mike42\Escpos\PrintBuffers\EscposPrintBuffer;
 
 /**
  * Class to handle data about a particular CodePage, as loaded from the receipt print
@@ -77,8 +78,7 @@ class CodePage
 
     /**
      * Get a 128-character data string representing this encoding.
-     * It will be
-     * calculated and cached if it was not previously known.
+     * It will be calculated and cached if it was not previously known.
      *
      * @throws InvalidArgumentException Where the data is now known or computable.
      * @return string Data for this encoding.
@@ -159,14 +159,17 @@ class CodePage
     {
         // Start with array of blanks (" " indicates unknown character).
         $charMap = array_fill(0, 128, " ");
+        $converter = @new \UConverter(self::INPUT_ENCODING, $iconvName);
+        $converter -> setSubstChars('');
         // Loop through 128 code points
         for ($char = 128; $char <= 255; $char ++) {
             // Try to identify the UTF-8 character that would go here
-            $utf8 = @iconv($iconvName, self::INPUT_ENCODING, chr($char));
+            $utf8 = $converter ->convert(chr($char), false);
             if ($utf8 == '') {
                 continue;
             }
-            if (iconv(self::INPUT_ENCODING, $iconvName, $utf8) != chr($char)) {
+            $reverse = $converter ->convert($utf8, true);
+            if ($reverse != chr($char)) {
                 // Avoid non-canonical conversions (no known examples)
                 continue;
             }
@@ -175,7 +178,7 @@ class CodePage
         }
         // Join into a 128-character string and return.
         $charMapStr = implode("", $charMap);
-        assert(mb_strlen($charMapStr, self::INPUT_ENCODING) == 128);
+        assert(EscposPrintBuffer::mb_strlen_substitute($charMapStr, self::INPUT_ENCODING) == 128);
         return $charMapStr;
     }
 }

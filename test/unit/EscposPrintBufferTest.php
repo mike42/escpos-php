@@ -39,6 +39,11 @@ class EscposPrintBufferTest extends PHPUnit\Framework\TestCase
         $this -> outputConnector -> finalize();
     }
 
+    public function testNotUtf8() {
+        $this -> expectException(Exception::class);
+        $this -> buffer -> writeText("Not valid UTF-8 can it be printed? \xc3\x28");
+    }
+
     public function testRawTextNonprintable()
     {
         $this -> buffer -> writeTextRaw("Test" . Printer::ESC . "v1\n");

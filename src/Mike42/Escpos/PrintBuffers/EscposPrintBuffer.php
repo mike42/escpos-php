@@ -84,42 +84,40 @@ class EscposPrintBuffer implements PrintBuffer
         }
     }
 
-    public function writeText($text)
+    public function writeText(string $text)
     {
         if ($this -> printer == null) {
             throw new LogicException("Not attached to a printer.");
         }
-        if ($text == null) {
-            return;
-        }
-        if (!mb_detect_encoding($text, self::INPUT_ENCODING, true)) {
-            // Assume that the user has already put non-UTF8 into the target encoding.
-            return $this -> writeTextRaw($text);
+        // Normalize text - this replaces combining characters with composed glyphs, and also helps us eliminated bad UTF-8 early
+        $text = \Normalizer::normalize($text);
+        if($text === false) {
+            throw new \Exception("Input must be UTF-8");
         }
         $i = 0;
         $j = 0;
-        $len = mb_strlen($text, self::INPUT_ENCODING);
+        $len = self::mb_strlen_substitute($text, self::INPUT_ENCODING);
         while ($i < $len) {
             $matching = true;
-            if (($encoding = $this -> identifyText(mb_substr($text, $i, 1, self::INPUT_ENCODING))) === false) {
+            if (($encoding = $this -> identifyText(self::mb_substr_substitute($text, $i, 1, self::INPUT_ENCODING))) === false) {
                 // Un-encodeable text
                 $encoding = $this -> getPrinter() -> getCharacterTable();
             }
             $i++;
             $j = 1;
             do {
-                $char = mb_substr($text, $i, 1, self::INPUT_ENCODING);
+                $char = self::mb_substr_substitute($text, $i, 1, self::INPUT_ENCODING);
                 $matching = !isset($this -> available[$char]) || isset($this -> available[$char][$encoding]);
                 if ($matching) {
                     $i++;
                     $j++;
                 }
             } while ($matching && $i < $len);
-            $this -> writeTextUsingEncoding(mb_substr($text, $i - $j, $j, self::INPUT_ENCODING), $encoding);
+            $this -> writeTextUsingEncoding(self::mb_substr_substitute($text, $i - $j, $j, self::INPUT_ENCODING), $encoding);
         }
     }
 
-    public function writeTextRaw($text)
+    public function writeTextRaw(string $text)
     {
         if ($this -> printer == null) {
             throw new LogicException("Not attached to a printer.");
@@ -152,11 +150,11 @@ class EscposPrintBuffer implements PrintBuffer
      * @return boolean|integer Code page number, or FALSE if the text is not
      *  printable on any supported encoding.
      */
-    private function identifyText($text)
+    private function identifyText(string $text)
     {
         // TODO Replace this with an algorithm to choose the encoding which will
         //      encode the farthest into the string, to minimise code page changes.
-        $char = mb_substr($text, 0, 1, self::INPUT_ENCODING);
+        $char = self::mb_substr_substitute($text, 0, 1, self::INPUT_ENCODING);
         if (!isset($this -> available[$char])) {
             /* Character not available anywhere */
             return false;
@@ -208,7 +206,7 @@ class EscposPrintBuffer implements PrintBuffer
             }
             $map = $codePage -> getData();
             for ($char = 128; $char <= 255; $char++) {
-                $utf8 = mb_substr($map, $char - 128, 1, self::INPUT_ENCODING);
+                $utf8 = self::mb_substr_substitute($map, $char - 128, 1, self::INPUT_ENCODING);
                 if ($utf8 == " ") { // Skip placeholders
                     continue;
                 }
@@ -238,14 +236,14 @@ class EscposPrintBuffer implements PrintBuffer
      * @param string $text Text to print, UTF-8 format.
      * @param integer $encodingNo Encoding number to use- assumed to exist.
      */
-    private function writeTextUsingEncoding($text, $encodingNo)
+    private function writeTextUsingEncoding(string $text, int $encodingNo)
     {
         $encodeMap = $this -> encode[$encodingNo];
-        $len = mb_strlen($text, self::INPUT_ENCODING);
+        $len = self::mb_strlen_substitute($text, self::INPUT_ENCODING);
         $rawText = str_repeat(self::REPLACEMENT_CHAR, $len);
         $j = 0;
         for ($i = 0; $i < $len; $i++) {
-            $char = mb_substr($text, $i, 1, self::INPUT_ENCODING);
+            $char = self::mb_substr_substitute($text, $i, 1, self::INPUT_ENCODING);
             if (isset($encodeMap[$char])) {
                 $rawText[$j] = $encodeMap[$char];
             } elseif (self::asciiCheck($char)) {
@@ -267,7 +265,7 @@ class EscposPrintBuffer implements PrintBuffer
      *
      * @param string $data
      */
-    private function write($data)
+    private function write(string $data)
     {
         $this -> printer -> getPrintConnector() -> write($data);
     }
@@ -279,7 +277,7 @@ class EscposPrintBuffer implements PrintBuffer
      * @param boolean $extended True to allow 128-256 values also (excluded by default)
      * @return boolean True if the character is printable, false if it is not.
      */
-    private static function asciiCheck($char, $extended = false)
+    private static function asciiCheck(string $char, bool $extended = false)
     {
         if (strlen($char) != 1) {
             // Multi-byte string
@@ -296,5 +294,15 @@ class EscposPrintBuffer implements PrintBuffer
             return true;
         }
         return false;
+    }
+
+    public static function mb_strlen_substitute(string $text, string $encoding = 'UTF-8') : int {
+        return count(preg_split('//u', $text, -1, PREG_SPLIT_NO_EMPTY));
+    }
+
+    public static function mb_substr_substitute(string $str, int $start, int $length = NULL, string $encoding = 'UTF-8') : string {
+        $split = preg_split('//u', $str, -1, PREG_SPLIT_NO_EMPTY);
+        $ret1 = implode(array_splice($split, $start, $length));
+        return $ret1;
     }
 }
