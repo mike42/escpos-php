@@ -96,24 +96,24 @@ class EscposPrintBuffer implements PrintBuffer
         }
         $i = 0;
         $j = 0;
-        $len = self::mb_strlen_substitute($text, self::INPUT_ENCODING);
+        $len = self::mbStrlenSubtitute($text, self::INPUT_ENCODING);
         while ($i < $len) {
             $matching = true;
-            if (($encoding = $this -> identifyText(self::mb_substr_substitute($text, $i, 1, self::INPUT_ENCODING))) === false) {
+            if (($encoding = $this -> identifyText(self::mbSubstrSubstitute($text, $i, 1, self::INPUT_ENCODING))) === false) {
                 // Un-encodeable text
                 $encoding = $this -> getPrinter() -> getCharacterTable();
             }
             $i++;
             $j = 1;
             do {
-                $char = self::mb_substr_substitute($text, $i, 1, self::INPUT_ENCODING);
+                $char = self::mbSubstrSubstitute($text, $i, 1, self::INPUT_ENCODING);
                 $matching = !isset($this -> available[$char]) || isset($this -> available[$char][$encoding]);
                 if ($matching) {
                     $i++;
                     $j++;
                 }
             } while ($matching && $i < $len);
-            $this -> writeTextUsingEncoding(self::mb_substr_substitute($text, $i - $j, $j, self::INPUT_ENCODING), $encoding);
+            $this -> writeTextUsingEncoding(self::mbSubstrSubstitute($text, $i - $j, $j, self::INPUT_ENCODING), $encoding);
         }
     }
 
@@ -154,7 +154,7 @@ class EscposPrintBuffer implements PrintBuffer
     {
         // TODO Replace this with an algorithm to choose the encoding which will
         //      encode the farthest into the string, to minimise code page changes.
-        $char = self::mb_substr_substitute($text, 0, 1, self::INPUT_ENCODING);
+        $char = self::mbSubstrSubstitute($text, 0, 1, self::INPUT_ENCODING);
         if (!isset($this -> available[$char])) {
             /* Character not available anywhere */
             return false;
@@ -206,7 +206,7 @@ class EscposPrintBuffer implements PrintBuffer
             }
             $map = $codePage -> getData();
             for ($char = 128; $char <= 255; $char++) {
-                $utf8 = self::mb_substr_substitute($map, $char - 128, 1, self::INPUT_ENCODING);
+                $utf8 = self::mbSubstrSubstitute($map, $char - 128, 1, self::INPUT_ENCODING);
                 if ($utf8 == " ") { // Skip placeholders
                     continue;
                 }
@@ -239,11 +239,11 @@ class EscposPrintBuffer implements PrintBuffer
     private function writeTextUsingEncoding(string $text, int $encodingNo)
     {
         $encodeMap = $this -> encode[$encodingNo];
-        $len = self::mb_strlen_substitute($text, self::INPUT_ENCODING);
+        $len = self::mbStrlenSubtitute($text, self::INPUT_ENCODING);
         $rawText = str_repeat(self::REPLACEMENT_CHAR, $len);
         $j = 0;
         for ($i = 0; $i < $len; $i++) {
-            $char = self::mb_substr_substitute($text, $i, 1, self::INPUT_ENCODING);
+            $char = self::mbSubstrSubstitute($text, $i, 1, self::INPUT_ENCODING);
             if (isset($encodeMap[$char])) {
                 $rawText[$j] = $encodeMap[$char];
             } elseif (self::asciiCheck($char)) {
@@ -296,12 +296,18 @@ class EscposPrintBuffer implements PrintBuffer
         return false;
     }
 
-    public static function mb_strlen_substitute(string $text, string $encoding = 'UTF-8') : int
+    /**
+     * Replacement for mb_strlen to help us transition away from the mbstring plugin.
+     */
+    public static function mbStrlenSubtitute(string $text, string $encoding = 'UTF-8') : int
     {
         return count(preg_split('//u', $text, -1, PREG_SPLIT_NO_EMPTY));
     }
 
-    public static function mb_substr_substitute(string $str, int $start, int $length = null, string $encoding = 'UTF-8') : string
+    /**
+     * Replacement for mb_substr to help us transition away from the mbstring plugin.
+     */
+    public static function mbSubstrSubstitute(string $str, int $start, int $length = null, string $encoding = 'UTF-8') : string
     {
         $split = preg_split('//u', $str, -1, PREG_SPLIT_NO_EMPTY);
         $ret1 = implode(array_splice($split, $start, $length));

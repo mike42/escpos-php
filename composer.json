@@ -23,6 +23,7 @@
 	},
 	"require" : {
 		"php" : ">=7.0.0",
+		"ext-json": "*",
 		"ext-intl": "*",
 		"ext-zlib": "*",
 		"mike42/gfx-php" : "^0.6"

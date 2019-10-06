@@ -178,7 +178,7 @@ class CodePage
         }
         // Join into a 128-character string and return.
         $charMapStr = implode("", $charMap);
-        assert(EscposPrintBuffer::mb_strlen_substitute($charMapStr, self::INPUT_ENCODING) == 128);
+        assert(EscposPrintBuffer::mbStrlenSubtitute($charMapStr, self::INPUT_ENCODING) == 128);
         return $charMapStr;
     }
 }
