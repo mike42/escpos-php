@@ -91,7 +91,7 @@ class EscposPrintBuffer implements PrintBuffer
         }
         // Normalize text - this replaces combining characters with composed glyphs, and also helps us eliminated bad UTF-8 early
         $text = \Normalizer::normalize($text);
-        if($text === false) {
+        if ($text === false) {
             throw new \Exception("Input must be UTF-8");
         }
         $i = 0;
@@ -296,11 +296,13 @@ class EscposPrintBuffer implements PrintBuffer
         return false;
     }
 
-    public static function mb_strlen_substitute(string $text, string $encoding = 'UTF-8') : int {
+    public static function mb_strlen_substitute(string $text, string $encoding = 'UTF-8') : int
+    {
         return count(preg_split('//u', $text, -1, PREG_SPLIT_NO_EMPTY));
     }
 
-    public static function mb_substr_substitute(string $str, int $start, int $length = NULL, string $encoding = 'UTF-8') : string {
+    public static function mb_substr_substitute(string $str, int $start, int $length = null, string $encoding = 'UTF-8') : string
+    {
         $split = preg_split('//u', $str, -1, PREG_SPLIT_NO_EMPTY);
         $ret1 = implode(array_splice($split, $start, $length));
         return $ret1;
