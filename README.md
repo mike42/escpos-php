@@ -179,7 +179,9 @@ If you haven't used `composer` before, you can read about it at [getcomposer.org
 This project has few hard dependencies:
 
 - PHP 7.0 or newer.
-- `mbstring` extension, since the driver accepts UTF-8 encoding.
+- `json` extension, used to load bundled printer definitions (see [documentation](https://www.php.net/manual/en/book.json.php))
+- `intl` extension, used for character encoding (see [documentation](https://www.php.net/manual/en/book.intl.php))
+- `zlib` extension, used for de-compressing bundled resources (see [documentation](https://www.php.net/manual/en/book.zlib.php)).
 
 It is also suggested that you install either `imagick` or `gd`, as these can be used to speed up image processing.
 
