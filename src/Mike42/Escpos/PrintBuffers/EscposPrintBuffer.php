@@ -13,6 +13,7 @@
 namespace Mike42\Escpos\PrintBuffers;
 
 use LogicException;
+use Mike42\Escpos\CodePage;
 use Mike42\Escpos\Printer;
 
 /**
@@ -39,7 +40,7 @@ class EscposPrintBuffer implements PrintBuffer
     private $available = null;
 
     /**
-     * @var array $encodeLegacy
+     * @var array $encode
      * Map code pages to a map of code points to encoding-specific characters 128-255
      */
     private $encode = null;
@@ -200,7 +201,7 @@ class EscposPrintBuffer implements PrintBuffer
             $encodeMap = [];
             for ($char = 128; $char <= 255; $char++) {
                 $codePoint = $map[$char - 128];
-                if ($codePoint == 32) { // Skip placeholders
+                if ($codePoint == CodePage::MISSING_CHAR_CODE) { // Skip placeholders
                     continue;
                 }
                 $encodeMap[$codePoint] = $char;

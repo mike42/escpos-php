@@ -13,7 +13,6 @@
 namespace Mike42\Escpos;
 
 use \InvalidArgumentException;
-use Mike42\Escpos\PrintBuffers\EscposPrintBuffer;
 
 /**
  * Class to handle data about a particular CodePage, as loaded from the receipt print
@@ -29,13 +28,13 @@ class CodePage
     const MISSING_CHAR_CODE = 0x20;
 
     /**
-     * @var string $data
+     * @var array|null $data
      *  Data string, null if not known (can be computed with iconv)
      */
     protected $data;
 
     /**
-     * @var string $iconv
+     * @var string|null $iconv
      *  Iconv encoding name, null if not known
      */
     protected $iconv;
@@ -53,7 +52,7 @@ class CodePage
     protected $name;
 
     /**
-     * @var string $notes
+     * @var string|null $notes
      *  Notes on this code page, or null if not set.
      */
     protected $notes;
@@ -100,9 +99,9 @@ class CodePage
 
     /**
      *
-     * @return string Iconv encoding name, or blank if not set.
+     * @return string|null Iconv encoding name, or null if not set.
      */
-    public function getIconv() : string
+    public function getIconv()
     {
         return $this->iconv;
     }
@@ -111,15 +110,15 @@ class CodePage
      *
      * @return string Unique identifier of the code page.
      */
-    public function getId()
+    public function getId() : string
     {
         return $this->id;
     }
 
     /**
-     * Name of the code page.
+     * @return string Name of the code page.
      */
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
@@ -127,7 +126,7 @@ class CodePage
     /**
      * The notes may explain quirks about a code-page, such as a source if it's non-standard or un-encodeable.
      *
-     * @return string Notes on the code page, or null if not set.
+     * @return string|null Notes on the code page, or null if not set.
      */
     public function getNotes()
     {
