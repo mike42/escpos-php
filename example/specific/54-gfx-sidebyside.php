@@ -11,7 +11,7 @@
  * Note that image operations are slow. You can and should serialise an EscposImage
  * object into some sort of cache if you will re-use the output.
  */
-require __DIR__ . '/../../autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
 use Mike42\Escpos\CapabilityProfile;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;

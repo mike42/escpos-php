@@ -1,7 +1,8 @@
 <?php
 use Mike42\Escpos\PrintConnectors\UriPrintConnector;
+use PHPUnit\Framework\Error\Notice;
 
-class UriPrintConnectorTest extends PHPUnit_Framework_TestCase
+class UriPrintConnectorTest extends PHPUnit\Framework\TestCase
 {
     public function testFile()
     {
@@ -16,11 +17,12 @@ class UriPrintConnectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException PHPUnit_Framework_Error
+
      * @expectedExceptionMessage not finalized
      */
     public function testSmb()
     {
+        $this -> expectException(Notice::class);
         $connector = UriPrintConnector::get("smb://windows/printer");
         $this -> assertEquals('Mike42\Escpos\PrintConnectors\WindowsPrintConnector', get_class($connector));
         // We expect that this will throw an exception, we can't

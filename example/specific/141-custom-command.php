@@ -1,8 +1,7 @@
 <?php
-require __DIR__ . '/../../autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
-use Mike42\Escpos\CapabilityProfiles\DefaultCapabilityProfile;
 
 /**
  * This example shows how to send a custom command to the printer

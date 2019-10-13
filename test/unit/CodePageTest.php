@@ -1,39 +1,24 @@
 <?php
 use Mike42\Escpos\CodePage;
 
-class CodePageTest extends PHPUnit_Framework_TestCase
+class CodePageTest extends PHPUnit\Framework\TestCase
 {
-
-    protected function requiresIconv()
-    {
-        if (! extension_loaded('iconv')) {
-            $this->markTestSkipped("Requires iconv");
-        }
-    }
-
-    public function testDataIconv()
+    public function testDataGenerated()
     {
         // Set up CP437
-        $this->requiresIconv();
         $cp = new CodePage("CP437", array(
             "name" => "CP437",
             "iconv" => "CP437"
         ));
-        $this->assertTrue($cp->isEncodable());
-        $this->assertEquals($cp->getIconv(), "CP437");
-        $this->assertEquals($cp->getName(), "CP437");
-        $this->assertEquals($cp->getId(), "CP437");
-        $this->assertEquals($cp->getNotes(), null);
-        // Get data and see if it's right
-        $data = $cp->getData();
-        $expected = "ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ ";
-        $this->assertEquals($expected, $data);
+        $dataArray = $cp->getDataArray();
+        $this->assertEquals(128, count($dataArray));
+        $expected = "ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ ";
+        $this->assertEquals($expected, self::dataArrayToString($dataArray));
     }
 
-    public function testDataIconvBogus()
+    public function testDataGenerateFailed()
     {
         // No errors raised, you just get an empty list of supported characters if you try to compute a fake code page
-        $this->requiresIconv();
         $cp = new CodePage("foo", array(
             "name" => "foo",
             "iconv" => "foo"
@@ -43,21 +28,49 @@ class CodePageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($cp->getName(), "foo");
         $this->assertEquals($cp->getId(), "foo");
         $this->assertEquals($cp->getNotes(), null);
-        $data = $cp->getData();
+        $dataArray = $cp->getDataArray();
         $expected = str_repeat(" ", 128);
-        $this->assertEquals($expected, $data);
+        $this->assertEquals($expected, self::dataArrayToString($dataArray));
         // Do this twice (caching behaviour)
-        $data = $cp->getData();
-        $this->assertEquals($expected, $data);
+        $dataArray = $cp->getDataArray();
+        $this->assertEquals($expected, self::dataArrayToString($dataArray));
+    }
+
+    public function testDataDefined()
+    {
+        // A made up code page called "baz", which is the same as CP437 but with some unmapped values at the start.
+        $cp = new CodePage("baz", array(
+            "name" => "baz",
+            "iconv" => "baz",
+            "data" => [
+                "   âäàåçêëèïîìÄÅ",
+                "ÉæÆôöòûùÿÖÜ¢£¥₧ƒ",
+                "áíóúñÑªº¿⌐¬½¼¡«»",
+                "░▒▓│┤╡╢╖╕╣║╗╝╜╛┐",
+                "└┴┬├─┼╞╟╚╔╩╦╠═╬╧",
+                "╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀",
+                "αßΓπΣσμτΦΘΩδ∞φε∩",
+                "≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ "]
+        ));
+        $dataArray = $cp->getDataArray();
+        $this->assertEquals(128, count($dataArray));
+        $expected = "   âäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ ";
+        $this->assertEquals($expected, self::dataArrayToString($dataArray));
     }
 
     public function testDataCannotEncode()
     {
-        $this->setExpectedException('\InvalidArgumentException');
+        $this->expectException(InvalidArgumentException::class);
         $cp = new CodePage("foo", array(
             "name" => "foo"
         ));
         $this->assertFalse($cp->isEncodable());
-        $cp->getData();
+        $cp->getDataArray();
+    }
+
+    private static function dataArrayToString(array $codePoints) : string
+    {
+        // Assemble into character string so that the assertion is more compact
+        return implode(array_map("IntlChar::chr", $codePoints));
     }
 }

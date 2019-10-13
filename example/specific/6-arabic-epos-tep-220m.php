@@ -13,7 +13,7 @@
  *  - ArPHP 4.0 (release date: Jan 8, 2016), available from SourceForge, for
  *      handling the layout for this example.
  */
-require __DIR__ . '/../../autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
 use Mike42\Escpos\CapabilityProfile;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;

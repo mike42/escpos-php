@@ -6,7 +6,7 @@
  * At the time of writing, this is implemented separately as a textChinese() function, until chinese text
  * can be properly detected and printed alongside other encodings.
  */
-require __DIR__ . '/../../autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
 use Mike42\Escpos\CapabilityProfile;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
