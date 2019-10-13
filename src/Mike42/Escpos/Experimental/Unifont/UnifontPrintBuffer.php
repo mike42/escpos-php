@@ -46,10 +46,17 @@ class UnifontPrintBuffer implements PrintBuffer
             $this -> printer -> getPrintConnector() -> write(Printer::ESC . "!" . chr($mode));
             $this -> printer -> selectUserDefinedCharacterSet(true);
         }
-        $chrArray = preg_split('//u', $text, -1, PREG_SPLIT_NO_EMPTY);
-        $codePoints = array_map("IntlChar::ord", $chrArray);
-        foreach ($codePoints as $char) {
-            $this -> writeChar($char);
+        // Normalize text - this replaces combining characters with composed glyphs, and also helps us eliminated bad UTF-8 early
+        $text = \Normalizer::normalize($text);
+        if ($text === false) {
+            throw new \Exception("Input must be UTF-8");
+        }
+        // Iterate code points
+        $codePointIterator = \IntlBreakIterator::createCodePointInstance();
+        $codePointIterator->setText($text);
+        while ($codePointIterator->next() > 0) {
+            $codePoint = $codePointIterator->getLastCodePoint();
+            $this->writeChar($codePoint);
         }
     }
     
