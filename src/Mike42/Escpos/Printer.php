@@ -987,7 +987,7 @@ class Printer
      * Text should either be followed by a line-break, or feed() should be called
      * after this to clear the print buffer.
      *
-     * @param string $str Text to print
+     * @param string $str Text to print, as UTF-8
      */
     public function text(string $str)
     {
@@ -995,7 +995,8 @@ class Printer
     }
 
     /**
-     * Add Chinese text to the buffer. This is a specific workaround for the common Zijang printer- The printer will be switched to a two-byte mode and sent GBK-encoded text.
+     * Add Chinese text to the buffer. This is a specific workaround for Zijang printers-
+     * The printer will be switched to a two-byte mode and sent GBK-encoded text.
      *
      * Support for this will be merged into a print buffer.
      *
@@ -1004,7 +1005,7 @@ class Printer
     public function textChinese(string $str = "")
     {
         $this -> connector -> write(self::FS . "&");
-        $str = iconv("UTF-8", "GBK//IGNORE", $str);
+        $str = \UConverter::transcode($str, "GBK", "UTF-8");
         $this -> buffer -> writeTextRaw((string)$str);
         $this -> connector -> write(self::FS . ".");
     }
