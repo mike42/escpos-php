@@ -199,7 +199,8 @@ class UnifontGlyphFactory implements ColumnFormatGlyphFactory
         $min = 0;
         $max = count($this -> unifontFile) - 1;
         $foundId = 0;
-        $m = 255; // Bias toward low side.
+        // Bias toward low side if file is > 255.
+        $m = min(count($this -> unifontFile) - 1, 255);
         while ($min <= $max) {
             $thisCodePoint = hexdec(substr($this -> unifontFile[$m], 0, 4));
             if ($codePoint === $thisCodePoint) {

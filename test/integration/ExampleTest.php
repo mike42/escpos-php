@@ -132,6 +132,7 @@ class ExampleTest extends PHPUnit\Framework\TestCase
      */
     public function testUnifontPrintBuffer()
     {
+        $this->markTestSkipped('Not repeatable on Travis CI.');
         if(!file_exists("/usr/share/unifont/unifont.hex")) {
             $this -> markTestSkipped("Test only repeatable w/ unifont installed");
         }
