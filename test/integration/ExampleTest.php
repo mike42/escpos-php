@@ -127,6 +127,19 @@ class ExampleTest extends PHPUnit\Framework\TestCase
         $this -> outpTest($outp, "pdf417-code.bin");
     }
 
+    /**
+     * @medium
+     */
+    public function testUnifontPrintBuffer()
+    {
+        $this->markTestSkipped('Not repeatable on Travis CI.');
+        if(!file_exists("/usr/share/unifont/unifont.hex")) {
+            $this -> markTestSkipped("Test only repeatable w/ unifont installed");
+        }
+        $outp = $this -> runExample("unifont-print-buffer.php");
+        $this -> outpTest($outp, "unifont-print-buffer.bin");
+    }
+
     public function testInterfaceCups()
     {
         $outp = $this -> runSyntaxCheck("interface/cups.php");

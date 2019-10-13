@@ -769,7 +769,17 @@ class Printer
 
         $this -> connector -> write(self::ESC . "!" . chr($mode));
     }
-    
+
+    /**
+     * Select user-defined character set.
+     *
+     * @param bool $on True to enable user-defined character set, false to use built-in characters sets.
+     */
+    public function selectUserDefinedCharacterSet($on = true)
+    {
+        $this -> connector -> write(self::ESC . "%". ($on ? chr(1) : chr(0)));
+    }
+
     /**
      * Set barcode height.
      *
