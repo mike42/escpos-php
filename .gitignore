@@ -3,6 +3,9 @@
 .project
 .buildpath
 
+# phpstorm files
+.idea
+
 # doxygen files
 doc/html
 doc/latex
