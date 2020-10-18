@@ -1,5 +1,4 @@
-<?php
-
+<?php declare(strict_types=1);
 /**
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
@@ -31,7 +30,7 @@ class NetworkPrintConnector extends FilePrintConnector
     public function __construct(string $ip, int $port = 9100, bool $timeout = false)
     {
         // Default to 60 if default_socket_timeout isn't defined in the ini
-        $defaultSocketTimeout = ini_get("default_socket_timeout") ?: 60;
+        $defaultSocketTimeout = (int)ini_get("default_socket_timeout") ?: 60;
         $timeout = $timeout ?: $defaultSocketTimeout;
 
         $this -> fp = @fsockopen($ip, $port, $errno, $errstr, $timeout);
