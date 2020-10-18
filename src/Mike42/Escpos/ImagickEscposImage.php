@@ -1,5 +1,4 @@
-<?php
-
+<?php declare(strict_types=1);
 /**
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
@@ -122,11 +121,11 @@ class ImagickEscposImage extends EscposImage
             $widthRight = $imgWidth - $widthLeft;
             // Slice up (left)
             $left = clone $im;
-            $left -> extentimage($widthLeft, $left -> getimageheight(), 0, 0);
+            $left -> extentimage((int)$widthLeft, $left -> getimageheight(), 0, 0);
             // Slice up (right - ensure width is divisible by lineHeight also)
             $right = clone $im;
             $widthRightRounded = $widthRight < $lineHeight ? $lineHeight : $widthRight;
-            $right -> extentimage($widthRightRounded, $right -> getimageheight(), $widthLeft, 0);
+            $right -> extentimage((int)$widthRightRounded, $right -> getimageheight(), (int) $widthLeft, 0);
             // Recurse
             $leftBlobs = $this -> getColumnFormatFromImage($left, $lineHeight);
             $rightBlobs = $this -> getColumnFormatFromImage($right, $lineHeight);
@@ -153,7 +152,7 @@ class ImagickEscposImage extends EscposImage
             $im -> readimage($filename);
         } catch (\ImagickException $e) {
             /* Re-throw as normal exception */
-            throw new Exception($e);
+            throw new Exception((string)$e);
         }
         return $im;
     }
@@ -247,7 +246,7 @@ class ImagickEscposImage extends EscposImage
         } catch (\ImagickException $e) {
             /* Wrap in normal exception, so that classes which call this do not
              * themselves require imagick as a dependency. */
-            throw new Exception($e);
+            throw new Exception((string)$e);
         }
     }
 
