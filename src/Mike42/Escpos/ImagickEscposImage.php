@@ -116,16 +116,16 @@ class ImagickEscposImage extends EscposImage
             return [$this -> getRasterBlobFromImage($im)];
         } elseif ($imgWidth > $lineHeight) {
             // Calculations
-            $slicesLeft = ceil($imgWidth / $lineHeight / 2);
+            $slicesLeft = (int)ceil($imgWidth / $lineHeight / 2); // TODO avoid use of floats with intdiv()
             $widthLeft = $slicesLeft * $lineHeight;
             $widthRight = $imgWidth - $widthLeft;
             // Slice up (left)
             $left = clone $im;
-            $left -> extentimage((int)$widthLeft, $left -> getimageheight(), 0, 0);
+            $left -> extentimage($widthLeft, $left -> getimageheight(), 0, 0);
             // Slice up (right - ensure width is divisible by lineHeight also)
             $right = clone $im;
             $widthRightRounded = $widthRight < $lineHeight ? $lineHeight : $widthRight;
-            $right -> extentimage((int)$widthRightRounded, $right -> getimageheight(), (int) $widthLeft, 0);
+            $right -> extentimage($widthRightRounded, $right -> getimageheight(), $widthLeft, 0);
             // Recurse
             $leftBlobs = $this -> getColumnFormatFromImage($left, $lineHeight);
             $rightBlobs = $this -> getColumnFormatFromImage($right, $lineHeight);
@@ -148,11 +148,11 @@ class ImagickEscposImage extends EscposImage
     {
         $im = new Imagick();
         try {
-            $im->setResourceLimit(6, 1); // Prevent libgomp1 segfaults, grumble grumble.
+            $im -> setResourceLimit(6, 1); // Prevent libgomp1 segfaults, grumble grumble.
             $im -> readimage($filename);
         } catch (\ImagickException $e) {
             /* Re-throw as normal exception */
-            throw new Exception((string)$e);
+            throw new Exception($e -> getMessage());
         }
         return $im;
     }
@@ -246,7 +246,7 @@ class ImagickEscposImage extends EscposImage
         } catch (\ImagickException $e) {
             /* Wrap in normal exception, so that classes which call this do not
              * themselves require imagick as a dependency. */
-            throw new Exception((string)$e);
+            throw new Exception($e -> getMessage());
         }
     }
 

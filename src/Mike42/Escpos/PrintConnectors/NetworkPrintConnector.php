@@ -23,17 +23,19 @@ class NetworkPrintConnector extends FilePrintConnector
      * Construct a new NetworkPrintConnector
      *
      * @param string $ip IP address or hostname to use.
-     * @param string $port The port number to connect on.
-     * @param string $timeout The connection timeout, in seconds.
+     * @param int $port The port number to connect on.
+     * @param int $timeout The connection timeout, in seconds.
      * @throws Exception Where the socket cannot be opened.
      */
-    public function __construct(string $ip, int $port = 9100, bool $timeout = false)
+    public function __construct(string $ip, int $port = 9100, int $timeout = -1)
     {
-        // Default to 60 if default_socket_timeout isn't defined in the ini
-        $defaultSocketTimeout = (int)ini_get("default_socket_timeout") ?: 60;
-        $timeout = $timeout ?: $defaultSocketTimeout;
-
-        $this -> fp = @fsockopen($ip, $port, $errno, $errstr, $timeout);
+        // Note: Once the minimum PHP version is PHP 7.0 or higher, we can type $timeout as '?int' to make it optional
+        // instead of using -1.
+        if($timeout == -1) {
+            $this -> fp = @fsockopen($ip, $port, $errno, $errstr);
+        } else {
+            $this -> fp = @fsockopen($ip, $port, $errno, $errstr, (float)$timeout);
+        }
         if ($this -> fp === false) {
             throw new Exception("Cannot initialise NetworkPrintConnector: " . $errstr);
         }

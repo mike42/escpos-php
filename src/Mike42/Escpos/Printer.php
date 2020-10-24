@@ -690,7 +690,10 @@ class Printer
         self::validateInteger($pin, 0, 1, __FUNCTION__);
         self::validateInteger($on_ms, 1, 511, __FUNCTION__);
         self::validateInteger($off_ms, 1, 511, __FUNCTION__);
-        $this -> connector -> write(self::ESC . "p" . chr($pin + 48) . chr((int)($on_ms / 2)) . chr((int)($off_ms / 2)));
+        $pin_value = $pin + 48; // Character '0' or '1'.
+        $on_value = intdiv($on_ms, 2);
+        $off_value = intdiv($off_ms, 2);
+        $this -> connector -> write(self::ESC . "p" . chr($pin_value) . chr($on_value) . chr($off_value));
     }
 
     /**
