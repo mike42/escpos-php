@@ -69,7 +69,7 @@ class GdEscposImageTest extends PHPUnit\Framework\TestCase
     private function loadAndCheckImg($fn, $width, $height, $rasterFormat = null, $columnFormat = null)
     {
         if (!EscposImage::isGdLoaded()) {
-            $this -> markTestSkipped("imagick plugin is required for this test");
+            $this -> markTestSkipped("gd plugin is required for this test");
         }
         $onDisk = ($fn === null ? null : (dirname(__FILE__) . "/resources/$fn"));
         // With optimisations

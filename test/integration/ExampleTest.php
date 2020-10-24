@@ -194,7 +194,7 @@ class ExampleTest extends PHPUnit\Framework\TestCase
     protected function requireGraphicsLibrary()
     {
         if (!EscposImage::isGdLoaded() && !EscposImage::isImagickLoaded()) {
-            $this -> markTestSkipped("This test requires a graphics library.");
+            $this -> markTestSkipped("gd or imagick plugin is required for this test");
         }
     }
 }
