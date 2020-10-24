@@ -31,7 +31,7 @@ class NetworkPrintConnector extends FilePrintConnector
     {
         // Note: Once the minimum PHP version is PHP 7.0 or higher, we can type $timeout as '?int' to make it optional
         // instead of using -1.
-        if($timeout == -1) {
+        if ($timeout == -1) {
             $this -> fp = @fsockopen($ip, $port, $errno, $errstr);
         } else {
             $this -> fp = @fsockopen($ip, $port, $errno, $errstr, (float)$timeout);
