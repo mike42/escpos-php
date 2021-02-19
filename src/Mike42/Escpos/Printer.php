@@ -1034,7 +1034,6 @@ class Printer
     public function getJobNumber()
     {
         if (! $this -> connector instanceof \Mike42\Escpos\PrintConnectors\CupsPrintConnector) {
-            echo "Connector is not cupsprintconnector\n";
             return null;
         }
 
@@ -1049,7 +1048,6 @@ class Printer
     public function getAmountPages()
     {
         if (! $this -> connector instanceof \Mike42\Escpos\PrintConnectors\CupsPrintConnector) {
-            echo "connector is not cupsprintconnector\n";
             return null;
         }
 
