@@ -80,6 +80,12 @@ class ImagickEscposImageTest extends PHPUnit\Framework\TestCase
      */
     public function testPdfAllPages()
     {
+        // This is expected to fail on many distributions with an error, due to GhostScript defaults.
+        //   'Exception: not authorized `/path/to/doc.pdf' @error/constitute.c/ReadImage/412'
+        // The defaults were changed to prevent a vulnerability (arbitrary code execution), and can be bypassed if you
+        // trust the source of PDF files.
+        // https://stackoverflow.com/a/52661288/1808534
+        $this -> markTestSkipped('unsupported feature');
         $this -> loadAndCheckPdf('doc.pdf', 1, 1, array("\x00", "\x80"), array(array("\x00"), array("\x80")));
     }
     
