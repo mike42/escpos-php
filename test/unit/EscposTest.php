@@ -9,7 +9,7 @@ class EscposTest extends PHPUnit\Framework\TestCase
     protected $printer;
     protected $outputConnector;
 
-    protected function setup()
+    protected function setUp(): void
     {
         /* Print to nowhere- for testing which inputs are accepted */
         $this -> outputConnector = new DummyPrintConnector();
@@ -26,7 +26,7 @@ class EscposTest extends PHPUnit\Framework\TestCase
         $this -> assertEquals($expected, $outp);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this -> outputConnector -> finalize();
     }
