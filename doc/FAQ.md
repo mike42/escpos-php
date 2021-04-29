@@ -140,3 +140,7 @@ Only `FilePrintConnector` or `NetworkPrintConnector` will support reading from t
 ESC/POS "page mode" is not currently supported, which would allow some printers to render some more complex layouts natively
 
 Since the output is raster anyway, it is suggested that you render your output to an image and print that instead. The driver supports PDF printing via Imagick, and an example that uses `wkhtmltoimage` is available in the repository.
+
+
+##  i have canon SELPHY CP1300 printer. can i use this driver for photo print.?
+
