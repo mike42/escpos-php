@@ -62,7 +62,7 @@ final class DummyPrintConnector implements PrintConnector
      */
     public function getData()
     {
-        return implode($this -> buffer);
+        return implode('', $this -> buffer);
     }
 
     /**
