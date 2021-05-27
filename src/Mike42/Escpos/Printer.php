@@ -999,16 +999,17 @@ class Printer
 
     /**
      * Add Chinese text to the buffer. This is a specific workaround for Zijang printers-
-     * The printer will be switched to a two-byte mode and sent GBK-encoded text.
+     * The printer will be switched to a two-byte mode and sent GBK/BIG5-encoded text.
      *
      * Support for this will be merged into a print buffer.
      *
      * @param string $str Text to print, as UTF-8
+     * @param string $encoding Encoding of Chinese text such as BIG-5, GB18030
      */
-    public function textChinese(string $str = "")
+    public function textChinese(string $str = "", string $encoding = "GBK")
     {
         $this -> connector -> write(self::FS . "&");
-        $str = \UConverter::transcode($str, "GBK", "UTF-8");
+        $str = \UConverter::transcode($str, $encoding, "UTF-8");
         $this -> buffer -> writeTextRaw((string)$str);
         $this -> connector -> write(self::FS . ".");
     }
