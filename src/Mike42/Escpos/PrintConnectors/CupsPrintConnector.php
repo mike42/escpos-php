@@ -37,6 +37,20 @@ class CupsPrintConnector implements PrintConnector
      *  The name of the target printer.
      */
     private $printerName;
+
+    /**
+     *
+     * @var int $jobNumber
+     *  The job dispatch number
+     */
+    private $jobNumber;
+
+    /**
+     *
+     * @var int amountPages
+     *  The amount of pages that CUPS reported to print
+     */
+    private $amountPages;
     
     /**
      * Construct new CUPS print connector.
@@ -91,12 +105,46 @@ class CupsPrintConnector implements PrintConnector
             escapeshellarg($tmpfname)
         );
         try {
-            $this->getCmdOutput($cmd);
+            $response = $this->getCmdOutput($cmd);
+            $exploded = explode(" ", $response);
+
+            // Set default data in case the checks fail, and make them obvioulsy incorrect
+            $this->jobNumber = -1;
+            $this->amountPages = -1;
+
+            if (count($exploded) > 3) {
+                $jobName = explode("-", $exploded[3]);
+                $this->jobNumber = intval($jobName[count($jobName) - 1]);
+            }
+
+            if (count($exploded) > 4) {
+                $this->amountPages = intval(substr($exploded[4], 1));
+            }
         } catch (Exception $e) {
             unlink($tmpfname);
             throw $e;
         }
         unlink($tmpfname);
+    }
+
+    /**
+     * Retrieve the job number
+     *
+     * @return int Assigned job number, or null if the job has not yet been finalized.
+     */
+    public function getJobNumber()
+    {
+        return $this->jobNumber;
+    }
+
+    /**
+     * Retrieve the amount of files printed
+     *
+     * @return in The amount of files CUPS reported to print, or null if the job has not yet been finalized.
+     */
+    public function getAmountPages()
+    {
+        return $this->amountPages;
     }
     
     /**

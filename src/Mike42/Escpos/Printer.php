@@ -1025,6 +1025,34 @@ class Printer
     {
         $this -> buffer -> writeTextRaw((string)$str);
     }
+
+    /**
+     * Returns job number assigned, only available if CupsPrintConnector has been used
+     *
+     * @return int Assigned job number, or null if the job has not yet been finalized or the printconnector does not support this function
+     */
+    public function getJobNumber()
+    {
+        if (! $this -> connector instanceof \Mike42\Escpos\PrintConnectors\CupsPrintConnector) {
+            return null;
+        }
+
+        return $this -> connector -> getJobNumber();
+    }
+
+    /**
+     * Returns amount of pages printed, only available if CupsPrintConnector has been used
+     *
+     * @return int Amount of pages printed, or null if the job has not yet been finalized or the printconnector does not support this function
+     */
+    public function getAmountPages()
+    {
+        if (! $this -> connector instanceof \Mike42\Escpos\PrintConnectors\CupsPrintConnector) {
+            return null;
+        }
+
+        return $this -> connector -> getAmountPages();
+    }
     
     /**
      * Wrapper for GS ( k, to calculate and send correct data length.
