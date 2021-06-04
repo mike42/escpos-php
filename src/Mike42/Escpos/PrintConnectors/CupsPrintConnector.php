@@ -107,9 +107,19 @@ class CupsPrintConnector implements PrintConnector
         try {
             $response = $this->getCmdOutput($cmd);
             $exploded = explode(" ", $response);
-            $jobName = explode("-", $exploded[3]);
-            $this->jobNumber = intval($jobName[count($jobName) - 1]);
-            $this->amountPages = intval(substr($exploded[4], 1));
+
+            // Set default data in case the checks fail, and make them obvioulsy incorrect
+            $this->jobNumber = -1;
+            $this->amountPages = -1;
+
+            if (count($exploded) > 3) {
+                $jobName = explode("-", $exploded[3]);
+                $this->jobNumber = intval($jobName[count($jobName) - 1]);
+            }
+
+            if (count($exploded) > 4) {
+                $this->amountPages = intval(substr($exploded[4], 1));
+            }
         } catch (Exception $e) {
             unlink($tmpfname);
             throw $e;
