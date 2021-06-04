@@ -17,7 +17,7 @@ class EscposPrintBufferTest extends PHPUnit\Framework\TestCase
     protected $buffer;
     protected $outputConnector;
     
-    protected function setup()
+    protected function setUp(): void
     {
         $this -> outputConnector = new DummyPrintConnector();
         $printer = new Printer($this -> outputConnector);
@@ -34,7 +34,7 @@ class EscposPrintBufferTest extends PHPUnit\Framework\TestCase
         $this -> assertEquals($expected, $outp);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this -> outputConnector -> finalize();
     }

@@ -16,13 +16,10 @@ class UriPrintConnectorTest extends PHPUnit\Framework\TestCase
         unlink($filename);
     }
 
-    /**
-
-     * @expectedExceptionMessage not finalized
-     */
     public function testSmb()
     {
-        $this -> expectException(Notice::class);
+        $this->expectNotice();
+        $this->expectNoticeMessage("not finalized");
         $connector = UriPrintConnector::get("smb://windows/printer");
         $this -> assertEquals('Mike42\Escpos\PrintConnectors\WindowsPrintConnector', get_class($connector));
         // We expect that this will throw an exception, we can't
@@ -30,31 +27,25 @@ class UriPrintConnectorTest extends PHPUnit\Framework\TestCase
         $connector -> __destruct();
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Malformed connector URI
-     */
     public function testBadUri()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Malformed connector URI");
         $connector = UriPrintConnector::get("foooooo");
     }
 
-    /**
-     * @expectedException Exception
-     * @expectedExceptionMessage Connection refused
-     */
     public function testNetwork()
     {
+        $this->expectExceptionMessage("Connection refused");
+        $this->expectException(Exception::class);
         // Port should be closed so we can catch an error and move on
         $connector = UriPrintConnector::get("tcp://localhost:45987/");
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage URI sheme is not supported: ldap://
-     */
     public function testUnsupportedUri()
     {
+        $this->expectExceptionMessage("URI sheme is not supported: ldap://");
+        $this->expectException(InvalidArgumentException::class);
         // Try to print to something silly
         $connector = UriPrintConnector::get("ldap://host:1234/");
     }

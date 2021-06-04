@@ -6,7 +6,7 @@ class ExampleTest extends PHPUnit\Framework\TestCase
     /* Verify that the examples don't fizzle out with fatal errors */
     private $exampleDir;
     
-    public function setup()
+    public function setUp(): void
     {
         $this -> exampleDir = dirname(__FILE__) . "/../../example/";
     }

@@ -178,7 +178,7 @@ If you haven't used `composer` before, you can read about it at [getcomposer.org
 
 This project has few hard dependencies:
 
-- PHP 7.0 or newer.
+- PHP 7.3 or newer.
 - `json` extension, used to load bundled printer definitions (see [documentation](https://www.php.net/manual/en/book.json.php))
 - `intl` extension, used for character encoding (see [documentation](https://www.php.net/manual/en/book.intl.php))
 - `zlib` extension, used for de-compressing bundled resources (see [documentation](https://www.php.net/manual/en/book.zlib.php)).
@@ -552,7 +552,7 @@ This code is MIT licensed, and you are encouraged to contribute any modification
 
 For development, it's suggested that you load `imagick`, `gd` and `Xdebug` PHP extensions.
 
-The tests are executed on [Travis CI](https://travis-ci.org/mike42/escpos-php) over PHP 7.0, 7.1, 7.2 and 7.3. Older versions of PHP are not supported in current release, nor is HHVM.
+The tests are executed on [Travis CI](https://travis-ci.org/mike42/escpos-php) over PHP 7.3, 7.4 and 8.0. Older versions of PHP are not supported in the current release, nor is HHVM.
 
 Fetch a copy of this code and load dependencies with composer:
 
