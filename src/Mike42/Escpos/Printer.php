@@ -645,13 +645,12 @@ class Printer
         }
 
         if (! (
-                ($scaleWidth < 1 && $scaleWidth > 2)
-                && ($scaleHeight < 1 && $scaleHeight > 2)
+                ($scaleWidth > 0  && $scaleWidth < 3)
+                && ($scaleHeight > 0  && $scaleHeight < 3)
             ) // valid scale factors
         ) {
             return false;
         }
-
 
         $this->connector->write(
             self::GS
