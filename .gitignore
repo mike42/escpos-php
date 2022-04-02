@@ -10,7 +10,9 @@ doc/doxygen_sqlite3.db
 
 # composer files
 vendor/
+composer.lock
 
 # other build files
 build/*
 *.phar
+.phpunit.result.cache
