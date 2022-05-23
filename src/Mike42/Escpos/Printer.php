@@ -1,9 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
  *
- * Copyright (c) 2014-18 Michael Billington < michael.billington@gmail.com >,
+ * Copyright (c) 2014-20 Michael Billington < michael.billington@gmail.com >,
  * incorporating modifications by others. See CONTRIBUTORS.md for a full list.
  *
  * This software is distributed under the terms of the MIT license. See LICENSE.md
@@ -690,7 +690,10 @@ class Printer
         self::validateInteger($pin, 0, 1, __FUNCTION__);
         self::validateInteger($on_ms, 1, 511, __FUNCTION__);
         self::validateInteger($off_ms, 1, 511, __FUNCTION__);
-        $this -> connector -> write(self::ESC . "p" . chr($pin + 48) . chr($on_ms / 2) . chr($off_ms / 2));
+        $pin_value = $pin + 48; // Character '0' or '1'.
+        $on_value = intdiv($on_ms, 2);
+        $off_value = intdiv($off_ms, 2);
+        $this -> connector -> write(self::ESC . "p" . chr($pin_value) . chr($on_value) . chr($off_value));
     }
 
     /**

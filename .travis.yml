@@ -1,14 +1,13 @@
 ---
-dist: trusty
+dist: xenial
 sudo: required
 
 language: php
 
 php:
-  - 7.0
-  - 7.1
-  - 7.2
-  - 7.3
+  - '7.3'
+  - '7.4'
+  - '8.0'
   - nightly
 
 matrix:
@@ -24,7 +23,7 @@ install:
 
 before_script:
   # Install 'imagick' plugin
-  - bash -c 'if [[ $TRAVIS_PHP_VERSION != hhvm* ]]; then printf "\n" | pecl install imagick; fi'
+  - bash -c 'if [[ $TRAVIS_PHP_VERSION != 8* ]] && [[ $TRAVIS_PHP_VERSION != "nightly" ]] ; then printf "\n" | pecl install imagick; fi'
   # Directory for coverage report
   - mkdir -p build/logs/
 

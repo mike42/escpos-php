@@ -6,7 +6,7 @@ class ExampleTest extends PHPUnit\Framework\TestCase
     /* Verify that the examples don't fizzle out with fatal errors */
     private $exampleDir;
     
-    public function setup()
+    public function setUp(): void
     {
         $this -> exampleDir = dirname(__FILE__) . "/../../example/";
     }
@@ -194,7 +194,7 @@ class ExampleTest extends PHPUnit\Framework\TestCase
     protected function requireGraphicsLibrary()
     {
         if (!EscposImage::isGdLoaded() && !EscposImage::isImagickLoaded()) {
-            $this -> markTestSkipped("This test requires a graphics library.");
+            $this -> markTestSkipped("gd or imagick plugin is required for this test");
         }
     }
 }
