@@ -130,7 +130,7 @@ class item
         if ($this->dollarSign) {
             $leftCols = $leftCols / 2 - $rightCols / 2;
         }
-        $left = str_pad($this->name, $leftCols);
+        $left = utf8_encode(str_pad(utf8_decode($this -> name), $leftCols));
 
         $sign = ($this->dollarSign ? '$ ' : '');
         $right = str_pad($sign . $this->price, $rightCols, ' ', STR_PAD_LEFT);
