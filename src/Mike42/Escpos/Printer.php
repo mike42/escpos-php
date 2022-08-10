@@ -12,6 +12,8 @@
 
 namespace Mike42\Escpos;
 
+use BadMethodCallException;
+use Closure;
 use Exception;
 use InvalidArgumentException;
 use Mike42\Escpos\PrintBuffers\PrintBuffer;
@@ -351,6 +353,13 @@ class Printer
     protected $characterTable;
 
     /**
+     * The registered string macros.
+     *
+     * @var array
+     */
+    protected static $macros = [];
+
+    /**
      * Construct a new print object
      *
      * @param PrintConnector $connector The PrintConnector to send data to. If not set, output is sent to standard output.
@@ -373,7 +382,19 @@ class Printer
         $this -> setPrintBuffer($buffer);
         $this -> initialize();
     }
-    
+
+    /**
+     * Register a custom macro.
+     *
+     * @param  string  $name
+     * @param  callable  $macro
+     * @return void
+     */
+    public static function macro($name, $macro)
+    {
+        static::$macros[$name] = $macro;
+    }
+
     /**
      * Print a barcode.
      *
@@ -1196,5 +1217,31 @@ class Printer
         if (preg_match($regex, $test) === 0) {
             throw new InvalidArgumentException("$argument given to $source is invalid. It should match regex '$regex', but '$test' was given.");
         }
+    }
+
+    /**
+     * Dynamically handle calls to the class.
+     *
+     * @param  string  $method
+     * @param  array  $parameters
+     * @return mixed
+     *
+     * @throws \BadMethodCallException
+     */
+    public function __call($method, $parameters)
+    {
+        if (! isset(static::$macros[$name])) {
+            throw new BadMethodCallException(sprintf(
+                'Method %s::%s does not exist.', static::class, $method
+            ));
+        }
+
+        $macro = static::$macros[$method];
+
+        if ($macro instanceof Closure) {
+            $macro = $macro->bindTo($this, static::class);
+        }
+
+        return $macro(...$parameters);
     }
 }
