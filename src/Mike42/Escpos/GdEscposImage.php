@@ -62,7 +62,7 @@ class GdEscposImage extends EscposImage
     public function readImageFromGdResource($im)
     {
         // Combine both version to support both PHP 7 & 8
-        if ((!is_object($im) && !$im instanceof \GdImage) || (!is_resource($im) && get_resource_type($image) != 'gd')) {
+        if ((!is_object($im) && !$im instanceof \GdImage) && (!is_resource($im) && get_resource_type($image) != 'gd')) {
             throw new Exception("Failed to load image.");
         } elseif (!EscposImage::isGdLoaded()) {
             throw new Exception(__FUNCTION__ . " requires 'gd' extension.");
