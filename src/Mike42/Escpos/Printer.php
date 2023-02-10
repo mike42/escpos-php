@@ -64,6 +64,16 @@ class Printer
     const EOT = "\x04";
 
     /**
+     * ASCII Enquiry control character
+     */
+    const ENQ = "\x05";
+
+    /**
+     * ASCII end of text control character
+     */
+    const ETX = "\x03";
+
+    /**
      * Indicates UPC-A barcode when used with Printer::barcode
      */
     const BARCODE_UPCA = 65;
@@ -145,6 +155,16 @@ class Printer
      * Make a partial cut, when used with Printer::cut
      */
     const CUT_PARTIAL = 66;
+
+    /**
+     * Make a total cut and completely eject sheet (eg. on VKP80III Custom printer), when used with Printer::cut
+     */
+    const CUT_FULL_EJECT = 67;
+
+    /**
+     * Make a total cut and partial eject sheet (eg. on VKP80III Custom printer), when used with Printer::cut
+     */
+    const CUT_FULL_PARTIAL_EJECT = 68;
 
     /**
      * Use Font A, when used with Printer::setFont
@@ -511,7 +531,20 @@ class Printer
     public function cut(int $mode = Printer::CUT_FULL, int $lines = 3)
     {
         // TODO validation on cut() inputs
-        $this -> connector -> write(self::GS . "V" . chr($mode) . chr($lines));
+        switch ($mode) {
+            case Printer::CUT_FULL:
+            case Printer::CUT_PARTIAL:
+                $this -> connector -> write(self::GS . "V" . chr($mode) . chr($lines));
+                break;
+            case Printer::CUT_FULL_EJECT:
+                $this -> connector -> write(self::GS . chr(101) . self::ENQ);
+                break;
+            case Printer::CUT_FULL_PARTIAL_EJECT:
+                $this -> connector -> write(self::GS . "e" . self::ETX . self::FF);
+                break;
+            default;
+                break;
+        }
     }
     
     /**
@@ -704,7 +737,7 @@ class Printer
      * @param int $size Pixel size to use. Must be 1-16 (default 3)
      * @param int $model QR code model to use. Must be one of Printer::QR_MODEL_1, Printer::QR_MODEL_2 (default) or Printer::QR_MICRO (not supported by all printers).
      */
-    public function qrCode(string $content, int $ec = Printer::QR_ECLEVEL_L, int$size = 3, int $model = Printer::QR_MODEL_2)
+    public function qrCode(string $content, int $ec = Printer::QR_ECLEVEL_L, int $size = 3, int $model = Printer::QR_MODEL_2)
     {
         self::validateInteger($ec, 0, 3, __FUNCTION__);
         self::validateInteger($size, 1, 16, __FUNCTION__);
@@ -1035,7 +1068,7 @@ class Printer
      * @param string $m Modifier/variant for function. Often '0' where used.
      * @throws InvalidArgumentException Where the input lengths are bad.
      */
-    protected function wrapperSend2dCodeData(string $fn, string $cn, string$data = '', string $m = '')
+    protected function wrapperSend2dCodeData(string $fn, string $cn, string $data = '', string $m = '')
     {
         if (strlen($m) > 1 || strlen($cn) != 1 || strlen($fn) != 1) {
             throw new InvalidArgumentException("wrapperSend2dCodeData: cn and fn must be one character each.");
@@ -1052,7 +1085,7 @@ class Printer
      * @param string $data Data to send.
      * @throws InvalidArgumentException Where the input lengths are bad.
      */
-    protected function wrapperSendGraphicsData(string $m, string $fn, string$data = '')
+    protected function wrapperSendGraphicsData(string $m, string $fn, string $data = '')
     {
         if (strlen($m) != 1 || strlen($fn) != 1) {
             throw new InvalidArgumentException("wrapperSendGraphicsData: m and fn must be one character each.");
