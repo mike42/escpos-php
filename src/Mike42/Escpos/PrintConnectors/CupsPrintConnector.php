@@ -67,7 +67,7 @@ class CupsPrintConnector implements PrintConnector
     public function __destruct()
     {
         if ($this->buffer !== null) {
-            trigger_error("Print connector was not finalized. Did you forget to close the printer?", E_USER_NOTICE);
+            throw new Exception("Print connector was not finalized. Did you forget to close the printer?");
         }
     }
     
