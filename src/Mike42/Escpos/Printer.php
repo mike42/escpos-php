@@ -572,6 +572,14 @@ class Printer
     }
 
     /**
+     * Emit a sound with a internal buzzer
+     */
+    public function buzzer()
+    {
+        $this->connector->write(PRINTER::FS . "\xc0" . "\x07");
+    }
+
+    /**
      * Some slip printers require `ESC q` sequence to release the paper.
      */
     public function release()
