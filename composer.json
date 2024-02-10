@@ -26,6 +26,7 @@
 		"ext-json": "*",
 		"ext-intl": "*",
 		"ext-zlib": "*",
+		"ext-mbstring": "*",
 		"mike42/gfx-php" : "^0.6"
 	},
 	"suggest" : {
