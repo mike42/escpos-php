@@ -136,6 +136,7 @@ Many thermal receipt printers support ESC/POS to some degree. This driver has be
 - Solux SX-TP-88300
 - Sicar POS-80
 - Silicon SP-201 / RP80USE
+- Speed X SP-X 200 Plus
 - SPRT SP-POS88V
 - Star BSC10
 - Star TSP100 ECO
