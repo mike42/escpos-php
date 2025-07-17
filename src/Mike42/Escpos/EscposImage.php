@@ -103,7 +103,7 @@ abstract class EscposImage
     /**
      * @return int height of the image in pixels
      */
-    public function getHeight()
+    protected function getHeight()
     {
         return $this -> imgHeight;
     }
@@ -111,7 +111,7 @@ abstract class EscposImage
     /**
      * @return int Number of bytes to represent a row of this image
      */
-    public function getHeightBytes()
+    protected function getHeightBytes()
     {
         return (int)(($this -> imgHeight + 7) / 8);
     }
@@ -119,15 +119,16 @@ abstract class EscposImage
     /**
      * @return int Width of the image
      */
-    public function getWidth()
-    {
-        return $this -> imgWidth;
-    }
+    protected function getWidth()
+{
+    return $this->imgWidth;
+}
+
     
     /**
      * @return int Number of bytes to represent a row of this image
      */
-    public function getWidthBytes()
+    protected function getWidthBytes()
     {
         return (int)(($this -> imgWidth + 7) / 8);
     }
@@ -198,13 +199,8 @@ abstract class EscposImage
      *
      * @param string|null $filename Filename to load from.
      */
-    protected function loadImageData(string $filename = null)
-    {
-        // Load image in to string of 1's and 0's, also set width & height
-        $this -> setImgWidth(0);
-        $this -> setImgHeight(0);
-        $this -> setImgData("");
-    }
+    abstract protected function loadImageData(string $filename = null);
+
     
     /**
      * Set image data.
@@ -213,8 +209,12 @@ abstract class EscposImage
      */
     protected function setImgData($data)
     {
-        $this -> imgData = $data;
+        if (!preg_match('/^[01]+$/', $data)) {
+            throw new InvalidArgumentException("Image data must contain only '0' and '1'.");
+        }
+     $this->imgData = $data;
     }
+    
     
     /**
      * Set image width.
@@ -305,7 +305,8 @@ abstract class EscposImage
             }
         } while (true);
         if (strlen($data) != ($this -> getWidthBytes() * $this -> getHeight())) {
-            throw new Exception("Bug in " . __FUNCTION__ . ", wrong number of bytes.");
+            throw new Exception("Bug in " . __FUNCTION__ . ": Expected " . ($this->getWidthBytes() * $this->getHeight()) . " bytes, got " . strlen($data) . ".");
+
         }
         return $data;
     }
