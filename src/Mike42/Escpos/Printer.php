@@ -357,7 +357,7 @@ class Printer
      * @param CapabilityProfile|null $profile Supported features of this printer. If not set, the "default" CapabilityProfile will be used, which is suitable for Epson printers.
      * @throws InvalidArgumentException
      */
-    public function __construct(PrintConnector $connector, CapabilityProfile $profile = null)
+    public function __construct(PrintConnector $connector, ?CapabilityProfile $profile = null)
     {
         /* Set connector */
         $this -> connector = $connector;
@@ -882,7 +882,7 @@ class Printer
      * @param int|null $height The height of each line, in dots. If not set, the printer
      *  will reset to its default line spacing.
      */
-    public function setLineSpacing(int $height = null)
+    public function setLineSpacing(?int $height = null)
     {
         if ($height === null) {
             // Reset to default

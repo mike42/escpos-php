@@ -115,7 +115,7 @@ class ImagickEscposImageTest extends PHPUnit\Framework\TestCase
     /**
      * Same as above, loading document and checking pages against some expected values.
      */
-    private function loadAndCheckPdf($fn, $width, $height, array $rasterFormat = null, array $columnFormat = null)
+    private function loadAndCheckPdf($fn, $width, $height, ?array $rasterFormat = null, ?array $columnFormat = null)
     {
         if (!EscposImage::isImagickLoaded()) {
             $this -> markTestSkipped("imagick plugin required for this test");
