@@ -36,6 +36,8 @@ class FontMap
     // next available slot
     protected $next = 0;
 
+    private ColumnFormatGlyphFactory $glyphFactory;
+
     public function __construct(ColumnFormatGlyphFactory $glyphFactory, Printer $printer)
     {
         $this -> printer = $printer;

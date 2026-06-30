@@ -77,7 +77,7 @@ class UnifontPrintBuffer implements PrintBuffer
     {
     }
     
-    public function setPrinter(Printer $printer = null)
+    public function setPrinter(?Printer $printer = null)
     {
         $this -> printer = $printer;
         $this -> fontMap = new FontMap($this -> unifont, $this -> printer);

@@ -198,7 +198,7 @@ abstract class EscposImage
      *
      * @param string|null $filename Filename to load from.
      */
-    protected function loadImageData(string $filename = null)
+    protected function loadImageData(?string $filename = null)
     {
         // Load image in to string of 1's and 0's, also set width & height
         $this -> setImgWidth(0);
