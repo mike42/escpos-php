@@ -10,7 +10,7 @@
  * - http://clagnut.com/blog/2380/ (mirrored from the English Wikipedia)
  */
 use Mike42\Escpos\Printer;
-use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
+use Mike42\Escpos\PrintConnectors\MemoryPrintConnector;
 
 class EscposPrintBufferTest extends PHPUnit\Framework\TestCase
 {
@@ -19,7 +19,7 @@ class EscposPrintBufferTest extends PHPUnit\Framework\TestCase
     
     protected function setUp(): void
     {
-        $this -> outputConnector = new DummyPrintConnector();
+        $this -> outputConnector = new MemoryPrintConnector();
         $printer = new Printer($this -> outputConnector);
         $this -> buffer = $printer -> getPrintBuffer();
     }

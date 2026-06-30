@@ -1,6 +1,6 @@
 <?php
 use Mike42\Escpos\Printer;
-use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
+use Mike42\Escpos\PrintConnectors\MemoryPrintConnector;
 use Mike42\Escpos\EscposImage;
 use Mike42\Escpos\CapabilityProfile;
 
@@ -12,7 +12,7 @@ class EscposTest extends PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         /* Print to nowhere- for testing which inputs are accepted */
-        $this -> outputConnector = new DummyPrintConnector();
+        $this -> outputConnector = new MemoryPrintConnector();
         $this -> printer = new Printer($this -> outputConnector);
     }
 
