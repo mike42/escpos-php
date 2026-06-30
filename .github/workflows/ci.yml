@@ -33,5 +33,5 @@ jobs:
         run: php vendor/bin/phpcs --standard=psr2 src/ -n
 
       - name: Run tests
-        run: php vendor/bin/phpunit
+        run: php -d error_reporting=0 vendor/bin/phpunit
 

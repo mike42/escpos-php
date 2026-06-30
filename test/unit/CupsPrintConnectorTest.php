@@ -24,7 +24,7 @@ class CupsPrintConnectorTest extends PHPUnit\Framework\TestCase
     }
     private function getMockConnector($path, array $printers)
     {
-        $stub = $this->getMockBuilder('Mike42\Escpos\PrintConnectors\CupsPrintConnector')->setMethods(array (
+        $stub = $this->getMockBuilder('Mike42\Escpos\PrintConnectors\CupsPrintConnector')->onlyMethods(array (
                 'getCmdOutput',
                 'getLocalPrinters'
         ))->disableOriginalConstructor()->getMock();
