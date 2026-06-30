@@ -62,7 +62,7 @@ class EscposPrintBuffer implements PrintBuffer
         $this -> printer = null;
     }
 
-    public function flush()
+    public function flush(): void
     {
         if ($this -> printer == null) {
             throw new LogicException("Not attached to a printer.");
@@ -70,12 +70,12 @@ class EscposPrintBuffer implements PrintBuffer
         // TODO Not yet implemented for this buffer: This indicates that the printer needs the current line to be ended.
     }
 
-    public function getPrinter()
+    public function getPrinter(): ?Printer
     {
         return $this -> printer;
     }
 
-    public function setPrinter(?Printer $printer = null)
+    public function setPrinter(?Printer $printer = null): void
     {
         $this -> printer = $printer;
         if ($printer != null) {
@@ -83,7 +83,7 @@ class EscposPrintBuffer implements PrintBuffer
         }
     }
 
-    public function writeText(string $text)
+    public function writeText(string $text): void
     {
         if ($this->printer == null) {
             throw new LogicException("Not attached to a printer.");
@@ -119,7 +119,7 @@ class EscposPrintBuffer implements PrintBuffer
         }
     }
 
-    public function writeTextRaw(string $text)
+    public function writeTextRaw(string $text): void
     {
         if ($this -> printer == null) {
             throw new LogicException("Not attached to a printer.");
@@ -152,7 +152,7 @@ class EscposPrintBuffer implements PrintBuffer
      * @return boolean|integer Code page number, or FALSE if the text is not
      *  printable on any supported encoding.
      */
-    private function identifyText(int $codePoint)
+    private function identifyText(int $codePoint): bool|int
     {
         if (!isset($this -> available[$codePoint])) {
             /* Character not available anywhere */
@@ -165,7 +165,7 @@ class EscposPrintBuffer implements PrintBuffer
      * Based on the printer's connector, compute (or load a cached copy of) maps
      * of UTF character to unicode characters for later use.
      */
-    private function loadAvailableCharacters()
+    private function loadAvailableCharacters(): void
     {
         $profile = $this -> printer -> getPrinterCapabilityProfile();
         $supportedCodePages = $profile -> getCodePages();
@@ -238,7 +238,7 @@ class EscposPrintBuffer implements PrintBuffer
      * @param array $codePoints Text to print, as list of unicode code points
      * @param integer $encodingNo Encoding number to use- assumed to exist.
      */
-    private function writeTextUsingEncoding(array $codePoints, int $encodingNo)
+    private function writeTextUsingEncoding(array $codePoints, int $encodingNo): void
     {
         $encodeMap = $this -> encode[$encodingNo];
         $len = count($codePoints);
@@ -271,7 +271,7 @@ class EscposPrintBuffer implements PrintBuffer
      *
      * @param string $data
      */
-    private function write(string $data)
+    private function write(string $data): void
     {
         $this -> printer -> getPrintConnector() -> write($data);
     }
@@ -283,7 +283,7 @@ class EscposPrintBuffer implements PrintBuffer
      * @param boolean $extended True to allow 128-256 values also (excluded by default)
      * @return boolean True if the character is printable, false if it is not.
      */
-    private static function asciiCheck(string $char, bool $extended = false)
+    private static function asciiCheck(string $char, bool $extended = false): bool
     {
         if (strlen($char) != 1) {
             // Multi-byte string

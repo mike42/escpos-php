@@ -23,14 +23,9 @@ final class RawbtPrintConnector implements PrintConnector
 {
     /**
      * @var array $buffer
-     *  Buffer of accumilated data.
+     *  Buffer of accumulated data.
      */
-    private $buffer;
-
-    /**
-     * @var string data which the printer will provide on next read
-     */
-    private $readData;
+    private array|null $buffer;
 
     /**
      * Create new print connector
@@ -41,7 +36,7 @@ final class RawbtPrintConnector implements PrintConnector
         $this->buffer = [];
     }
 
-    public function clear()
+    public function clear(): void
     {
         $this->buffer = [];
     }
@@ -53,7 +48,7 @@ final class RawbtPrintConnector implements PrintConnector
         }
     }
 
-    public function finalize()
+    public function finalize(): void
     {
         ob_end_clean();
         echo "intent:base64," . base64_encode($this->getData()) . "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
@@ -63,7 +58,7 @@ final class RawbtPrintConnector implements PrintConnector
     /**
      * @return string Get the accumulated data that has been sent to this buffer.
      */
-    public function getData()
+    public function getData(): string
     {
         return implode($this->buffer);
     }
@@ -72,12 +67,12 @@ final class RawbtPrintConnector implements PrintConnector
      * {@inheritDoc}
      * @see PrintConnector::read()
      */
-    public function read($len)
+    public function read(int $len): bool|string
     {
-        return $len >= strlen($this->readData) ? $this->readData : substr($this->readData, 0, $len);
+        return false;
     }
 
-    public function write($data)
+    public function write(string $data): void
     {
         $this->buffer[] = $data;
     }

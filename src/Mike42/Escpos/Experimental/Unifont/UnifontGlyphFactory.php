@@ -17,15 +17,15 @@ namespace Mike42\Escpos\Experimental\Unifont;
 
 class UnifontGlyphFactory implements ColumnFormatGlyphFactory
 {
-    protected $unifontFile;
+    protected array $unifontFile;
 
-    public static function colFormat16(array $in)
+    public static function colFormat16(array $in): string
     {
         // Map 16 x 16 bit unifont (32 bytes) to 16 x 24 ESC/POS column format image (48 bytes).
         return UnifontGlyphFactory::colFormat8($in, 2, 1) . UnifontGlyphFactory::colFormat8($in, 2, 2);
     }
 
-    public static function colFormat8(array $in, $chars = 1, $idx = 1)
+    public static function colFormat8(array $in, $chars = 1, $idx = 1): string
     {
         // Map 8 x 16 bit unifont (32 bytes) to 8 x 24 ESC/POS column format image (24 bytes).
         return implode([
@@ -205,7 +205,7 @@ class UnifontGlyphFactory implements ColumnFormatGlyphFactory
         $this -> unifontFile = $unifontFile;
     }
 
-    public function getGlyph($codePoint)
+    public function getGlyph($codePoint): ColumnFormatGlyph
     {
         // Binary search for correct line.
         $min = 0;

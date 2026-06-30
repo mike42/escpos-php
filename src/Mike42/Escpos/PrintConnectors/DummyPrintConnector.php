@@ -52,7 +52,7 @@ final class DummyPrintConnector implements PrintConnector
         }
     }
 
-    public function finalize()
+    public function finalize(): void
     {
         $this -> buffer = null;
     }
@@ -69,12 +69,12 @@ final class DummyPrintConnector implements PrintConnector
      * {@inheritDoc}
      * @see PrintConnector::read()
      */
-    public function read($len)
+    public function read(int $len): bool|string
     {
         return $len >= strlen($this -> readData) ? $this -> readData : substr($this -> readData, 0, $len);
     }
 
-    public function write($data)
+    public function write(string $data): void
     {
         $this -> buffer[] = $data;
     }

@@ -20,27 +20,27 @@ namespace Mike42\Escpos\PrintConnectors;
  */
 class MultiplePrintConnector implements PrintConnector
 {
-    private $connectors;
+    private array $connectors;
 
     public function __construct(PrintConnector ...$connectors)
     {
         $this -> connectors = $connectors;
     }
 
-    public function finalize()
+    public function finalize(): void
     {
         foreach ($this -> connectors as $connector) {
             $connector -> finalize();
         }
     }
 
-    public function read($len)
+    public function read(int $len): bool|string
     {
         // Cannot write
         return false;
     }
 
-    public function write($data)
+    public function write(string $data): void
     {
         foreach ($this -> connectors as $connector) {
             $connector -> write($data);

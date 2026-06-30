@@ -19,7 +19,7 @@ class UriPrintConnector
 {
     const URI_ASSEMBLER_PATTERN = "~^(.+):/{2}(.+?)(?::(\d{1,4}))?$~";
 
-    public static function get($uri)
+    public static function get($uri): PrintConnector
     {
         // Parse URI
         $is_uri = preg_match(self::URI_ASSEMBLER_PATTERN, $uri, $uri_parts);

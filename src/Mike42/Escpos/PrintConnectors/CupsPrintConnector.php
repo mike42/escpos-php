@@ -26,17 +26,17 @@ class CupsPrintConnector implements PrintConnector
 {
     
     /**
-     * @var array $buffer
+     * @var array|null $buffer
      *  Buffer of accumilated data.
      */
-    private $buffer;
+    private array|null $buffer;
     
     /**
      *
      * @var string $printerName
      *  The name of the target printer.
      */
-    private $printerName;
+    private string $printerName;
     
     /**
      * Construct new CUPS print connector.
@@ -45,8 +45,9 @@ class CupsPrintConnector implements PrintConnector
      *          The CUPS printer name to print to. This must be loaded using a raw driver.
      * @throws BadMethodCallException
      */
-    public function __construct($dest)
+    public function __construct(string $dest)
     {
+        $this->buffer = null; // just ensurer this is initialized - __destruct() will call if an exception is thrown below.
         $valid = $this->getLocalPrinters();
         if (count($valid) == 0) {
             throw new BadMethodCallException("You do not have any printers installed on " .
@@ -57,7 +58,7 @@ class CupsPrintConnector implements PrintConnector
             throw new BadMethodCallException("'$dest' is not a printer on this system. " .
                 "Printers are: [" . implode(", ", $valid) . "]");
         }
-        $this->buffer = array ();
+        $this->buffer = array();
         $this->printerName = $dest;
     }
     
@@ -74,7 +75,7 @@ class CupsPrintConnector implements PrintConnector
     /**
      * Send job to printer.
      */
-    public function finalize()
+    public function finalize(): void
     {
         $data = implode($this->buffer);
         $this->buffer = null;
@@ -106,7 +107,7 @@ class CupsPrintConnector implements PrintConnector
      * @param string $cmd
      *          Command to run
      */
-    protected function getCmdOutput($cmd)
+    protected function getCmdOutput($cmd): false|string
     {
         $descriptors = array (
                 1 => array (
@@ -139,10 +140,10 @@ class CupsPrintConnector implements PrintConnector
     /**
      * Read data from the printer.
      *
-     * @param string $len Length of data to read.
-     * @return string Data read from the printer, or false where reading is not possible.
+     * @param int $len Length of data to read.
+     * @return string|boolean Data read from the printer, or false where reading is not possible.
      */
-    public function read($len)
+    public function read(int $len): bool|string
     {
         return false;
     }
@@ -150,7 +151,7 @@ class CupsPrintConnector implements PrintConnector
     /**
      * @param string $data
      */
-    public function write($data)
+    public function write(string $data): void
     {
         $this->buffer [] = $data;
     }

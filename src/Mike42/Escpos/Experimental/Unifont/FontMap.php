@@ -20,7 +20,7 @@ use Mike42\Escpos\Printer;
 
 class FontMap
 {
-    protected $printer;
+    protected Printer $printer;
 
     const MIN = 0x20;
     const MAX = 0x7E;
@@ -28,13 +28,13 @@ class FontMap
     const FONT_B_WIDTH = 9;
 
     // Map memory locations to code points
-    protected $memory;
+    protected array $memory;
 
-    // Map unicode code points to bytes
-    protected $chars;
+    // Map Unicode code points to bytes
+    protected array $chars;
 
     // next available slot
-    protected $next = 0;
+    protected int $next = 0;
 
     private ColumnFormatGlyphFactory $glyphFactory;
 
@@ -45,12 +45,12 @@ class FontMap
         $this -> reset();
     }
 
-    public function cacheChars(array $codePoints)
+    public function cacheChars(array $codePoints): void
     {
         // TODO flush existing cache to fill with these chars.
     }
 
-    public function writeChar(int $codePoint)
+    public function writeChar(int $codePoint): void
     {
         if (!$this -> addChar($codePoint, true)) {
             throw new InvalidArgumentException("Code point $codePoint not available");
@@ -59,18 +59,18 @@ class FontMap
         $this -> printer -> getPrintConnector() -> write($data);
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this -> chars = [];
-        $this -> memory = array_fill(0, (\Mike42\Escpos\Experimental\Unifont\FontMap::MAX - FontMap::MIN) + 1, -1);
+        $this -> memory = array_fill(0, (FontMap::MAX - FontMap::MIN) + 1, -1);
     }
 
-    public function occupied($id)
+    public function occupied($id): bool
     {
         return $this -> memory[$id] !== -1;
     }
 
-    public function evict($id)
+    public function evict($id): bool
     {
         if (!$this -> occupied($id)) {
             return true;
@@ -80,7 +80,7 @@ class FontMap
         return true;
     }
 
-    public function addChar(int $codePoint, $evict = true)
+    public function addChar(int $codePoint, $evict = true): bool
     {
         if (isset($this -> chars[$codePoint])) {
             // Char already available
@@ -118,7 +118,7 @@ class FontMap
         return true;
     }
 
-    public function submitCharsToPrinterFont(array $chars)
+    public function submitCharsToPrinterFont(array $chars): void
     {
         ksort($chars);
         // TODO We can sort into batches of contiguous characters here.
