@@ -1,8 +1,9 @@
 # ESC/POS Print Driver for PHP
-[![Build Status](https://travis-ci.org/mike42/escpos-php.svg?branch=master)](https://travis-ci.org/mike42/escpos-php) [![Latest Stable Version](https://poser.pugx.org/mike42/escpos-php/v/stable)](https://packagist.org/packages/mike42/escpos-php)
-[![Total Downloads](https://poser.pugx.org/mike42/escpos-php/downloads)](https://packagist.org/packages/mike42/escpos-php)
-[![License](https://poser.pugx.org/mike42/escpos-php/license)](https://packagist.org/packages/mike42/escpos-php)
-[![Coverage Status](https://coveralls.io/repos/github/mike42/escpos-php/badge.svg?branch=development)](https://coveralls.io/github/mike42/escpos-php?branch=development)
+
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mike42/escpos-php/ci.yml?branch=main&style=flat-square)](https://github.com/mike42/escpos-php/actions/workflows/ci.yml)
+[![Packagist Version](https://img.shields.io/packagist/v/mike42/escpos-php?style=flat-square&color=007ec6)](https://packagist.org/packages/mike42/escpos-php)
+[![Packagist Downloads](https://img.shields.io/packagist/dt/mike42/escpos-php?style=flat-square)](https://packagist.org/packages/mike42/escpos-php)
+[![Packagist License](https://img.shields.io/packagist/l/mike42/escpos-php?style=flat-square&color=007ec6)](https://github.com/mike42/escpos-php/blob/development/LICENSE.md)
 
 This project implements a subset of Epson's ESC/POS protocol for thermal receipt printers. It allows you to generate and print receipts with basic formatting, cutting, and barcodes on a compatible printer.
 
