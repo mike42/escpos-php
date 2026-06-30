@@ -296,10 +296,10 @@ class EscposPrintBuffer implements PrintBuffer
         if ($num == 10) { // New-line (printer will take these)
             return true;
         }
-        if ($num == 13) { // Carriage-return (printer will take these)
+        if ($extended && $num == 13) { // Carriage-return (printer will take these)
             return true;
         }
-        if ($num == 9) {  // Horizontal-tab (printer will take these)
+        if ($extended && $num == 9) {  // Horizontal-tab (printer will take these)
             return true;
         }
         if ($extended && $num > 127) {
