@@ -7,4 +7,5 @@ doc/ export-ignore
 phpunit.xml export-ignore
 test/ export-ignore
 composer.lock export-ignore
-
+CONTRIBUTING.md export-ignore
+CONTRIBUTORS.md export-ignore
