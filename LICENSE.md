@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2014-2016 Michael Billington, incorporating modifications by others.
+Copyright (c) 2014-2026 Michael Billington, incorporating modifications by others.
 See CONTRIBUTORS.md for a full list.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
