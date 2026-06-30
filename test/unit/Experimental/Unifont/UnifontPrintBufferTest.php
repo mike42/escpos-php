@@ -2,7 +2,7 @@
 
 namespace Mike42\Escpos\Experimental\Unifont;
 
-use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
+use Mike42\Escpos\PrintConnectors\MemoryPrintConnector;
 use Mike42\Escpos\Printer;
 use PHPUnit\Framework\TestCase;
 
@@ -13,7 +13,7 @@ class UnifontPrintBufferTest extends TestCase
 
     protected function setUp(): void
     {
-        $this -> outputConnector = new DummyPrintConnector();
+        $this -> outputConnector = new MemoryPrintConnector();
         $this -> printer = new Printer($this -> outputConnector);
         $filename = tempnam(sys_get_temp_dir(), "escpos-php-");
         $glyphs = [

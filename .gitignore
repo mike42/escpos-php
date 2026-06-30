@@ -15,4 +15,4 @@ vendor/
 # other build files
 build/*
 *.phar
-.phpunit.cache
+.phpunit.cache/
