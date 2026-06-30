@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+
 /**
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
@@ -9,6 +10,8 @@
  * This software is distributed under the terms of the MIT license. See LICENSE.md
  * for details.
  */
+
+declare(strict_types=1);
 
 namespace Mike42\Escpos;
 
