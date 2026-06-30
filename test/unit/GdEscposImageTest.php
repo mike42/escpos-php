@@ -1,7 +1,9 @@
 <?php
 use Mike42\Escpos\GdEscposImage;
 use Mike42\Escpos\EscposImage;
+use PHPUnit\Framework\Attributes\Medium;
 
+#[Medium]
 class GdEscposImageTest extends PHPUnit\Framework\TestCase
 {
 
@@ -15,17 +17,11 @@ class GdEscposImageTest extends PHPUnit\Framework\TestCase
         $this -> loadAndCheckImg('not a real file.png', 1, 1, null, null);
     }
     
-    /**
-     * @medium
-     */
     public function testGdEmpty()
     {
         $this -> loadAndCheckImg(null, 0, 0, "", array());
     }
     
-    /**
-     * @medium
-     */
     public function testGdBlack()
     {
         foreach (array('png', 'jpg', 'gif') as $format) {
@@ -33,9 +29,6 @@ class GdEscposImageTest extends PHPUnit\Framework\TestCase
         }
     }
     
-    /**
-     * @medium
-     */
     public function testGdBlackTransparent()
     {
         foreach (array('png', 'gif') as $format) {
@@ -43,9 +36,6 @@ class GdEscposImageTest extends PHPUnit\Framework\TestCase
         }
     }
     
-    /**
-     * @medium
-     */
     public function testGdBlackWhite()
     {
         foreach (array('png', 'jpg', 'gif') as $format) {
@@ -53,9 +43,6 @@ class GdEscposImageTest extends PHPUnit\Framework\TestCase
         }
     }
     
-    /**
-     * @medium
-     */
     public function testGdWhite()
     {
         foreach (array('png', 'jpg', 'gif') as $format) {

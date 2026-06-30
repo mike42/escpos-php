@@ -1,7 +1,9 @@
 <?php
 use Mike42\Escpos\ImagickEscposImage;
 use Mike42\Escpos\EscposImage;
+use PHPUnit\Framework\Attributes\Medium;
 
+#[Medium]
 class ImagickEscposImageTest extends PHPUnit\Framework\TestCase
 {
 
@@ -15,17 +17,11 @@ class ImagickEscposImageTest extends PHPUnit\Framework\TestCase
         $this -> loadAndCheckImg('not a real file.png', 1, 1, null, null);
     }
     
-    /**
-     * @medium
-     */
     public function testImagickEmpty()
     {
         $this -> loadAndCheckImg(null, 0, 0, "", array());
     }
     
-    /**
-     * @medium
-     */
     public function testImagickBlack()
     {
         foreach (array('png', 'jpg', 'gif') as $format) {
@@ -33,9 +29,6 @@ class ImagickEscposImageTest extends PHPUnit\Framework\TestCase
         }
     }
     
-    /**
-     * @medium
-     */
     public function testImagickBlackTransparent()
     {
         foreach (array('png', 'gif') as $format) {
@@ -43,9 +36,6 @@ class ImagickEscposImageTest extends PHPUnit\Framework\TestCase
         }
     }
     
-    /**
-     * @medium
-     */
     public function testImagickBlackWhite()
     {
         foreach (array('png', 'jpg', 'gif') as $format) {
@@ -53,9 +43,6 @@ class ImagickEscposImageTest extends PHPUnit\Framework\TestCase
         }
     }
 
-    /**
-     * @medium
-     */
     public function testImagickBlackWhiteTall()
     {
         // We're very interested in correct column format chopping here at 8 pixels
@@ -63,9 +50,6 @@ class ImagickEscposImageTest extends PHPUnit\Framework\TestCase
             "\xc0\xc0\xc0\xc0\xc0\xc0\xc0\xc0\x00\x00\x00\x00\x00\x00\x00\x00", array("\xff\xff", "\x00\x00"));
     }
 
-    /**
-     * @medium
-     */
     public function testImagickWhite()
     {
         foreach (array('png', 'jpg', 'gif') as $format) {
@@ -76,7 +60,6 @@ class ImagickEscposImageTest extends PHPUnit\Framework\TestCase
     /**
      * PDF test - load tiny PDF and check for well-formedness
      * These are also skipped if you don't have imagick
-     * @medium
      */
     public function testPdfAllPages()
     {
