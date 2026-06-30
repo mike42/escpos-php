@@ -16,11 +16,6 @@
 			"email" : "michael.billington@gmail.com"
 		}
 	],
-	"config": {
-		"platform": {
-			"php": "8.2.0"
-		}
-	},
 	"require" : {
 		"php" : ">=8.2.0",
 		"ext-json": "*",

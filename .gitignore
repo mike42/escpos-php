@@ -9,8 +9,10 @@ doc/latex
 doc/doxygen_sqlite3.db
 
 # composer files
+composer.lock
 vendor/
 
 # other build files
 build/*
 *.phar
+.phpunit.cache

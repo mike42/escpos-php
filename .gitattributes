@@ -3,7 +3,7 @@
 .gitattributes export-ignore
 .gitignore export-ignore
 .github/ export-ignore
-docs/ export-ignore
+doc/ export-ignore
 phpunit.xml export-ignore
 test/ export-ignore
 composer.lock export-ignore
