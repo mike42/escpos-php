@@ -1,6 +1,6 @@
 # ESC/POS Print Driver for PHP
 
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mike42/escpos-php/ci.yml?branch=main&style=flat-square)](https://github.com/mike42/escpos-php/actions/workflows/ci.yml)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mike42/escpos-php/ci.yml?branch=development&style=flat-square)](https://github.com/mike42/escpos-php/actions/workflows/ci.yml)
 [![Packagist Version](https://img.shields.io/packagist/v/mike42/escpos-php?style=flat-square&color=007ec6)](https://packagist.org/packages/mike42/escpos-php)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/mike42/escpos-php?style=flat-square)](https://packagist.org/packages/mike42/escpos-php)
 [![Packagist License](https://img.shields.io/packagist/l/mike42/escpos-php?style=flat-square&color=007ec6)](https://github.com/mike42/escpos-php/blob/development/LICENSE.md)
