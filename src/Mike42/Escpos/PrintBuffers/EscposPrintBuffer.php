@@ -133,8 +133,8 @@ class EscposPrintBuffer implements PrintBuffer
         $outp = str_repeat(self::REPLACEMENT_CHAR, $l);
         for ($i = 0; $i < $l; $i++) {
             $c = substr($text, $i, 1);
-            if ($c == "\r") {
-                /* Skip past Windows line endings (raw usage). */
+            if ($c == "\r" && substr($text, $i + 1, 1) == "\n") {
+                /* Skip past Windows line endings CRLF (raw usage). */
                 continue;
             } elseif (self::asciiCheck($c, true)) {
                 $outp[$j] = $c;
@@ -294,6 +294,12 @@ class EscposPrintBuffer implements PrintBuffer
             return true;
         }
         if ($num == 10) { // New-line (printer will take these)
+            return true;
+        }
+        if ($extended && $num == 13) { // Carriage-return (printer will take these)
+            return true;
+        }
+        if ($extended && $num == 9) {  // Horizontal-tab (printer will take these)
             return true;
         }
         if ($extended && $num > 127) {
