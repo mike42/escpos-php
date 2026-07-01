@@ -4,7 +4,7 @@
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
  *
- * Copyright (c) 2014-20 Michael Billington < michael.billington@gmail.com >,
+ * Copyright (c) 2014-2026 Michael Billington < michael.billington@gmail.com >,
  * incorporating modifications by others. See CONTRIBUTORS.md for a full list.
  *
  * This software is distributed under the terms of the MIT license. See LICENSE.md
@@ -28,17 +28,18 @@ use Mike42\Escpos\ImagickEscposImage;
  */
 class ImagePrintBuffer implements PrintBuffer
 {
-    private $printer;
+    private ?Printer $printer;
 
     /**
      * @var string|null font to use
      */
-    private $font;
+    private ?string $font;
 
-    private $fontSize;
+    private int $fontSize;
 
     public function __construct()
     {
+        $this -> printer = null;
         if (!EscposImage::isImagickLoaded()) {
             throw new Exception("ImagePrintBuffer requires the imagick extension");
         }
@@ -46,24 +47,24 @@ class ImagePrintBuffer implements PrintBuffer
         $this -> fontSize = 24;
     }
 
-    public function flush()
+    public function flush(): void
     {
         if ($this -> printer == null) {
             throw new LogicException("Not attached to a printer.");
         }
     }
 
-    public function getPrinter()
+    public function getPrinter(): ?Printer
     {
         return $this -> printer;
     }
 
-    public function setPrinter(Printer $printer = null)
+    public function setPrinter(?Printer $printer = null): void
     {
         $this -> printer = $printer;
     }
 
-    public function writeText(string $text)
+    public function writeText(string $text): void
     {
         if ($this -> printer == null) {
             throw new LogicException("Not attached to a printer.");
@@ -90,9 +91,8 @@ class ImagePrintBuffer implements PrintBuffer
         $draw -> setTextAntialias(true);
         $metrics = $image -> queryFontMetrics($draw, $text);
         $draw -> annotation(0, $metrics['ascender'], $text);
-
         /* Create image & draw annotation on it */
-        $image -> newImage($metrics['textWidth'], $metrics['textHeight'], $background);
+        $image -> newImage((int)$metrics['textWidth'], (int)$metrics['textHeight'], $background);
         $image -> setImageFormat('png');
         $image -> drawImage($draw);
         // debugging if you want to view the images yourself
@@ -105,7 +105,7 @@ class ImagePrintBuffer implements PrintBuffer
         $this -> printer -> bitImage($escposImage, $size);
     }
 
-    public function writeTextRaw(string $text)
+    public function writeTextRaw(string $text): void
     {
         if ($this -> printer == null) {
             throw new LogicException("Not attached to a printer.");
@@ -123,7 +123,7 @@ class ImagePrintBuffer implements PrintBuffer
      * @param string $font
      *            Font name or a filename
      */
-    public function setFont(string $font)
+    public function setFont(string $font): void
     {
         $this->font = $font;
     }
@@ -131,7 +131,7 @@ class ImagePrintBuffer implements PrintBuffer
     /**
      * Numeric font size for rendering text to image
      */
-    public function setFontSize(int $fontSize)
+    public function setFontSize(int $fontSize): void
     {
         $this->fontSize = $fontSize;
     }

@@ -1,8 +1,9 @@
 # ESC/POS Print Driver for PHP
-[![Build Status](https://travis-ci.org/mike42/escpos-php.svg?branch=master)](https://travis-ci.org/mike42/escpos-php) [![Latest Stable Version](https://poser.pugx.org/mike42/escpos-php/v/stable)](https://packagist.org/packages/mike42/escpos-php)
-[![Total Downloads](https://poser.pugx.org/mike42/escpos-php/downloads)](https://packagist.org/packages/mike42/escpos-php)
-[![License](https://poser.pugx.org/mike42/escpos-php/license)](https://packagist.org/packages/mike42/escpos-php)
-[![Coverage Status](https://coveralls.io/repos/github/mike42/escpos-php/badge.svg?branch=development)](https://coveralls.io/github/mike42/escpos-php?branch=development)
+
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mike42/escpos-php/ci.yml?branch=main&style=flat-square)](https://github.com/mike42/escpos-php/actions/workflows/ci.yml)
+[![Packagist Version](https://img.shields.io/packagist/v/mike42/escpos-php?style=flat-square&color=007ec6)](https://packagist.org/packages/mike42/escpos-php)
+[![Packagist Downloads](https://img.shields.io/packagist/dt/mike42/escpos-php?style=flat-square)](https://packagist.org/packages/mike42/escpos-php)
+[![Packagist License](https://img.shields.io/packagist/l/mike42/escpos-php?style=flat-square&color=007ec6)](https://github.com/mike42/escpos-php/blob/development/LICENSE.md)
 
 This project implements a subset of Epson's ESC/POS protocol for thermal receipt printers. It allows you to generate and print receipts with basic formatting, cutting, and barcodes on a compatible printer.
 
@@ -178,15 +179,12 @@ If you haven't used `composer` before, you can read about it at [getcomposer.org
 
 This project has few hard dependencies:
 
-- PHP 7.3 or newer.
+- PHP 8.2 or newer.
 - `json` extension, used to load bundled printer definitions (see [documentation](https://www.php.net/manual/en/book.json.php))
 - `intl` extension, used for character encoding (see [documentation](https://www.php.net/manual/en/book.intl.php))
 - `zlib` extension, used for de-compressing bundled resources (see [documentation](https://www.php.net/manual/en/book.zlib.php)).
 
-It is also suggested that you install either `imagick` or `gd`, as these can be used to speed up image processing.
-
-A number of optional extensions can be added to enable more specific features. These
-are described in the "suggest" section of [composer.json](https://github.com/mike42/escpos-php/tree/master/composer.json).
+It is also suggested that you install either `imagick` or `gd`, as these will be used to speed up image processing if present. The [gfx-php](https://github.com/mike42/gfx-php) library will otherwise be used as a fallback.
 
 ### The 'Hello World' receipt
 
@@ -552,7 +550,7 @@ This code is MIT licensed, and you are encouraged to contribute any modification
 
 For development, it's suggested that you load `imagick`, `gd` and `Xdebug` PHP extensions.
 
-The tests are executed on [Travis CI](https://travis-ci.org/mike42/escpos-php) over PHP 7.3, 7.4 and 8.0. Older versions of PHP are not supported in the current release, nor is HHVM.
+The tests are executed [via GitHub actions](https://github.com/mike42/escpos-php/blob/main/.github/workflows/ci.yml) on PHP 8.2, 8.3, 8.4 and 8.5. Older versions of PHP are not supported in the current release.
 
 Fetch a copy of this code and load dependencies with composer:
 
@@ -564,11 +562,15 @@ Execute unit tests via `phpunit`:
 
     php vendor/bin/phpunit --coverage-text
 
+Or with coverage:
+
+    XDEBUG_MODE=coverage php vendor/bin/phpunit --coverage-text
+
 This project uses the PSR-2 standard, which can be checked via [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer):
 
     php vendor/bin/phpcs --standard=psr2 src/ -n
 
-The developer docs are build with [doxygen](https://github.com/doxygen/doxygen). Re-build them to check for documentation warnings:
+The developer docs are not currently maintained, but were built with [doxygen](https://github.com/doxygen/doxygen). Re-build them to check for documentation warnings:
 
     make -C doc clean && make -C doc
 

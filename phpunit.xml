@@ -1,10 +1,5 @@
-<phpunit bootstrap="test/bootstrap.php"
-timeoutForSmallTests="1"
-timeoutForMediumTests="10"
-timeoutForLargeTests="60"
-verbose="true"
-
->
+<?xml version="1.0"?>
+<phpunit bootstrap="test/bootstrap.php" timeoutForSmallTests="1" timeoutForMediumTests="10" timeoutForLargeTests="60" cacheDirectory=".phpunit.cache">
   <testsuites>
     <testsuite name="unit">
       <directory>test/unit</directory>
@@ -13,9 +8,9 @@ verbose="true"
       <directory>test/integration</directory>
     </testsuite>
   </testsuites>
-  <filter>
-    <whitelist processUncoveredFilesFromWhitelist="true">
+  <source>
+    <include>
       <directory suffix=".php">src</directory>
-    </whitelist>
-  </filter>
+    </include>
+  </source>
 </phpunit>

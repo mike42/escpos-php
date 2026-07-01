@@ -1,14 +1,17 @@
-<?php declare(strict_types=1);
+<?php
+
 /**
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
  *
- * Copyright (c) 2014-20 Michael Billington < michael.billington@gmail.com >,
+ * Copyright (c) 2014-2026 Michael Billington < michael.billington@gmail.com >,
  * incorporating modifications by others. See CONTRIBUTORS.md for a full list.
  *
  * This software is distributed under the terms of the MIT license. See LICENSE.md
  * for details.
  */
+
+declare(strict_types=1);
 
 namespace Mike42\Escpos;
 
@@ -330,25 +333,25 @@ class Printer
      * @var PrintBuffer|null $buffer
      *  The printer's output buffer.
      */
-    protected $buffer;
+    protected ?PrintBuffer $buffer;
 
     /**
      * @var PrintConnector $connector
      *  Connector showing how to print to this printer
      */
-    protected $connector;
+    protected PrintConnector $connector;
 
     /**
      * @var CapabilityProfile $profile
      *  Profile showing supported features for this printer
      */
-    protected $profile;
+    protected CapabilityProfile $profile;
 
     /**
      * @var int $characterTable
      *  Current character code table
      */
-    protected $characterTable;
+    protected int $characterTable;
 
     /**
      * Construct a new print object
@@ -357,7 +360,7 @@ class Printer
      * @param CapabilityProfile|null $profile Supported features of this printer. If not set, the "default" CapabilityProfile will be used, which is suitable for Epson printers.
      * @throws InvalidArgumentException
      */
-    public function __construct(PrintConnector $connector, CapabilityProfile $profile = null)
+    public function __construct(PrintConnector $connector, ?CapabilityProfile $profile = null)
     {
         /* Set connector */
         $this -> connector = $connector;
@@ -387,7 +390,7 @@ class Printer
      * available barcode types vary between printers.
      * @throws InvalidArgumentException Where the length or characters used in $content is invalid for the requested barcode format.
      */
-    public function barcode(string $content, int $type = Printer::BARCODE_CODE39)
+    public function barcode(string $content, int $type = Printer::BARCODE_CODE39): void
     {
         /* Validate input */
         self::validateInteger($type, 65, 73, __FUNCTION__, "Barcode type");
@@ -453,7 +456,7 @@ class Printer
      *  (default), or any combination of the `Printer::IMG_DOUBLE_HEIGHT` and
      *  `Printer::IMG_DOUBLE_WIDTH` flags.
      */
-    public function bitImage(EscposImage $img, int $size = Printer::IMG_DEFAULT)
+    public function bitImage(EscposImage $img, int $size = Printer::IMG_DEFAULT): void
     {
         self::validateInteger($size, 0, 3, __FUNCTION__);
         $rasterData = $img -> toRasterFormat();
@@ -473,7 +476,7 @@ class Printer
      *  (default), or any combination of the `Printer::IMG_DOUBLE_HEIGHT` and
      *  `Printer::IMG_DOUBLE_WIDTH` flags.
      */
-    public function bitImageColumnFormat(EscposImage $img, int $size = Printer::IMG_DEFAULT)
+    public function bitImageColumnFormat(EscposImage $img, int $size = Printer::IMG_DEFAULT): void
     {
         $highDensityVertical = ! (($size & self::IMG_DOUBLE_HEIGHT) == Printer::IMG_DOUBLE_HEIGHT);
         $highDensityHorizontal = ! (($size & self::IMG_DOUBLE_WIDTH) == Printer::IMG_DOUBLE_WIDTH);
@@ -497,7 +500,7 @@ class Printer
      * Close the underlying buffer. With some connectors, the
      * job will not actually be sent to the printer until this is called.
      */
-    public function close()
+    public function close(): void
     {
         $this -> connector -> finalize();
     }
@@ -508,7 +511,7 @@ class Printer
      * @param int $mode Cut mode, either Printer::CUT_FULL or Printer::CUT_PARTIAL. If not specified, `Printer::CUT_FULL` will be used.
      * @param int $lines Number of lines to feed
      */
-    public function cut(int $mode = Printer::CUT_FULL, int $lines = 3)
+    public function cut(int $mode = Printer::CUT_FULL, int $lines = 3): void
     {
         // TODO validation on cut() inputs
         $this -> connector -> write(self::GS . "V" . chr($mode) . chr($lines));
@@ -519,7 +522,7 @@ class Printer
      *
      * @param int $lines Number of lines to feed
      */
-    public function feed(int $lines = 1)
+    public function feed(int $lines = 1): void
     {
         self::validateInteger($lines, 1, 255, __FUNCTION__);
         if ($lines <= 1) {
@@ -533,7 +536,7 @@ class Printer
      * Some printers require a form feed to release the paper. On most printers, this
      * command is only useful in page mode, which is not implemented in this driver.
      */
-    public function feedForm()
+    public function feedForm(): void
     {
         $this -> connector -> write(self::FF);
     }
@@ -541,7 +544,7 @@ class Printer
     /**
      * Some slip printers require `ESC q` sequence to release the paper.
      */
-    public function release()
+    public function release(): void
     {
         $this -> connector -> write(self::ESC . chr(113));
     }
@@ -551,7 +554,7 @@ class Printer
      *
      * @param int $lines number of lines to feed. If not specified, 1 line will be fed.
      */
-    public function feedReverse(int $lines = 1)
+    public function feedReverse(int $lines = 1): void
     {
         self::validateInteger($lines, 1, 255, __FUNCTION__);
         $this -> connector -> write(self::ESC . "e" . chr($lines));
@@ -560,7 +563,7 @@ class Printer
     /**
      * @return int
      */
-    public function getCharacterTable()
+    public function getCharacterTable(): int
     {
         return $this -> characterTable;
     }
@@ -568,7 +571,7 @@ class Printer
     /**
      * @return PrintBuffer
      */
-    public function getPrintBuffer()
+    public function getPrintBuffer(): ?PrintBuffer
     {
         return $this -> buffer;
     }
@@ -576,7 +579,7 @@ class Printer
     /**
      * @return PrintConnector
      */
-    public function getPrintConnector()
+    public function getPrintConnector(): PrintConnector
     {
         return $this -> connector;
     }
@@ -584,7 +587,7 @@ class Printer
     /**
      * @return CapabilityProfile
      */
-    public function getPrinterCapabilityProfile()
+    public function getPrinterCapabilityProfile(): CapabilityProfile
     {
         return $this -> profile;
     }
@@ -608,7 +611,7 @@ class Printer
      *  (default), or any combination of the `Printer::IMG_DOUBLE_HEIGHT` and
      *  `Printer::IMG_DOUBLE_WIDTH` flags.
      */
-    public function graphics(EscposImage $img, int $size = Printer::IMG_DEFAULT)
+    public function graphics(EscposImage $img, int $size = Printer::IMG_DEFAULT): void
     {
         self::validateInteger($size, 0, 3, __FUNCTION__);
         $rasterData = $img -> toRasterFormat();
@@ -625,7 +628,7 @@ class Printer
     /**
      * Initialize printer. This resets formatting back to the defaults.
      */
-    public function initialize()
+    public function initialize(): void
     {
         $this -> connector -> write(self::ESC . "@");
         $this -> characterTable = 0;
@@ -647,7 +650,7 @@ class Printer
      *  start/end bars, or truncated code Printer::PDF417_TRUNCATED with start bars only.
      * @throws Exception If this profile indicates that PDF417 code is not supported
      */
-    public function pdf417Code(string $content, int $width = 3, int $heightMultiplier = 3, int $dataColumnCount = 0, float $ec = 0.10, int $options = Printer::PDF417_STANDARD)
+    public function pdf417Code(string $content, int $width = 3, int $heightMultiplier = 3, int $dataColumnCount = 0, float $ec = 0.10, int $options = Printer::PDF417_STANDARD): void
     {
         self::validateInteger($width, 2, 8, __FUNCTION__, 'width');
         self::validateInteger($heightMultiplier, 2, 8, __FUNCTION__, 'heightMultiplier');
@@ -685,7 +688,7 @@ class Printer
      * @param int $on_ms pulse ON time, in milliseconds.
      * @param int $off_ms pulse OFF time, in milliseconds.
      */
-    public function pulse(int $pin = 0, int $on_ms = 120, int $off_ms = 240)
+    public function pulse(int $pin = 0, int $on_ms = 120, int $off_ms = 240): void
     {
         self::validateInteger($pin, 0, 1, __FUNCTION__);
         self::validateInteger($on_ms, 1, 511, __FUNCTION__);
@@ -704,7 +707,7 @@ class Printer
      * @param int $size Pixel size to use. Must be 1-16 (default 3)
      * @param int $model QR code model to use. Must be one of Printer::QR_MODEL_1, Printer::QR_MODEL_2 (default) or Printer::QR_MICRO (not supported by all printers).
      */
-    public function qrCode(string $content, int $ec = Printer::QR_ECLEVEL_L, int$size = 3, int $model = Printer::QR_MODEL_2)
+    public function qrCode(string $content, int $ec = Printer::QR_ECLEVEL_L, int$size = 3, int $model = Printer::QR_MODEL_2): void
     {
         self::validateInteger($ec, 0, 3, __FUNCTION__);
         self::validateInteger($size, 1, 16, __FUNCTION__);
@@ -734,7 +737,7 @@ class Printer
      *
      * @param int $table The table to select. Available code tables are model-specific.
      */
-    public function selectCharacterTable(int $table = 0)
+    public function selectCharacterTable(int $table = 0): void
     {
         self::validateInteger($table, 0, 255, __FUNCTION__);
         $supported = $this -> profile -> getCodePages();
@@ -763,7 +766,7 @@ class Printer
      *
      * @param int $mode The mode to use. Default is Printer::MODE_FONT_A, with no special formatting. This has a similar effect to running initialize().
      */
-    public function selectPrintMode(int $mode = Printer::MODE_FONT_A)
+    public function selectPrintMode(int $mode = Printer::MODE_FONT_A): void
     {
         $allModes = Printer::MODE_FONT_B | self::MODE_EMPHASIZED | self::MODE_DOUBLE_HEIGHT | self::MODE_DOUBLE_WIDTH | self::MODE_UNDERLINE;
         if (!is_integer($mode) || $mode < 0 || ($mode & $allModes) != $mode) {
@@ -778,7 +781,7 @@ class Printer
      *
      * @param bool $on True to enable user-defined character set, false to use built-in characters sets.
      */
-    public function selectUserDefinedCharacterSet($on = true)
+    public function selectUserDefinedCharacterSet($on = true): void
     {
         $this -> connector -> write(self::ESC . "%". ($on ? chr(1) : chr(0)));
     }
@@ -788,7 +791,7 @@ class Printer
      *
      * @param int $height Height in dots. If not specified, 8 will be used.
      */
-    public function setBarcodeHeight(int $height = 8)
+    public function setBarcodeHeight(int $height = 8): void
     {
         self::validateInteger($height, 1, 255, __FUNCTION__);
         $this -> connector -> write(self::GS . "h" . chr($height));
@@ -800,7 +803,7 @@ class Printer
      * @param int $width Bar width in dots. If not specified, 3 will be used.
      *  Values above 6 appear to have no effect.
      */
-    public function setBarcodeWidth(int $width = 3)
+    public function setBarcodeWidth(int $width = 3): void
     {
         self::validateInteger($width, 1, 255, __FUNCTION__);
         $this -> connector -> write(self::GS . "w" . chr($width));
@@ -813,7 +816,7 @@ class Printer
      *  or any combination of Printer::BARCODE_TEXT_ABOVE and Printer::BARCODE_TEXT_BELOW
      *  flags to display the text.
      */
-    public function setBarcodeTextPosition(int $position = Printer::BARCODE_TEXT_NONE)
+    public function setBarcodeTextPosition(int $position = Printer::BARCODE_TEXT_NONE): void
     {
         self::validateInteger($position, 0, 3, __FUNCTION__, "Barcode text position");
         $this -> connector -> write(self::GS . "H" . chr($position));
@@ -824,7 +827,7 @@ class Printer
      *
      * @param boolean $on true for double strike, false for no double strike
      */
-    public function setDoubleStrike(bool $on = true)
+    public function setDoubleStrike(bool $on = true): void
     {
         self::validateBoolean($on, __FUNCTION__);
         $this -> connector -> write(self::ESC . "G". ($on ? chr(1) : chr(0)));
@@ -835,7 +838,7 @@ class Printer
      *
      * @param int $color Color to use. Must be either Printer::COLOR_1 (default), or Printer::COLOR_2.
      */
-    public function setColor(int $color = Printer::COLOR_1)
+    public function setColor(int $color = Printer::COLOR_1): void
     {
         self::validateInteger($color, 0, 1, __FUNCTION__, "Color");
         $this -> connector -> write(self::ESC . "r" . chr($color));
@@ -846,7 +849,7 @@ class Printer
      *
      *  @param boolean $on true for emphasis, false for no emphasis
      */
-    public function setEmphasis(bool $on = true)
+    public function setEmphasis(bool $on = true): void
     {
         self::validateBoolean($on, __FUNCTION__);
         $this -> connector -> write(self::ESC . "E". ($on ? chr(1) : chr(0)));
@@ -857,7 +860,7 @@ class Printer
      *
      * @param int $font The font to use. Must be either Printer::FONT_A, Printer::FONT_B, or Printer::FONT_C.
      */
-    public function setFont(int $font = Printer::FONT_A)
+    public function setFont(int $font = Printer::FONT_A): void
     {
         self::validateInteger($font, 0, 2, __FUNCTION__);
         $this -> connector -> write(self::ESC . "M" . chr($font));
@@ -868,7 +871,7 @@ class Printer
      *
      * @param int $justification One of Printer::JUSTIFY_LEFT, Printer::JUSTIFY_CENTER, or Printer::JUSTIFY_RIGHT.
      */
-    public function setJustification(int $justification = Printer::JUSTIFY_LEFT)
+    public function setJustification(int $justification = Printer::JUSTIFY_LEFT): void
     {
         self::validateInteger($justification, 0, 2, __FUNCTION__);
         $this -> connector -> write(self::ESC . "a" . chr($justification));
@@ -882,7 +885,7 @@ class Printer
      * @param int|null $height The height of each line, in dots. If not set, the printer
      *  will reset to its default line spacing.
      */
-    public function setLineSpacing(int $height = null)
+    public function setLineSpacing(?int $height = null): void
     {
         if ($height === null) {
             // Reset to default
@@ -898,7 +901,7 @@ class Printer
      *
      * @param int $margin The left margin to set on to the print area, in dots.
      */
-    public function setPrintLeftMargin(int $margin = 0)
+    public function setPrintLeftMargin(int $margin = 0): void
     {
         self::validateInteger($margin, 0, 65535, __FUNCTION__);
         $this -> connector -> write(Printer::GS . 'L' . self::intLowHigh($margin, 2));
@@ -910,7 +913,7 @@ class Printer
      *
      * @param int $width The width of the page print area, in dots.
      */
-    public function setPrintWidth(int $width = 512)
+    public function setPrintWidth(int $width = 512): void
     {
         self::validateInteger($width, 1, 65535, __FUNCTION__);
          $this -> connector -> write(Printer::GS . 'W' . self::intLowHigh($width, 2));
@@ -922,7 +925,7 @@ class Printer
      * @param PrintBuffer $buffer The buffer to use.
      * @throws InvalidArgumentException Where the buffer is already attached to a different printer.
      */
-    public function setPrintBuffer(PrintBuffer $buffer)
+    public function setPrintBuffer(PrintBuffer $buffer): void
     {
         if ($buffer === $this -> buffer) {
             return;
@@ -942,7 +945,7 @@ class Printer
      *
      * @param boolean $on True to enable, false to disable.
      */
-    public function setReverseColors(bool $on = true)
+    public function setReverseColors(bool $on = true): void
     {
         self::validateBoolean($on, __FUNCTION__);
         $this -> connector -> write(self::GS . "B" . ($on ? chr(1) : chr(0)));
@@ -954,7 +957,7 @@ class Printer
      * @param int $widthMultiplier Multiple of the regular height to use (range 1 - 8)
      * @param int $heightMultiplier Multiple of the regular height to use (range 1 - 8)
      */
-    public function setTextSize(int $widthMultiplier, int $heightMultiplier)
+    public function setTextSize(int $widthMultiplier, int $heightMultiplier): void
     {
         self::validateInteger($widthMultiplier, 1, 8, __FUNCTION__);
         self::validateInteger($heightMultiplier, 1, 8, __FUNCTION__);
@@ -967,7 +970,7 @@ class Printer
      *
      * @param int $underline Either true/false, or one of Printer::UNDERLINE_NONE, Printer::UNDERLINE_SINGLE or Printer::UNDERLINE_DOUBLE. Defaults to Printer::UNDERLINE_SINGLE.
      */
-    public function setUnderline(int $underline = Printer::UNDERLINE_SINGLE)
+    public function setUnderline(int $underline = Printer::UNDERLINE_SINGLE): void
     {
         /* Set the underline */
         self::validateInteger($underline, 0, 2, __FUNCTION__);
@@ -979,7 +982,7 @@ class Printer
      *
      * @param boolean $on True to enable, false to disable.
      */
-    public function setUpsideDown(bool $on = true)
+    public function setUpsideDown(bool $on = true): void
     {
         $this -> connector -> write(self::ESC . "{" . ($on ? chr(1) : chr(0)));
     }
@@ -992,9 +995,9 @@ class Printer
      *
      * @param string $str Text to print, as UTF-8
      */
-    public function text(string $str)
+    public function text(string $str): void
     {
-        $this -> buffer -> writeText((string)$str);
+        $this -> buffer -> writeText($str);
     }
 
     /**
@@ -1005,7 +1008,7 @@ class Printer
      *
      * @param string $str Text to print, as UTF-8
      */
-    public function textChinese(string $str = "")
+    public function textChinese(string $str = ""): void
     {
         $this -> connector -> write(self::FS . "&");
         $str = \UConverter::transcode($str, "GBK", "UTF-8");
@@ -1021,9 +1024,9 @@ class Printer
      *
      * @param string $str Text to print
      */
-    public function textRaw(string $str = "")
+    public function textRaw(string $str = ""): void
     {
-        $this -> buffer -> writeTextRaw((string)$str);
+        $this -> buffer -> writeTextRaw($str);
     }
     
     /**
@@ -1035,7 +1038,7 @@ class Printer
      * @param string $m Modifier/variant for function. Often '0' where used.
      * @throws InvalidArgumentException Where the input lengths are bad.
      */
-    protected function wrapperSend2dCodeData(string $fn, string $cn, string$data = '', string $m = '')
+    protected function wrapperSend2dCodeData(string $fn, string $cn, string$data = '', string $m = ''): void
     {
         if (strlen($m) > 1 || strlen($cn) != 1 || strlen($fn) != 1) {
             throw new InvalidArgumentException("wrapperSend2dCodeData: cn and fn must be one character each.");
@@ -1052,7 +1055,7 @@ class Printer
      * @param string $data Data to send.
      * @throws InvalidArgumentException Where the input lengths are bad.
      */
-    protected function wrapperSendGraphicsData(string $m, string $fn, string$data = '')
+    protected function wrapperSendGraphicsData(string $m, string $fn, string$data = ''): void
     {
         if (strlen($m) != 1 || strlen($fn) != 1) {
             throw new InvalidArgumentException("wrapperSendGraphicsData: m and fn must be one character each.");
@@ -1068,7 +1071,7 @@ class Printer
      * @param boolean $long True to use 4 bytes, false to use 2
      * @return string
      */
-    protected static function dataHeader(array $inputs, bool $long = true)
+    protected static function dataHeader(array $inputs, bool $long = true): string
     {
         $outp = [];
         foreach ($inputs as $input) {
@@ -1088,7 +1091,7 @@ class Printer
      * @param int $input Input number
      * @param int $length The number of bytes to output (1 - 4).
      */
-    protected static function intLowHigh(int $input, int $length)
+    protected static function intLowHigh(int $input, int $length): string
     {
         $maxInput = (256 << ($length * 8) - 1);
         self::validateInteger($length, 1, 4, __FUNCTION__);
@@ -1107,7 +1110,7 @@ class Printer
      * @param boolean $test the input to test
      * @param string $source the name of the function calling this
      */
-    protected static function validateBoolean(bool $test, string $source)
+    protected static function validateBoolean(bool $test, string $source): void
     {
         if (!($test === true || $test === false)) {
             throw new InvalidArgumentException("Argument to $source must be a boolean");
@@ -1123,7 +1126,7 @@ class Printer
      * @param string $source the name of the function calling this
      * @param string $argument the name of the invalid parameter
      */
-    protected static function validateFloat(float $test, float $min, float $max, string $source, string $argument = "Argument")
+    protected static function validateFloat(float $test, float $min, float $max, string $source, string $argument = "Argument"): void
     {
         if (!is_numeric($test)) {
             throw new InvalidArgumentException("$argument given to $source must be a float, but '$test' was given.");
@@ -1142,7 +1145,7 @@ class Printer
      * @param string $source the name of the function calling this
      * @param string $argument the name of the invalid parameter
      */
-    protected static function validateInteger(int $test, int $min, int $max, string $source, string $argument = "Argument")
+    protected static function validateInteger(int $test, int $min, int $max, string $source, string $argument = "Argument"): void
     {
         self::validateIntegerMulti($test, [[$min, $max]], $source, $argument);
     }
@@ -1153,10 +1156,9 @@ class Printer
      * @param int $test the input to test
      * @param array $ranges array of two-item min/max ranges.
      * @param string $source the name of the function calling this
-     * @param string $source the name of the function calling this
      * @param string $argument the name of the invalid parameter
      */
-    protected static function validateIntegerMulti(int $test, array $ranges, string $source, string $argument = "Argument")
+    protected static function validateIntegerMulti(int $test, array $ranges, string $source, string $argument = "Argument"): void
     {
         if (!is_integer($test)) {
             throw new InvalidArgumentException("$argument given to $source must be a number, but '$test' was given.");
@@ -1191,7 +1193,7 @@ class Printer
      * @param string $argument the name of the parameter being validated
      * @throws InvalidArgumentException Where the argument is not valid
      */
-    protected static function validateStringRegex(string $test, string $source, string $regex, string $argument = "Argument")
+    protected static function validateStringRegex(string $test, string $source, string $regex, string $argument = "Argument"): void
     {
         if (preg_match($regex, $test) === 0) {
             throw new InvalidArgumentException("$argument given to $source is invalid. It should match regex '$regex', but '$test' was given.");
