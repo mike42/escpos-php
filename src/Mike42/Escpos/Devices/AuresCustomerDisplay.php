@@ -4,7 +4,7 @@
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
  *
- * Copyright (c) 2014-20 Michael Billington < michael.billington@gmail.com >,
+ * Copyright (c) 2014-2026 Michael Billington < michael.billington@gmail.com >,
  * incorporating modifications by others. See CONTRIBUTORS.md for a full list.
  *
  * This software is distributed under the terms of the MIT license. See LICENSE.md
@@ -48,7 +48,7 @@ class AuresCustomerDisplay extends Printer
      *
      * @see \Mike42\Escpos\Printer::initialize()
      */
-    public function initialize()
+    public function initialize(): void
     {
         // Select ESC/POS mode first
         $this->selectEscposMode();
@@ -64,7 +64,7 @@ class AuresCustomerDisplay extends Printer
      *
      * This device supports other modes, which are not used.
      */
-    protected function selectEscposMode()
+    protected function selectEscposMode(): void
     {
         $this->connector->write("\x02\x05\x43\x31\x03");
     }
@@ -77,7 +77,7 @@ class AuresCustomerDisplay extends Printer
      *            AuresCustomerDisplay::TEXT_VERTICAL_SCROLL or
      *            AuresCustomerDisplay::TEXT_HORIZONTAL_SCROLL
      */
-    public function selectTextScrollMode(int $mode = AuresCustomerDisplay::TEXT_VERTICAL_SCROLL)
+    public function selectTextScrollMode(int $mode = AuresCustomerDisplay::TEXT_VERTICAL_SCROLL): void
     {
         self::validateInteger($mode, 1, 3, __FUNCTION__);
         $this->connector->write("\x1F" . chr($mode));
@@ -86,7 +86,7 @@ class AuresCustomerDisplay extends Printer
     /**
      * Clear the display.
      */
-    public function clear()
+    public function clear(): void
     {
         $this->connector->write("\x0c");
     }
@@ -94,7 +94,7 @@ class AuresCustomerDisplay extends Printer
     /**
      * Instruct the display to show the firmware version.
      */
-    public function showFirmwareVersion()
+    public function showFirmwareVersion(): void
     {
         $this->connector->write("\x02\x05\x56\x01\x03");
     }
@@ -102,7 +102,7 @@ class AuresCustomerDisplay extends Printer
     /**
      * Instruct the display to begin a self-test/demo sequence.
      */
-    public function selfTest()
+    public function selfTest(): void
     {
         $this->connector->write("\x02\x05\x44\x08\x03");
     }
@@ -114,7 +114,7 @@ class AuresCustomerDisplay extends Printer
      * logo, but that the vendor supplies software
      * which has this function.
      */
-    public function showLogo()
+    public function showLogo(): void
     {
         $this->connector->write("\x02\xFC\x55\xAA\x55\xAA");
     }
@@ -125,7 +125,7 @@ class AuresCustomerDisplay extends Printer
      *
      * @see \Mike42\Escpos\Printer::text()
      */
-    public function text(string $str)
+    public function text(string $str): void
     {
         // Need to intercept line-feeds, since "\n" is insufficient on this device.
         foreach (explode("\n", $str) as $id => $line) {
@@ -142,7 +142,7 @@ class AuresCustomerDisplay extends Printer
      *
      * @see \Mike42\Escpos\Printer::feed()
      */
-    public function feed(int $lines = 1)
+    public function feed(int $lines = 1): void
     {
         self::validateInteger($lines, 1, 255, __FUNCTION__);
         for ($i = 0; $i < $lines; $i ++) {

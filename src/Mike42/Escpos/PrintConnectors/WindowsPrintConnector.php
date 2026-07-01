@@ -4,7 +4,7 @@
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
  *
- * Copyright (c) 2014-20 Michael Billington < michael.billington@gmail.com >,
+ * Copyright (c) 2014-2026 Michael Billington < michael.billington@gmail.com >,
  * incorporating modifications by others. See CONTRIBUTORS.md for a full list.
  *
  * This software is distributed under the terms of the MIT license. See LICENSE.md
@@ -168,7 +168,7 @@ class WindowsPrintConnector implements PrintConnector
         }
     }
 
-    public function finalize()
+    public function finalize(): void
     {
         $data = implode($this -> buffer);
         $this -> buffer = null;
@@ -187,7 +187,7 @@ class WindowsPrintConnector implements PrintConnector
      * @param string $data Print data
      * @throws Exception
      */
-    protected function finalizeLinux($data)
+    protected function finalizeLinux($data): void
     {
         /* Non-Windows samba printing */
         $device = "//" . $this -> hostname . "/" . $this -> printerName;
@@ -251,7 +251,7 @@ class WindowsPrintConnector implements PrintConnector
      *
      * @param string $data
      */
-    protected function finalizeWin($data)
+    protected function finalizeWin($data): void
     {
         /* Windows-friendly printing of all sorts */
         if (!$this -> isLocal) {
@@ -306,9 +306,9 @@ class WindowsPrintConnector implements PrintConnector
     }
 
     /**
-     * @return string Current platform. Separated out for testing purposes.
+     * @return int Current platform. Separated out for testing purposes.
      */
-    protected function getCurrentPlatform()
+    protected function getCurrentPlatform(): int
     {
         if (PHP_OS == "WINNT") {
             return self::PLATFORM_WIN;
@@ -322,7 +322,7 @@ class WindowsPrintConnector implements PrintConnector
     /* (non-PHPdoc)
      * @see PrintConnector::read()
      */
-    public function read($len)
+    public function read(int $len): bool|string
     {
         /* Two-way communication is not supported */
         return false;
@@ -334,10 +334,10 @@ class WindowsPrintConnector implements PrintConnector
      * @param string $command the command to run.
      * @param string $outputStr variable to fill with standard output.
      * @param string $errorStr variable to fill with standard error.
-     * @param string $inputStr text to pass to the command's standard input (optional).
+     * @param string|null $inputStr text to pass to the command's standard input (optional).
      * @return number
      */
-    protected function runCommand($command, &$outputStr, &$errorStr, $inputStr = null)
+    protected function runCommand(string $command, &$outputStr, &$errorStr, string|null $inputStr = null): int
     {
         $descriptors = [
                 0 => ["pipe", "r"],
@@ -390,7 +390,7 @@ class WindowsPrintConnector implements PrintConnector
         return file_put_contents($filename, $data) !== false;
     }
 
-    public function write($data)
+    public function write(string $data): void
     {
         $this -> buffer[] = $data;
     }
