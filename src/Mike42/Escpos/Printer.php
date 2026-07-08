@@ -1007,12 +1007,12 @@ class Printer
      * Support for this will be merged into a print buffer.
      *
      * @param string $str Text to print, as UTF-8
-     * @param string $encoding Encoding of Chinese text such as BIG-5, GB18030
+     * @param ChineseEncoding $encoding Encoding of Chinese text
      */
-    public function textChinese(string $str = "", string $encoding = "GBK"): void
+    public function textChinese(string $str = "", ChineseEncoding $encoding = ChineseEncoding::GBK): void
     {
         $this -> connector -> write(self::FS . "&");
-        $str = \UConverter::transcode($str, $encoding, "UTF-8");
+        $str = \UConverter::transcode($str, $encoding -> value, "UTF-8");
         $this -> buffer -> writeTextRaw((string)$str);
         $this -> connector -> write(self::FS . ".");
     }
