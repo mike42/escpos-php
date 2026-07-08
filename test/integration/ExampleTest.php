@@ -1,6 +1,8 @@
 <?php
 use Mike42\Escpos\EscposImage;
+use PHPUnit\Framework\Attributes\Medium;
 
+#[Medium]
 class ExampleTest extends PHPUnit\Framework\TestCase
 {
     /* Verify that the examples don't fizzle out with fatal errors */
@@ -11,9 +13,6 @@ class ExampleTest extends PHPUnit\Framework\TestCase
         $this -> exampleDir = dirname(__FILE__) . "/../../example/";
     }
     
-    /**
-     * @medium
-     */
     public function testBitImage()
     {
         $this->markTestSkipped('Not repeatable on Travis CI.');
@@ -22,18 +21,12 @@ class ExampleTest extends PHPUnit\Framework\TestCase
         $this -> outpTest($outp, "bit-image.bin");
     }
     
-    /**
-     * @medium
-     */
     public function testCharacterEncodings()
     {
         $outp = $this -> runExample("character-encodings.php");
         $this -> outpTest($outp, "character-encodings.bin");
     }
     
-    /**
-     * @medium
-     */
     public function testCharacterTables()
     {
         $outp = $this -> runExample("character-tables.php");
@@ -49,9 +42,6 @@ class ExampleTest extends PHPUnit\Framework\TestCase
         $this -> assertEquals($outp, file_get_contents($file));
     }
     
-    /**
-     * @medium
-     */
     public function testDemo()
     {
         $this->markTestSkipped('Not repeatable on Travis CI.');
@@ -60,9 +50,6 @@ class ExampleTest extends PHPUnit\Framework\TestCase
         $this -> outpTest($outp, "demo.bin");
     }
     
-    /**
-     * @medium
-     */
     public function testGraphics()
     {
         $this->markTestSkipped('Not repeatable on Travis CI.');
@@ -71,9 +58,6 @@ class ExampleTest extends PHPUnit\Framework\TestCase
         $this -> outpTest($outp, "graphics.bin");
     }
     
-    /**
-     * @medium
-     */
     public function testReceiptWithLogo()
     {
         $this->markTestSkipped('Not repeatable on Travis CI.');
@@ -82,54 +66,36 @@ class ExampleTest extends PHPUnit\Framework\TestCase
         $this -> outpTest($outp, "receipt-with-logo.bin");
     }
     
-    /**
-     * @medium
-     */
     public function testQrCode()
     {
         $outp = $this -> runExample("qr-code.php");
         $this -> outpTest($outp, "qr-code.bin");
     }
 
-    /**
-     * @medium
-     */
     public function testBarcode()
     {
         $outp = $this -> runExample("barcode.php");
         $this -> outpTest($outp, "barcode.bin");
     }
     
-    /**
-     * @medium
-     */
     public function testTextSize()
     {
         $outp = $this -> runExample("text-size.php");
         $this -> outpTest($outp, "text-size.bin");
     }
 
-    /**
-     * @medium
-     */
     public function testMarginsAndSpacing()
     {
         $outp = $this -> runExample("margins-and-spacing.php");
         $this -> outpTest($outp, "margins-and-spacing.bin");
     }
 
-    /**
-     * @medium
-     */
     public function testPdf417Code()
     {
         $outp = $this -> runExample("pdf417-code.php");
         $this -> outpTest($outp, "pdf417-code.bin");
     }
 
-    /**
-     * @medium
-     */
     public function testUnifontPrintBuffer()
     {
         $this->markTestSkipped('Not repeatable on Travis CI.');

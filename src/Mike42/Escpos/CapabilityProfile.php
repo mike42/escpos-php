@@ -4,7 +4,7 @@
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
  *
- * Copyright (c) 2014-20 Michael Billington < michael.billington@gmail.com >,
+ * Copyright (c) 2014-2026 Michael Billington < michael.billington@gmail.com >,
  * incorporating modifications by others. See CONTRIBUTORS.md for a full list.
  *
  * This software is distributed under the terms of the MIT license. See LICENSE.md
@@ -28,84 +28,84 @@ class CapabilityProfile
      * @var string $codePageCacheKey
      *  Hash of the code page data structure, to identify it for caching.
      */
-    protected $codePageCacheKey;
+    protected string $codePageCacheKey;
 
     /**
      *
      * @var array $codePages
      *  Associtive array of CodePage objects, indicating which encodings the printer supports.
      */
-    protected $codePages;
+    protected array $codePages;
 
     /**
      *
      * @var array $colors
      *  Not used.
      */
-    protected $colors;
+    protected array $colors;
 
     /**
      *
      * @var array $features
      *  Feature values.
      */
-    protected $features;
+    protected array $features;
 
     /**
      *
      * @var array $fonts
      *  Not used
      */
-    protected $fonts;
+    protected array $fonts;
 
     /**
      *
      * @var array $media
      *  Not used
      */
-    protected $media;
+    protected array $media;
 
     /**
      *
      * @var string $name
      *  Name of the profile, including model number.
      */
-    protected $name;
+    protected string $name;
 
     /**
      *
      * @var string $notes
      *  Notes on the profile, null if not set.
      */
-    protected $notes;
+    protected string $notes;
 
     /**
      *
      * @var string $profileId
      *  ID of the profile.
      */
-    protected $profileId;
+    protected string $profileId;
 
     
     /**
      * @var string $vendor
      *  Name of manufacturer.
      */
-    protected $vendor;
+    protected string $vendor;
     
     /**
      *
-     * @var array $encodings
+     * @var array|null $encodings
      *  Data structure containing encodings loaded from disk, null if not loaded yet.
      */
-    protected static $encodings = null;
+    protected static ?array $encodings = null;
 
     /**
      *
-     * @var array $profiles
+     * @var array|null $profiles
      *  Data structure containing profiles loaded from disk, null if not loaded yet.
      */
-    protected static $profiles = null;
+    protected static ?array $profiles = null;
 
     /**
      * Construct new CapabilityProfile.
@@ -158,11 +158,11 @@ class CapabilityProfile
      *
      * @param string $featureName
      *            Name of the feature to retrieve.
-     * @throws \InvalidArgumentException Where the feature does not exist.
+     * @throws InvalidArgumentException Where the feature does not exist.
      *         The exception will contain suggestions for the closest-named features.
-     * @return mixed feature value.
+     * @return bool feature value.
      */
-    public function getFeature($featureName)
+    public function getFeature($featureName): bool
     {
         if (isset($this->features[$featureName])) {
             return $this->features[$featureName];

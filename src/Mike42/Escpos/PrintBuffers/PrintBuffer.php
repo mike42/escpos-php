@@ -4,7 +4,7 @@
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
  *
- * Copyright (c) 2014-20 Michael Billington < michael.billington@gmail.com >,
+ * Copyright (c) 2014-2026 Michael Billington < michael.billington@gmail.com >,
  * incorporating modifications by others. See CONTRIBUTORS.md for a full list.
  *
  * This software is distributed under the terms of the MIT license. See LICENSE.md
@@ -36,31 +36,31 @@ interface PrintBuffer
      * Cause the buffer to send any partial input and wait on a newline.
      * If the printer is already on a new line, this does nothing.
      */
-    public function flush();
+    public function flush(): void;
 
     /**
      * Used by Escpos to check if a printer is set.
      */
-    public function getPrinter();
+    public function getPrinter(): ?Printer;
 
     /**
      * Used by Escpos to hook up one-to-one link between buffers and printers.
      *
      * @param Printer|null $printer New printer
      */
-    public function setPrinter(Printer $printer = null);
+    public function setPrinter(?Printer $printer = null): void;
 
     /**
      * Accept UTF-8 text for printing.
      *
      * @param string $text Text to print
      */
-    public function writeText(string $text);
+    public function writeText(string $text): void;
 
     /**
      * Accept 8-bit text in the current encoding and add it to the buffer.
      *
      * @param string $text Text to print, already the target encoding.
      */
-    public function writeTextRaw(string $text);
+    public function writeTextRaw(string $text): void;
 }

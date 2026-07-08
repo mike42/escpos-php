@@ -4,7 +4,7 @@
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
  *
- * Copyright (c) 2014-20 Michael Billington < michael.billington@gmail.com >,
+ * Copyright (c) 2014-2026 Michael Billington < michael.billington@gmail.com >,
  * incorporating modifications by others. See CONTRIBUTORS.md for a full list.
  *
  * This software is distributed under the terms of the MIT license. See LICENSE.md
@@ -31,20 +31,20 @@ interface PrintConnector
      * Finish using this print connector (close file, socket, send
      * accumulated output, etc).
      */
-    public function finalize();
+    public function finalize(): void;
 
     /**
      * Read data from the printer.
      *
-     * @param string $len Length of data to read.
-     * @return string Data read from the printer, or false where reading is not possible.
+     * @param int $len Length of data to read.
+     * @return string|boolean Data read from the printer, or false where reading is not possible.
      */
-    public function read($len);
+    public function read(int $len): bool|string;
 
     /**
      * Write data to the print connector.
      *
      * @param string $data The data to write
      */
-    public function write($data);
+    public function write(string $data): void;
 }
