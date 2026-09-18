@@ -682,6 +682,43 @@ class EscposTest extends PHPUnit\Framework\TestCase
         $this -> printer -> pulse(0, 0, 2);
     }
 
+    /* Buzzer */
+    function testBuzzerDefault()
+    {
+        $this -> printer -> buzzer();
+        $this -> checkOutput("\x1b@\x1bB\x02\x04");
+    }
+
+    function testBuzzerCustom()
+    {
+        $this -> printer -> buzzer(1, 9);
+        $this -> checkOutput("\x1b@\x1bB\x01\x09");
+    }
+
+    function testBuzzerTimesTooHigh()
+    {
+        $this -> expectException(InvalidArgumentException::class);
+        $this -> printer -> buzzer(10, 4);
+    }
+
+    function testBuzzerTimesTooLow()
+    {
+        $this -> expectException(InvalidArgumentException::class);
+        $this -> printer -> buzzer(0, 4);
+    }
+
+    function testBuzzerDurationTooHigh()
+    {
+        $this -> expectException(InvalidArgumentException::class);
+        $this -> printer -> buzzer(2, 10);
+    }
+
+    function testBuzzerDurationTooLow()
+    {
+        $this -> expectException(InvalidArgumentException::class);
+        $this -> printer -> buzzer(2, 0);
+    }
+
     /* Set reverse */
     public function testSetReverseColorsDefault()
     {
