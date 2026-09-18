@@ -700,6 +700,19 @@ class Printer
     }
 
     /**
+     * Sound the internal buzzer, on printers which have one.
+     *
+     * @param int $times number of times to beep. Must be between 1 and 9.
+     * @param int $duration duration of each beep, in units of 100 ms. Must be between 1 and 9.
+     */
+    public function buzzer(int $times = 2, int $duration = 4): void
+    {
+        self::validateInteger($times, 1, 9, __FUNCTION__);
+        self::validateInteger($duration, 1, 9, __FUNCTION__);
+        $this -> connector -> write(self::ESC . "B" . chr($times) . chr($duration));
+    }
+
+    /**
      * Print the given data as a QR code on the printer.
      *
      * @param string $content The content of the code. Numeric data will be more efficiently compacted.
