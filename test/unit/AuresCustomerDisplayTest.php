@@ -1,7 +1,7 @@
 <?php
 
 use Mike42\Escpos\Devices\AuresCustomerDisplay;
-use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
+use Mike42\Escpos\PrintConnectors\MemoryPrintConnector;
 use Mike42\Escpos\CapabilityProfile;
 
 class AuresCustomerDisplayTest extends PHPUnit\Framework\TestCase
@@ -12,7 +12,7 @@ class AuresCustomerDisplayTest extends PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         /* Print to nowhere- for testing which inputs are accepted */
-        $this -> outputConnector = new DummyPrintConnector();
+        $this -> outputConnector = new MemoryPrintConnector();
         $profile = CapabilityProfile::load('OCD-300');
         $this -> printer = new AuresCustomerDisplay($this -> outputConnector, $profile);
     }

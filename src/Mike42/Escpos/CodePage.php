@@ -1,14 +1,17 @@
-<?php declare(strict_types=1);
+<?php
+
 /**
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
  *
- * Copyright (c) 2014-20 Michael Billington < michael.billington@gmail.com >,
+ * Copyright (c) 2014-2026 Michael Billington < michael.billington@gmail.com >,
  * incorporating modifications by others. See CONTRIBUTORS.md for a full list.
  *
  * This software is distributed under the terms of the MIT license. See LICENSE.md
  * for details.
  */
+
+declare(strict_types=1);
 
 namespace Mike42\Escpos;
 
@@ -146,7 +149,7 @@ class CodePage
     }
 
     /**
-     * Given an ICU encoding name, generate a 128-entry array, with the unicode code points
+     * Given an ICU encoding name, generate a 128-entry array, with the Unicode code points
      * for the character at positions 128-255 in this code page.
      *
      * @param string $encodingName Name of the encoding
@@ -156,8 +159,13 @@ class CodePage
     {
         // Set up converter for encoding
         $missingChar = chr(self::MISSING_CHAR_CODE);
-        // Throws a lot of warnings for ambiguous code pages, but fallbacks seem fine.
-        $converter = @new \UConverter("UTF-8", $encodingName);
+        try {
+            $converter = new \UConverter("UTF-8", $encodingName);
+        } catch (\IntlException $e) {
+            // In PHP 8.5+ an unknown encoding will throw. We are enumerating every character we know how to print,
+            // and it is common/expected that we will encounter things unsupported by the host OS.
+            return array_fill(0, 128, self::MISSING_CHAR_CODE);
+        }
         $converter -> setSubstChars($missingChar);
         // Loop through 128 code points
         $intArray = array_fill(0, 128, self::MISSING_CHAR_CODE);
@@ -166,12 +174,12 @@ class CodePage
             $encodingChar = chr($char);
             $utf8 = $converter ->convert($encodingChar, false);
             if ($utf8 === $missingChar || $utf8 === false) {
-                // Cannot be mapped to unicode
+                // Cannot be mapped to Unicode
                 continue;
             }
             $reverse = $converter ->convert($utf8, true);
             if ($reverse !== $encodingChar) {
-                // Avoid conversions which don't reverse well (eg. multi-byte code pages)
+                // Avoid conversions which don't reverse well (eg. multibyte code pages)
                 continue;
             }
             // Replace space with the correct character if we found it

@@ -6,11 +6,11 @@
  */
 require __DIR__ . '/../../vendor/autoload.php';
 use Mike42\Escpos\Printer;
-use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
+use Mike42\Escpos\PrintConnectors\MemoryPrintConnector;
 use Mike42\Escpos\CapabilityProfile;
 
 // Make sure you load a Star print connector or you may get gibberish.
-$connector = new DummyPrintConnector();
+$connector = new MemoryPrintConnector();
 $profile = CapabilityProfile::load("TSP600");
 $printer = new Printer($connector);
 $printer -> text("Hello world!\n");

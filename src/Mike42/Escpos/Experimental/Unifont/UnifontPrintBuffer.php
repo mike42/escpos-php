@@ -4,7 +4,7 @@
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
  *
- * Copyright (c) 2014-20 Michael Billington < michael.billington@gmail.com >,
+ * Copyright (c) 2014-2026 Michael Billington < michael.billington@gmail.com >,
  * incorporating modifications by others. See CONTRIBUTORS.md for a full list.
  *
  * This software is distributed under the terms of the MIT license. See LICENSE.md
@@ -40,7 +40,7 @@ class UnifontPrintBuffer implements PrintBuffer
         $this -> started = false;
     }
 
-    public function writeChar(int $codePoint)
+    public function writeChar(int $codePoint): void
     {
         if ($codePoint == 10) {
             $this -> write("\n");
@@ -52,7 +52,7 @@ class UnifontPrintBuffer implements PrintBuffer
         }
     }
     
-    public function writeText(string $text)
+    public function writeText(string $text): void
     {
         if (!$this -> started) {
             $mode = Printer::MODE_FONT_B | Printer::MODE_DOUBLE_HEIGHT | Printer::MODE_DOUBLE_WIDTH;
@@ -73,21 +73,21 @@ class UnifontPrintBuffer implements PrintBuffer
         }
     }
     
-    public function flush()
+    public function flush(): void
     {
     }
     
-    public function setPrinter(Printer $printer = null)
+    public function setPrinter(?Printer $printer = null): void
     {
         $this -> printer = $printer;
         $this -> fontMap = new FontMap($this -> unifont, $this -> printer);
     }
     
-    public function writeTextRaw(string $text)
+    public function writeTextRaw(string $text): void
     {
     }
     
-    public function getPrinter()
+    public function getPrinter(): ?Printer
     {
         return $this -> printer;
     }
@@ -97,7 +97,7 @@ class UnifontPrintBuffer implements PrintBuffer
      *
      * @param string $data
      */
-    private function write($data)
+    private function write($data): void
     {
         $this -> printer -> getPrintConnector() -> write($data);
     }

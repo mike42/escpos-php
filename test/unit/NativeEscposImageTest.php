@@ -1,7 +1,9 @@
 <?php
 use Mike42\Escpos\NativeEscposImage;
 use Mike42\Escpos\EscposImage;
+use PHPUnit\Framework\Attributes\Medium;
 
+#[Medium]
 class NativeEscposImageTest extends PHPUnit\Framework\TestCase
 {
     /**
@@ -14,9 +16,7 @@ class NativeEscposImageTest extends PHPUnit\Framework\TestCase
         $this -> loadAndCheckImg('not a real file.png', 1, 1, null, null);
     }
 
-    /**
-     * @medium
-     */
+
     public function testBlack()
     {
         foreach (array('bmp', 'gif', 'png') as $format) {
@@ -24,9 +24,6 @@ class NativeEscposImageTest extends PHPUnit\Framework\TestCase
         }
     }
 
-    /**
-     * @medium
-     */
     public function testBlackTransparent()
     {
         foreach (array('gif', 'png') as $format) {
@@ -34,9 +31,6 @@ class NativeEscposImageTest extends PHPUnit\Framework\TestCase
         }
     }
     
-    /**
-     * @medium
-     */
     public function testBlackWhite()
     {
         foreach (array('bmp', 'png', 'gif') as $format) {
@@ -44,9 +38,6 @@ class NativeEscposImageTest extends PHPUnit\Framework\TestCase
         }
     }
 
-    /**
-     * @medium
-     */
     public function testBlackWhiteTall()
     {
         // We're very interested in correct column format chopping here at 8 pixels
@@ -54,9 +45,6 @@ class NativeEscposImageTest extends PHPUnit\Framework\TestCase
             "\xc0\xc0\xc0\xc0\xc0\xc0\xc0\xc0\x00\x00\x00\x00\x00\x00\x00\x00", array("\xff\xff", "\x00\x00"));
     }
 
-    /**
-     * @medium
-     */
     public function testWhite()
     {
         foreach (array('bmp', 'png', 'gif') as $format) {

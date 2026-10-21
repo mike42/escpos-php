@@ -1,6 +1,6 @@
 <?php
 
-use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
+use Mike42\Escpos\PrintConnectors\MemoryPrintConnector;
 use Mike42\Escpos\PrintConnectors\MultiplePrintConnector;
 use Mike42\Escpos\Printer;
 
@@ -9,8 +9,8 @@ class MultiplePrintConnectorTest extends PHPUnit\Framework\TestCase
     public function testOnePrinter()
     {
         // Set up connector which goes to multiple printers
-        $kitchenPrinter = new DummyPrintConnector();
-        $barPrinter = new DummyPrintConnector();
+        $kitchenPrinter = new MemoryPrintConnector();
+        $barPrinter = new MemoryPrintConnector();
         $connector = new MultiplePrintConnector($kitchenPrinter, $barPrinter);
         // Print something
         $printer = new Printer($connector);

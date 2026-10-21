@@ -4,7 +4,7 @@
  * This file is part of escpos-php: PHP receipt printer library for use with
  * ESC/POS-compatible thermal and impact printers.
  *
- * Copyright (c) 2014-20 Michael Billington < michael.billington@gmail.com >,
+ * Copyright (c) 2014-2026 Michael Billington < michael.billington@gmail.com >,
  * incorporating modifications by others. See CONTRIBUTORS.md for a full list.
  *
  * This software is distributed under the terms of the MIT license. See LICENSE.md
@@ -23,7 +23,7 @@ use Exception;
 class FilePrintConnector implements PrintConnector
 {
     /**
-     * @var resource $fp
+     * @var false|resource $fp
      *  The file pointer to send data to.
      */
     protected $fp;
@@ -33,7 +33,7 @@ class FilePrintConnector implements PrintConnector
      *
      * @param string $filename
      */
-    public function __construct($filename)
+    public function __construct(string $filename)
     {
         $this -> fp = fopen($filename, "wb+");
         if ($this -> fp === false) {
@@ -51,7 +51,7 @@ class FilePrintConnector implements PrintConnector
     /**
      * Close file pointer
      */
-    public function finalize()
+    public function finalize(): void
     {
         if ($this -> fp !== false) {
             fclose($this -> fp);
@@ -62,7 +62,7 @@ class FilePrintConnector implements PrintConnector
     /* (non-PHPdoc)
      * @see PrintConnector::read()
      */
-    public function read($len)
+    public function read(int $len): bool|string
     {
         if ($this -> fp === false) {
             throw new Exception("PrintConnector has been closed, cannot read input.");
@@ -75,7 +75,7 @@ class FilePrintConnector implements PrintConnector
      *
      * @param string $data
      */
-    public function write($data)
+    public function write(string $data): void
     {
         if ($this -> fp === false) {
             throw new Exception("PrintConnector has been closed, cannot send output.");

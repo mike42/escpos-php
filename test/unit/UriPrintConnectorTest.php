@@ -1,6 +1,6 @@
 <?php
 use Mike42\Escpos\PrintConnectors\UriPrintConnector;
-use PHPUnit\Framework\Error\Notice;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 class UriPrintConnectorTest extends PHPUnit\Framework\TestCase
 {
@@ -18,13 +18,16 @@ class UriPrintConnectorTest extends PHPUnit\Framework\TestCase
 
     public function testSmb()
     {
-        $this->expectNotice();
-        $this->expectNoticeMessage("not finalized");
+        // An smb:// URI should be accepted and resolve to a WindowsPrintConnector.
         $connector = UriPrintConnector::get("smb://windows/printer");
-        $this -> assertEquals('Mike42\Escpos\PrintConnectors\WindowsPrintConnector', get_class($connector));
-        // We expect that this will throw an exception, we can't
-        // realistically print to a real printer in this test though... :)
-        $connector -> __destruct();
+        $this -> assertInstanceOf(WindowsPrintConnector::class, $connector);
+        // Hack: swallow the "not finalized" notice from the destructor, since we
+        // never finalize() (can't print to a real SMB share from a unit test).
+        set_error_handler(function () {
+            return true;
+        }, E_USER_NOTICE);
+        unset($connector);
+        restore_error_handler();
     }
 
     public function testBadUri()

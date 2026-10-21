@@ -226,7 +226,7 @@ class WindowsPrintConnectorTest extends PHPUnit\Framework\TestCase
     private function getMockConnector($path, $platform)
     {
         $stub = $this -> getMockBuilder('Mike42\Escpos\PrintConnectors\WindowsPrintConnector')
-                -> setMethods(array('runCopy', 'runCommand', 'getCurrentPlatform', 'runWrite'))
+                -> onlyMethods(array('runCopy', 'runCommand', 'getCurrentPlatform', 'runWrite'))
                 -> disableOriginalConstructor()
                 -> getMock();
         $stub -> method('runCommand')
