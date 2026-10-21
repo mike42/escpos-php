@@ -67,6 +67,16 @@ class Printer
     const EOT = "\x04";
 
     /**
+     * ASCII Enquiry control character
+     */
+    const ENQ = "\x05";
+
+    /**
+     * ASCII end of text control character
+     */
+    const ETX = "\x03";
+
+    /**
      * Indicates UPC-A barcode when used with Printer::barcode
      */
     const BARCODE_UPCA = 65;
@@ -148,6 +158,16 @@ class Printer
      * Make a partial cut, when used with Printer::cut
      */
     const CUT_PARTIAL = 66;
+
+    /**
+     * Make a total cut and completely eject sheet (eg. on VKP80III Custom printer), when used with Printer::cut
+     */
+    const CUT_FULL_EJECT = 67;
+
+    /**
+     * Make a total cut and partial eject sheet (eg. on VKP80III Custom printer), when used with Printer::cut
+     */
+    const CUT_FULL_PARTIAL_EJECT = 68;
 
     /**
      * Use Font A, when used with Printer::setFont
@@ -514,7 +534,20 @@ class Printer
     public function cut(int $mode = Printer::CUT_FULL, int $lines = 3): void
     {
         // TODO validation on cut() inputs
-        $this -> connector -> write(self::GS . "V" . chr($mode) . chr($lines));
+        switch ($mode) {
+            case Printer::CUT_FULL:
+            case Printer::CUT_PARTIAL:
+                $this -> connector -> write(self::GS . "V" . chr($mode) . chr($lines));
+                break;
+            case Printer::CUT_FULL_EJECT:
+                $this -> connector -> write(self::GS . chr(101) . self::ENQ);
+                break;
+            case Printer::CUT_FULL_PARTIAL_EJECT:
+                $this -> connector -> write(self::GS . "e" . self::ETX . self::FF);
+                break;
+            default;
+                break;
+        }
     }
     
     /**
@@ -539,6 +572,14 @@ class Printer
     public function feedForm(): void
     {
         $this -> connector -> write(self::FF);
+    }
+
+    /**
+     * Emit a sound with a internal buzzer
+     */
+    public function buzzer()
+    {
+        $this->connector->write(PRINTER::FS . "\xc0" . "\x07");
     }
 
     /**
