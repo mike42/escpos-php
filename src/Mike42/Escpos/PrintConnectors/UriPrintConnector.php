@@ -40,6 +40,6 @@ class UriPrintConnector
                 return new WindowsPrintConnector($uri);
         }
         // Fallthrough
-        throw new \InvalidArgumentException("URI sheme is not supported: {$protocol}://");
+        throw new \InvalidArgumentException("URI scheme is not supported: {$protocol}://");
     }
 }
